@@ -11,7 +11,7 @@ class CourseSection extends Model
 
     protected $guarded = [];
 
-    public function course() {
+    public function courses() {
         return $this->belongsTo(Course::class);
     }
 

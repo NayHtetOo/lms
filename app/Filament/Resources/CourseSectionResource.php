@@ -4,6 +4,8 @@ namespace App\Filament\Resources;
 
 use App\Filament\Resources\CourseResource\RelationManagers\CourseSectionsRelationManager;
 use App\Filament\Resources\CourseSectionResource\Pages;
+use App\Filament\Resources\CourseSectionResource\RelationManagers\CoursesRelationManager;
+use App\Filament\Resources\CourseSectionResource\RelationManagers\ExamsRelationManager;
 use App\Filament\Resources\CourseSectionResource\RelationManagers\LessonsRelationManager;
 use App\Models\Course;
 use App\Models\CourseCategory;
@@ -263,6 +265,8 @@ class CourseSectionResource extends Resource
     {
         return [
             LessonsRelationManager::class,
+            ExamsRelationManager::class,
+            // CoursesRelationManager::class
         ];
     }
 

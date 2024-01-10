@@ -4,6 +4,7 @@ namespace App\Filament\Resources\CourseSectionResource\RelationManagers;
 
 use App\Models\Course;
 use Filament\Forms;
+use Filament\Forms\Components\BelongsToSelect;
 use Filament\Forms\Components\RichEditor;
 use Filament\Forms\Form;
 use Filament\Resources\RelationManagers\RelationManager;
@@ -23,21 +24,10 @@ class LessonsRelationManager extends RelationManager
         // dd($this);
         return $form
             ->schema([
-                // Select::make('course_id')->label('Course Name')->required()->options([
-                //     'Beginner' => Course::join('course_categories as cc','cc.id','=','courses.course_category_id')
-                //         ->where('cc.category_name','beginner')
-                //         ->pluck('courses.course_name','courses.id')
-                //         ->toArray()
-                //     ,
-                //     'Advanced' => Course::join('course_categories as cc','cc.id','=','courses.course_category_id')
-                //         ->where('cc.category_name','advanced')
-                //         ->pluck('courses.course_name','courses.id')
-                //         ->toArray()
-                // ]),
-                TextInput::make('course_id')
-                    ->default('1')
-                    ->readOnly()
-                ,
+                // TextInput::make('course_id')
+                //     ->default('1')
+                //     ->readOnly()
+                // ,
                 TextInput::make('lesson_name')
                     ->required()
                     ->maxLength(255),
@@ -62,12 +52,12 @@ class LessonsRelationManager extends RelationManager
                 //     // dd($data);
                 //     return $data;
                 // })
-                ->form([
-                    TextInput::make('course_id')
-                    ->default('1')
-                    ->readOnly(),
-                    TextInput::make('lesson_name')
-                ]),
+                // ->form([
+                //     TextInput::make('course_id')
+                //     ->default('1')
+                //     ->readOnly(),
+                //     TextInput::make('lesson_name')
+                // ]),
             ])
             ->actions([
                 Tables\Actions\EditAction::make(),

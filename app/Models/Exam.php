@@ -23,7 +23,7 @@ class Exam extends Model
         return "{$this->end_date_time->isoFormat('dddd')}, {$this->end_date_time->format('d F Y, h:i A')}";;
     }
 
-    public function course_section()
+    public function course_sections()
     {
         return $this->belongsTo(CourseSection::class);
     }

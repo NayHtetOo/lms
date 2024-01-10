@@ -15,7 +15,7 @@ class Lesson extends Model
     // {
     //     return $this->hasMany(LessonContent::class);
     // }
-    public function course(){
+    public function courses(){
         return $this->belongsTo(Course::class);
     }
     function course_sections() {
