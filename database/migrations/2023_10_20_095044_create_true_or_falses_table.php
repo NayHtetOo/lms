@@ -18,6 +18,7 @@ return new class extends Migration
             $table->string('question_no')->nullable(); // added new
             $table->text('question');
             $table->string('answer');
+            $table->integer('mark');
             $table->timestamps();
         });
     }

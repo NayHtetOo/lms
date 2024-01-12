@@ -18,12 +18,12 @@ class DatabaseSeeder extends Seeder
         //     'name' => 'Admin',
         //     'email' => 'admin@gmail.com',
         // ]);
-        
-        // \App\Models\User::create([
-        //     'name' => 'Admin',
-        //     'email' => 'admin@gmail.com',
-        //     'password' => bcrypt('123')
-        // ]);
+
+        \App\Models\User::create([
+            'name' => 'Admin',
+            'email' => 'admin@gmail.com',
+            'password' => bcrypt('123')
+        ]);
         $list = ['admin', 'teacher', 'student','guest'];
 
         for ($i = 0; $i < count($list); $i++) {

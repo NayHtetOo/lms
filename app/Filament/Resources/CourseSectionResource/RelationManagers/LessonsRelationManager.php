@@ -24,10 +24,10 @@ class LessonsRelationManager extends RelationManager
         // dd($this);
         return $form
             ->schema([
-                // TextInput::make('course_id')
-                //     ->default('1')
-                //     ->readOnly()
-                // ,
+                TextInput::make('course_id')
+                    ->default('1')
+                    ->readOnly()
+                ,
                 TextInput::make('lesson_name')
                     ->required()
                     ->maxLength(255),

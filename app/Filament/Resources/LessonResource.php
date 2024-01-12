@@ -7,17 +7,14 @@ use App\Models\Course;
 use App\Models\CourseCategory;
 use App\Models\CourseSection;
 use App\Models\Lesson;
-use Filament\Forms;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
-use Filament\Tables;
 use Filament\Tables\Table;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Grid;
 use Filament\Forms\Components\RichEditor;
 use Filament\Forms\Get;
-use Filament\Forms\Set;
 use Filament\Infolists\Components\Fieldset;
 use Filament\Infolists\Components\TextEntry;
 use Filament\Infolists\Infolist;
@@ -101,7 +98,7 @@ class LessonResource extends Resource
                         }
                     })
                 ,
-                TextColumn::make('lesson_name')->label('Lesson Name')->toggleable(),
+                TextColumn::make('lesson_name')->label('Lesson Name')->toggleable()->searchable(),
                 TextColumn::make('content')->toggleable(),
                 TextColumn::make('created_at')
                     ->dateTime()

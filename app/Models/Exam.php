@@ -36,4 +36,23 @@ class Exam extends Model
     {
         return $this->hasMany(ExamAttachment::class);
     }
+
+    public function true_or_falses(){
+        return $this->hasMany(TrueOrFalse::class);
+    }
+    public function multiple_choices(){
+        return $this->hasMany(MultipleChoice::class);
+    }
+    public function short_questions(){
+        return $this->hasMany(ShortQuestion::class);
+    }
+    public function essays(){
+        return $this->hasMany(Essay::class);
+    }
+    public function matchings(){
+        return $this->hasMany(Matching::class);
+    }
+    public function forums(){
+        return $this->hasMany(Forum::class);
+    }
 }

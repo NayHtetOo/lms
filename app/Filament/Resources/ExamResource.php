@@ -3,6 +3,12 @@
 namespace App\Filament\Resources;
 
 use App\Filament\Resources\ExamResource\Pages;
+use App\Filament\Resources\ExamResource\RelationManagers\EssaysRelationManager;
+use App\Filament\Resources\ExamResource\RelationManagers\ForumsRelationManager;
+use App\Filament\Resources\ExamResource\RelationManagers\MatchingsRelationManager;
+use App\Filament\Resources\ExamResource\RelationManagers\MultipleChoicesRelationManager;
+use App\Filament\Resources\ExamResource\RelationManagers\ShortQuestionsRelationManager;
+use App\Filament\Resources\ExamResource\RelationManagers\TrueOrFalsesRelationManager;
 use App\Models\Course;
 use App\Models\CourseCategory;
 use App\Models\CourseSection;
@@ -11,7 +17,6 @@ use App\Models\Exam;
 use App\Models\MultipleChoice;
 use App\Models\ShortQuestion;
 use App\Models\TrueOrFalse;
-use Filament\Facades\Filament;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
@@ -22,14 +27,12 @@ use Filament\Forms\Components\DateTimePicker;
 use Filament\Forms\Components\Grid;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Get;
-use Filament\Forms\Set;
 use Filament\Infolists\Components\Fieldset;
 use Filament\Infolists\Components\RepeatableEntry;
 use Filament\Tables\Columns\TextColumn;
 use Illuminate\Support\Collection;
 use Filament\Infolists\Components\TextEntry;
 use Filament\Infolists\Infolist;
-use PHPUnit\Framework\MockObject\Stub\ReturnReference;
 
 class ExamResource extends Resource
 {
@@ -123,7 +126,7 @@ class ExamResource extends Resource
                 //         }
                 //     })
                 // ,
-                TextColumn::make('exam_name')->label('Exam Name'),
+                TextColumn::make('exam_name')->label('Exam Name')->searchable(),
                 TextColumn::make('start_date_time')
                     ->dateTime()
                     ->sortable(),
@@ -283,7 +286,12 @@ class ExamResource extends Resource
     public static function getRelations(): array
     {
         return [
-            //
+            TrueOrFalsesRelationManager::class,
+            MultipleChoicesRelationManager::class,
+            MatchingsRelationManager::class,
+            ShortQuestionsRelationManager::class,
+            EssaysRelationManager::class,
+            ForumsRelationManager::class
         ];
     }
 

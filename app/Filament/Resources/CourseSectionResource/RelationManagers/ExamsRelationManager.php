@@ -21,12 +21,12 @@ class ExamsRelationManager extends RelationManager
     {
         return $form
             ->schema([
-                // TextInput::make('course_id')->label('Course Name')
-                //     ->required()
-                //     ->default('1')
-                //     ->readOnly()
-                //     ->maxLength(255)
-                // ,
+                TextInput::make('course_id')->label('Course Name')
+                    ->required()
+                    ->default('1')
+                    ->readOnly()
+                    ->maxLength(255)
+                ,
                 TextInput::make('exam_name')
                     ->required()
                     ->maxLength(255)
@@ -53,7 +53,7 @@ class ExamsRelationManager extends RelationManager
             ->recordTitleAttribute('exam_name')
             ->columns([
                 TextColumn::make('exam_name'),
-                TextColumn::make('duration'),
+                TextColumn::make('duration')->label('Duration (minutes)'),
                 TextColumn::make('description'),
                 TextColumn::make('start_date_time'),
                 TextColumn::make('end_date_time'),

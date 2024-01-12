@@ -9,4 +9,8 @@ class Forum extends Model
 {
     use HasFactory;
     protected $guarded = [];
+
+    public function exams(){
+        return $this->belongsTo(Exam::class);
+    }
 }

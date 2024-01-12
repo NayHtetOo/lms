@@ -16,6 +16,7 @@ return new class extends Migration
             $table->foreignId('exam_id')->constrained()->onDelete('cascade');
             $table->string('question_no')->nullable(); // added new
             $table->text('question');
+            $table->integer('mark');
             $table->timestamps();
         });
     }

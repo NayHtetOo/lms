@@ -11,16 +11,21 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('multiple_choices', function (Blueprint $table) {
+        Schema::create('matchings', function (Blueprint $table) {
             $table->id();
             $table->foreignId('exam_id')->constrained()->onDelete('cascade');
-            $table->string('question_no')->nullable(); // added new
+            $table->string('question_no')->nullable();
             $table->text('question');
-            $table->string('choice_1');
-            $table->string('choice_2');
-            $table->string('choice_3');
-            $table->string('choice_4');
-            $table->integer('answer');
+
+            $table->text('question_1');
+            $table->text('answer_1');
+
+            $table->text('question_2');
+            $table->text('answer_2');
+
+            $table->text('question_3');
+            $table->text('answer_3');
+            
             $table->integer('mark');
             $table->timestamps();
         });
@@ -31,6 +36,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('multiple_choices');
+        Schema::dropIfExists('matchings');
     }
 };

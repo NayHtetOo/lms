@@ -37,6 +37,12 @@ class CourseResource extends Resource
 
     protected static ?int $navigationSort = 2;
 
+    public static function getNavigationBadge(): ?string
+    {
+        // return static::getModel()::where('status','=','available')->count();
+        return static::getModel()::count();
+    }
+
     public static function form(Form $form): Form
     {
         return $form
@@ -77,9 +83,6 @@ class CourseResource extends Resource
                         }
                     }
                     )
-                    // ->getState(function($query){
-
-                    // })
                 ,
                 TextColumn::make('course_name')->label('Course Name')
                     ->searchable(),
@@ -137,6 +140,9 @@ class CourseResource extends Resource
                 }),
                 TextEntry::make('to_date')->label('To Date')->getStateUsing(function($record){
                     return $record->to_date;
+                }),
+                TextEntry::make('visible')->label('Status')->getStateUsing(function($record){
+                    return $record->visible == 1 ? 'Visible' : 'Invisible';
                 }),
             ])->columns(5),
             Fieldset::make('Description')->schema([
