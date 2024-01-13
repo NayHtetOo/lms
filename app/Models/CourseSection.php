@@ -27,4 +27,8 @@ class CourseSection extends Model
     {
         return $this->hasMany(Exam::class);
     }
+
+    public function assignments(){
+        return $this->hasMany(Assignment::class);
+    }
 }

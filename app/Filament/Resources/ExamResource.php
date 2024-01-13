@@ -27,6 +27,7 @@ use Filament\Forms\Components\DateTimePicker;
 use Filament\Forms\Components\Grid;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Get;
+use Filament\Forms\Set;
 use Filament\Infolists\Components\Fieldset;
 use Filament\Infolists\Components\RepeatableEntry;
 use Filament\Tables\Columns\TextColumn;
@@ -49,40 +50,39 @@ class ExamResource extends Resource
         return $form->schema([
             Grid::make()->schema([
                 TextInput::make('exam_name')->required(),
-
-                // Select::make('course_id')->label('Course Name')->options(
-                //     Course::all()->pluck('course_name','id')
-                // )->searchable()
+                // Select::make('course_id')->label('Course Name')->options([
+                //     'Beginner' => Course::join('course_categories as cc','cc.id','=','courses.course_category_id')
+                //         ->where('cc.category_name','beginner')
+                //         ->pluck('courses.course_name','courses.id')
+                //         ->toArray()
+                //     ,
+                //     'Advanced' => Course::join('course_categories as cc','cc.id','=','courses.course_category_id')
+                //         ->where('cc.category_name','advanced')
+                //         ->pluck('courses.course_name','courses.id')
+                //         ->toArray()
+                // ])
                 // ->afterStateUpdated(fn(Set $set) => $set('course_section_id',null))
                 // ->preload()
                 // ->live()
-                // ->required(),
-
-                Select::make('course_id')->label('Course Name')->options([
-                    'Beginner' => Course::join('course_categories as cc','cc.id','=','courses.course_category_id')
-                        ->where('cc.category_name','beginner')
-                        ->pluck('courses.course_name','courses.id')
-                        ->toArray()
-                    ,
-                    'Advanced' => Course::join('course_categories as cc','cc.id','=','courses.course_category_id')
-                        ->where('cc.category_name','advanced')
-                        ->pluck('courses.course_name','courses.id')
-                        ->toArray()
-                ])
-                ->required()
-                ,
-
-                Select::make('course_section_id')->label('Section Name')
-                    ->options(
-                        // CourseSection::all()->pluck('section_name','id')
-                        fn(Get $get): Collection => CourseSection::query()
-                        ->where('course_id',$get('course_id'))
-                        ->pluck('section_name','id')
-                    )->searchable()
-                    ->preload()
-                    ->live()
-                    ->required()
-                ,
+                // ->required()
+                // ,
+                // Select::make('course_section_id')->label('Section Name')
+                //     ->options(
+                //         // CourseSection::all()->pluck('section_name','id')
+                //         fn(Get $get): Collection => CourseSection::query()
+                //         ->where('course_id',$get('course_id'))
+                //         ->pluck('section_name','id')
+                //     )->searchable()
+                //     ->preload()
+                //     // ->live()
+                //     ->required()
+                // ,
+                Select::make('course_id')->label('Course Name')->options(function () {
+                    return Course::all()->pluck('course_name', 'id');
+                })->disabled(),
+                Select::make('course_section_id')->label('Section Name')->options(function () {
+                    return CourseSection::all()->pluck('section_name', 'id');
+                })->disabled(),
             ])->columns(3),
             Grid::make()->schema([
                 // TextInput::make('exam_name')->required(),

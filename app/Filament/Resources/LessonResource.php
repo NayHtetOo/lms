@@ -33,38 +33,36 @@ class LessonResource extends Resource
 
     protected static ?int $navigationSort = 4;
 
+    protected static bool $shouldRegisterNavigation = false;
+
     public static function form(Form $form): Form
     {
         return $form
             ->schema([
                 Grid::make()->schema([
-                    // Select::make('course_id')->label('Course Name')->required()->options(
-                    //     Course::all()->pluck('course_name','id')
+                    // Select::make('course_id')->label('Course Name')->options([
+                    //     'Beginner' => Course::join('course_categories as cc','cc.id','=','courses.course_category_id')
+                    //         ->where('cc.category_name','beginner')
+                    //         ->pluck('courses.course_name','courses.id')
+                    //         ->toArray()
+                    //     ,
+                    //     'Advanced' => Course::join('course_categories as cc','cc.id','=','courses.course_category_id')
+                    //         ->where('cc.category_name','advanced')
+                    //         ->pluck('courses.course_name','courses.id')
+                    //         ->toArray()
+                    // ])
+                    // ->required(),
+                    // Select::make('course_section_id')->label('Section Name')->options(
+                    //     fn(Get $get): Collection => CourseSection::query()->where('course_id',$get('course_id'))
+                    //     ->pluck('section_name','id')
                     // )->searchable()
-                    // ->afterStateUpdated(fn(Set $set) => $set('course_section_id',null))
-                    // ->preload()->live(),
-
-                    Select::make('course_id')->label('Course Name')->options([
-                        'Beginner' => Course::join('course_categories as cc','cc.id','=','courses.course_category_id')
-                            ->where('cc.category_name','beginner')
-                            ->pluck('courses.course_name','courses.id')
-                            ->toArray()
-                        ,
-                        'Advanced' => Course::join('course_categories as cc','cc.id','=','courses.course_category_id')
-                            ->where('cc.category_name','advanced')
-                            ->pluck('courses.course_name','courses.id')
-                            ->toArray()
-                    ])
-                    ->required()
-                    // ->preload()->live()
-                    ,
-
-                    Select::make('course_section_id')->label('Section Name')->options(
-                        fn(Get $get): Collection => CourseSection::query()->where('course_id',$get('course_id'))
-                        ->pluck('section_name','id')
-                    )->searchable()
-                    ->preload()->live()->required()
-                   ,
+                    // ->preload()->live()->required(),
+                    Select::make('course_id')->label('Course Name')->options(function () {
+                        return Course::all()->pluck('course_name', 'id');
+                    })->disabled(),
+                    Select::make('course_section_id')->label('Section Name')->options(function () {
+                        return CourseSection::all()->pluck('section_name', 'id');
+                    })->disabled(),
                    TextInput::make('lesson_name')->required(),
                 ])->columns(3),
                 //     ->maxLength(65535)

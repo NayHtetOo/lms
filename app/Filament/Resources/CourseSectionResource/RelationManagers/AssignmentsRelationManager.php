@@ -2,44 +2,47 @@
 
 namespace App\Filament\Resources\CourseSectionResource\RelationManagers;
 
+use Filament\Forms;
 use Filament\Forms\Components\Hidden;
 use Filament\Forms\Components\RichEditor;
 use Filament\Forms\Form;
 use Filament\Resources\RelationManagers\RelationManager;
 use Filament\Tables;
 use Filament\Tables\Table;
-use Filament\Forms\Components\TextInput;
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\SoftDeletingScope;
 use Filament\Tables\Columns\TextColumn;
+use Filament\Forms\Components\TextInput;
 
-class LessonsRelationManager extends RelationManager
+class AssignmentsRelationManager extends RelationManager
 {
-    protected static string $relationship = 'lessons';
+    protected static string $relationship = 'assignments';
 
     public function form(Form $form): Form
     {
         return $form
             ->schema([
                 Hidden::make('course_id')->default($this->getOwnerRecord()->course_id),
-                TextInput::make('lesson_name')
+                TextInput::make('assignment_name')
                     ->required()
                     ->maxLength(255),
-                RichEditor::make('content')->columnSpanFull(),
+                RichEditor::make('description')->columnSpanFull()
             ]);
     }
 
     public function table(Table $table): Table
     {
         return $table
-            ->recordTitleAttribute('lesson_name')
+            ->recordTitleAttribute('assignment_name')
             ->columns([
-                TextColumn::make('lesson_name')->searchable(),
-                TextColumn::make('content'),
+                TextColumn::make('assignment_name'),
+                TextColumn::make('description'),
             ])
             ->filters([
                 //
             ])
             ->headerActions([
-                Tables\Actions\CreateAction::make()
+                Tables\Actions\CreateAction::make(),
             ])
             ->actions([
                 Tables\Actions\EditAction::make(),

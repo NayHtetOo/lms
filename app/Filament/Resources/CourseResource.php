@@ -53,7 +53,7 @@ class CourseResource extends Resource
                 TextInput::make('course_name')
                     ->required()
                     ->maxLength(255),
-                TextInput::make('course_id')
+                TextInput::make('course_idd')
                     ->required()
                     ->maxLength(255),
                 DatePicker::make('from_date')

@@ -28,7 +28,7 @@ class Exam extends Model
         return $this->belongsTo(CourseSection::class);
     }
 
-    public function course(){
+    public function courses(){
         return $this->belongsTo(Course::class);
     }
 

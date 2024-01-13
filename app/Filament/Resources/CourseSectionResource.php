@@ -2,9 +2,8 @@
 
 namespace App\Filament\Resources;
 
-use App\Filament\Resources\CourseResource\RelationManagers\CourseSectionsRelationManager;
 use App\Filament\Resources\CourseSectionResource\Pages;
-use App\Filament\Resources\CourseSectionResource\RelationManagers\CoursesRelationManager;
+use App\Filament\Resources\CourseSectionResource\RelationManagers\AssignmentsRelationManager;
 use App\Filament\Resources\CourseSectionResource\RelationManagers\ExamsRelationManager;
 use App\Filament\Resources\CourseSectionResource\RelationManagers\LessonsRelationManager;
 use App\Models\Course;
@@ -16,7 +15,6 @@ use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
 use Filament\Forms\Components\Select;
-use Filament\Forms\Components\TextInput;
 use Filament\Infolists\Components\TextEntry;
 use Filament\Infolists\Infolist;
 use App\Models\Exam;
@@ -24,12 +22,14 @@ use App\Models\Lesson;
 use App\Models\MultipleChoice;
 use App\Models\ShortQuestion;
 use App\Models\TrueOrFalse;
-use Doctrine\DBAL\Driver\Mysqli\Initializer\Options;
+use Filament\Forms\Components\TextInput;
+use Filament\Forms\Get;
+use Filament\Forms\Set;
 use Filament\Infolists\Components\Fieldset;
 use Filament\Infolists\Components\Grid;
 use Filament\Infolists\Components\RepeatableEntry;
 use Filament\Tables\Columns\TextColumn;
-use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Collection;
 
 class CourseSectionResource extends Resource
 {
@@ -37,30 +37,37 @@ class CourseSectionResource extends Resource
 
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
 
+    protected static ?string $navigationLabel = 'Sections';
+
     protected static ?string $navigationGroup = 'Admin Management';
 
     protected static ?int $navigationSort = 3;
 
     public static function form(Form $form): Form
     {
+        return $form->schema([
 
-        return $form
-            ->schema([
-                Select::make('course_id')->label('Course Name')->required()->options([
-                    'Beginner' => Course::join('course_categories as cc','cc.id','=','courses.course_category_id')
-                        ->where('cc.category_name','beginner')
-                        ->pluck('courses.course_name','courses.id')
-                        ->toArray()
-                    ,
-                    'Advanced' => Course::join('course_categories as cc','cc.id','=','courses.course_category_id')
-                        ->where('cc.category_name','advanced')
-                        ->pluck('courses.course_name','courses.id')
-                        ->toArray()
-                ]),
-                TextInput::make('section_name')
-                    ->required()
-                    ->maxLength(255)
-            ]);
+            // Select::make('course_id')->label('Course Name')->options([
+            //     'Beginner' => Course::join('course_categories as cc','cc.id','=','courses.course_category_id')
+            //         ->where('cc.category_name','beginner')
+            //         ->pluck('courses.course_name','courses.id')
+            //         ->toArray()
+            //     ,
+            //     'Advanced' => Course::join('course_categories as cc','cc.id','=','courses.course_category_id')
+            //         ->where('cc.category_name','advanced')
+            //         ->pluck('courses.course_name','courses.id')
+            //         ->toArray()
+            // ])
+            // // ->afterStateUpdated(fn(Set $set) => $set('section_name',null))
+            // ->preload()
+            // ->live()
+            // ->required()
+            // ,
+            Select::make('course_id')->label('Course Name')->options(function () {
+                return Course::all()->pluck('course_name', 'id');
+            })->disabled(),
+            TextInput::make('section_name'),
+        ]);
     }
 
     public static function table(Table $table): Table
@@ -72,18 +79,18 @@ class CourseSectionResource extends Resource
                     $courseCategory = CourseCategory::find($course->course_category_id);
                     return $courseCategory->category_name;
                 }),
+                TextColumn::make('section_name')->label('Section Name')
+                    ->searchable(),
                 TextColumn::make('course_id')->label('Course Name')
-                    ->sortable()
-                    ->getStateUsing(function($record){
+                    ->sortable()->getStateUsing(function($record){
                         $course = Course::find($record->course_id);
                         if($course){
                             return $course->course_name;
                         }else{
                             return '';
                         }
-                    }),
-                TextColumn::make('section_name')
-                    ->searchable(),
+                    }
+                ),
                 TextColumn::make('created_at')
                     ->dateTime()
                     ->sortable()
@@ -263,10 +270,15 @@ class CourseSectionResource extends Resource
 
     public static function getRelations(): array
     {
+        // dd($courseId);
         return [
+            // LessonsRelationManager::make([
+            //     'status' => 'approved'
+            // ]),
             LessonsRelationManager::class,
             ExamsRelationManager::class,
             // CoursesRelationManager::class
+            AssignmentsRelationManager::class
         ];
     }
 

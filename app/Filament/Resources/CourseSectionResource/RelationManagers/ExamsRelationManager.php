@@ -10,6 +10,7 @@ use Filament\Tables;
 use Filament\Tables\Table;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\DateTimePicker;
+use Filament\Forms\Components\Hidden;
 use Filament\Forms\Components\Textarea;
 use Filament\Tables\Columns\TextColumn;
 
@@ -21,12 +22,13 @@ class ExamsRelationManager extends RelationManager
     {
         return $form
             ->schema([
-                TextInput::make('course_id')->label('Course Name')
-                    ->required()
-                    ->default('1')
-                    ->readOnly()
-                    ->maxLength(255)
-                ,
+                // TextInput::make('course_id')->label('Course Name')
+                //     ->required()
+                //     ->default('1')
+                //     ->readOnly()
+                //     ->maxLength(255)
+                // ,
+                Hidden::make('course_id')->default($this->getOwnerRecord()->course_id),
                 TextInput::make('exam_name')
                     ->required()
                     ->maxLength(255)
@@ -52,7 +54,7 @@ class ExamsRelationManager extends RelationManager
         return $table
             ->recordTitleAttribute('exam_name')
             ->columns([
-                TextColumn::make('exam_name'),
+                TextColumn::make('exam_name')->searchable(),
                 TextColumn::make('duration')->label('Duration (minutes)'),
                 TextColumn::make('description'),
                 TextColumn::make('start_date_time'),
