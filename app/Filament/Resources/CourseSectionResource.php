@@ -14,7 +14,6 @@ use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
-use Filament\Forms\Components\Select;
 use Filament\Infolists\Components\TextEntry;
 use Filament\Infolists\Infolist;
 use App\Models\Exam;
@@ -23,13 +22,12 @@ use App\Models\MultipleChoice;
 use App\Models\ShortQuestion;
 use App\Models\TrueOrFalse;
 use Filament\Forms\Components\TextInput;
-use Filament\Forms\Get;
-use Filament\Forms\Set;
 use Filament\Infolists\Components\Fieldset;
 use Filament\Infolists\Components\Grid;
 use Filament\Infolists\Components\RepeatableEntry;
 use Filament\Tables\Columns\TextColumn;
-use Illuminate\Support\Collection;
+use Filament\Widgets\StatsOverviewWidget\Stat;
+use Illuminate\Database\Eloquent\Builder as EloquentBuilder;
 
 class CourseSectionResource extends Resource
 {
@@ -43,10 +41,17 @@ class CourseSectionResource extends Resource
 
     protected static ?int $navigationSort = 3;
 
+    public static int $course_id = 1;
+
+    // public static function getUrl($action, $parameters = [])
+    // {
+    //     return static::route($action, $parameters);
+    // }
+
     public static function form(Form $form): Form
     {
-        return $form->schema([
 
+        return $form->schema([
             // Select::make('course_id')->label('Course Name')->options([
             //     'Beginner' => Course::join('course_categories as cc','cc.id','=','courses.course_category_id')
             //         ->where('cc.category_name','beginner')
@@ -63,17 +68,32 @@ class CourseSectionResource extends Resource
             // ->live()
             // ->required()
             // ,
-            Select::make('course_id')->label('Course Name')->options(function () {
-                return Course::all()->pluck('course_name', 'id');
-            })->disabled(),
+            // Select::make('course_id')->label('Course Name')->options(function () {
+            //     return Course::all()->pluck('course_name', 'id');
+            // })->disabled(),
             TextInput::make('section_name'),
         ]);
     }
+
+    // public static function getEloquentQuery(): EloquentBuilder
+    // {
+    //     return parent::getEloquentQuery()->where('course_id','=','1');
+    // }
 
     public static function table(Table $table): Table
     {
         return $table
             ->columns([
+                TextColumn::make('index')->label('No.')->state(
+                    static function (Tables\Contracts\HasTable $livewire, \stdClass $rowLoop): string {
+                        return (string) (
+                            $rowLoop->iteration +
+                            ($livewire->getTableRecordsPerPage() * (
+                                $livewire->getTablePage() - 1
+                            ))
+                        );
+                    }
+                ),
                 TextColumn::make('class')->getStateUsing(function($record){
                     $course = Course::find($record->course_id);
                     $courseCategory = CourseCategory::find($course->course_category_id);

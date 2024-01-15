@@ -39,6 +39,16 @@ class CourseCategoryResource extends Resource
     {
         return $table
             ->columns([
+                TextColumn::make('index')->label('No.')->state(
+                    static function (\Filament\Tables\Contracts\HasTable $livewire, \stdClass $rowLoop): string {
+                        return (string) (
+                            $rowLoop->iteration +
+                            ($livewire->getTableRecordsPerPage() * (
+                                $livewire->getTablePage() - 1
+                            ))
+                        );
+                    }
+                ),
                 TextColumn::make('category_name')
                     ->searchable(),
                 TextColumn::make('created_at')

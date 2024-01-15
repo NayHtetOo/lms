@@ -11,6 +11,7 @@ use App\Models\CourseCategory;
 use App\Models\CourseSection;
 use App\Models\Exam;
 use App\Models\Lesson;
+use Filament\Facades\Filament;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables\Table;
@@ -73,6 +74,16 @@ class CourseResource extends Resource
     {
         return $table
             ->columns([
+                TextColumn::make('index')->label('No.')->state(
+                    static function (\Filament\Tables\Contracts\HasTable $livewire, \stdClass $rowLoop): string {
+                        return (string) (
+                            $rowLoop->iteration +
+                            ($livewire->getTableRecordsPerPage() * (
+                                $livewire->getTablePage() - 1
+                            ))
+                        );
+                    }
+                ),
                 TextColumn::make('course_category_id')->label('Class')
                     ->getStateUsing(function($record) {
                         $courseCategory = CourseCategory::find($record->course_category_id);

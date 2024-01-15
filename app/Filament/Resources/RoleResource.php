@@ -38,7 +38,16 @@ class RoleResource extends Resource
     {
         return $table
             ->columns([
-                // TextColumn::make('No'),
+                TextColumn::make('index')->label('No.')->state(
+                    static function (Tables\Contracts\HasTable $livewire, \stdClass $rowLoop): string {
+                        return (string) (
+                            $rowLoop->iteration +
+                            ($livewire->getTableRecordsPerPage() * (
+                                $livewire->getTablePage() - 1
+                            ))
+                        );
+                    }
+                ),
                 TextColumn::make('name')
             ])
             ->filters([

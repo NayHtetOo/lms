@@ -26,14 +26,13 @@ use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\DateTimePicker;
 use Filament\Forms\Components\Grid;
 use Filament\Forms\Components\Select;
-use Filament\Forms\Get;
-use Filament\Forms\Set;
 use Filament\Infolists\Components\Fieldset;
 use Filament\Infolists\Components\RepeatableEntry;
 use Filament\Tables\Columns\TextColumn;
-use Illuminate\Support\Collection;
 use Filament\Infolists\Components\TextEntry;
 use Filament\Infolists\Infolist;
+use Filament\Pages\Page;
+use Illuminate\Support\Facades\App;
 
 class ExamResource extends Resource
 {
@@ -44,6 +43,17 @@ class ExamResource extends Resource
     protected static ?string $navigationGroup = 'Admin Management';
 
     protected static ?int $navigationSort = 5;
+
+    // protected static SubNavigationPosition $subNavigationPosition = SubNavigationPosition::End;
+
+    // public static function getRecordSubNavigation(Page $page) :array{
+    //     return $page->generateNavigationItems([
+    //         Pages\ListExams::class,
+    //         Pages\ViewExam::class,
+    //         \App\Filament\Resources\LessonResource\Pages\CreateLesson::class,
+    //         Pages\EditExam::class
+    //     ]);
+    // }
 
     public static function form(Form $form): Form
     {
@@ -105,6 +115,16 @@ class ExamResource extends Resource
     {
         return $table
             ->columns([
+                TextColumn::make('index')->label('No.')->state(
+                    static function (Tables\Contracts\HasTable $livewire, \stdClass $rowLoop): string {
+                        return (string) (
+                            $rowLoop->iteration +
+                            ($livewire->getTableRecordsPerPage() * (
+                                $livewire->getTablePage() - 1
+                            ))
+                        );
+                    }
+                ),
                 // TextColumn::make('course_id')->label('Course Name')
                 //     ->sortable()
                 //     ->getStateUsing(function($record){
@@ -126,6 +146,7 @@ class ExamResource extends Resource
                 //         }
                 //     })
                 // ,
+
                 TextColumn::make('exam_name')->label('Exam Name')->searchable(),
                 TextColumn::make('start_date_time')
                     ->dateTime()
