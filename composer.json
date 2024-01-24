@@ -15,7 +15,8 @@
         "hasnayeen/themes": "^3.0",
         "laravel/framework": "^10.10",
         "laravel/sanctum": "^3.2",
-        "laravel/tinker": "^2.8"
+        "laravel/tinker": "^2.8",
+        "livewire/livewire": "^3.4"
     },
     "require-dev": {
         "fakerphp/faker": "^1.9.1",
