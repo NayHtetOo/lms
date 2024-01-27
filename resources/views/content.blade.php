@@ -1,5 +1,5 @@
 {{-- <div class="bg-slate-500 w-full min-h-screen flex justify-center items-center"> --}}
-    <div class="p-2 bg-slate-500 rounded-xl transform transition-all hover:-translate-y-2 duration-300 shadow-lg">
+    <div class="p-2 bg-slate-300 rounded-xl transform transition-all hover:-translate-y-2 duration-300 shadow-lg">
         <div class="row">
             <div class="mx-auto max-w-7xl px-1 sm:px-6 lg:px-8">
                 <div class="flex h-16 items-center justify-between">
@@ -22,7 +22,8 @@
 
         <div class="grid grid-cols-4 gap-4">
             <!-- card -->
-            @foreach ($courses as $row)
+            {{-- <div>{{ $courses }}</div> --}}
+            @foreach ($courses as $key => $row)
                 {{-- <div>{{ $row }}</div> --}}
                 <div class="w-60 p-2 bg-white rounded-xl transform transition-all hover:-translate-y-2 duration-300 shadow-lg hover:shadow-2xl">
                     <!-- image -->
@@ -35,7 +36,7 @@
                         <p class="text-sm text-gray-600">{{ $row->description }} </p>
                     </div>
                     <div class="m-2">
-                        <a role="button" href="#" class="text-white bg-purple-600 px-3 py-2 rounded-md hover:bg-purple-700">Learn More</a>
+                        <a role="button" href="/course_view/{{ $row->id }}" class="text-white bg-purple-600 px-3 py-2 rounded-md hover:bg-purple-700">Learn More</a>
                     </div>
                 </div>
             @endforeach

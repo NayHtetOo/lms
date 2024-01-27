@@ -9,4 +9,8 @@ class Role extends Model
 {
     use HasFactory;
     protected $guarded = [];
+
+    public function enrollment(){
+        return $this->belongsTo(Enrollment::class);
+    }
 }
