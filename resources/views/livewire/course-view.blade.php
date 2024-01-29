@@ -3,7 +3,6 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  {{-- <link href="https://cdnjs.cloudflare.com/ajax/libs/flowbite/2.2.1/flowbite.min.css" rel="stylesheet" /> --}}
   <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
 
   @vite('resources/css/app.css')
@@ -13,11 +12,11 @@
 
         @include('nav')
 
-        <div>{{ $currentCourse }}</div>
-        <div>{{ $currentCourseSection }}</div>
-        <div>{{ $lessons }}</div>
-        <div>{{ $exams }}</div>
-        <div>{{ $assignments }}</div>
+        {{-- <div>{{ $currentCourse }}</div> --}}
+        {{-- <div>{{ $currentCourseSection }}</div> --}}
+        {{-- <div>{{ $lessons }}</div> --}}
+        {{-- <div>{{ $exams }}</div> --}}
+        {{-- <div>{{ $assignments }}</div> --}}
 
         <header class="bg-white shadow">
             <div class="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
@@ -27,7 +26,7 @@
 
         <main>
           <div class="mx-auto max-w-7xl py-6 sm:px-6 lg:px-8">
-            <div class="p-2 rounded-xl shadow-xl">
+            <div class="p-2 rounded-xl shadow-2xl bg-slate-300">
                 <div class="mb-4 border-b border-gray-200 dark:border-gray-700">
                     <ul class="flex flex-wrap -mb-px text-sm font-medium text-center" id="default-tab" data-tabs-toggle="#default-tab-content" role="tablist">
                         <li class="me-2" role="presentation">

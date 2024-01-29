@@ -27,24 +27,28 @@ class CourseView extends Component
     public function mount($id)
     {
         $this->id = $id;
+
         $this->currentCourse = Course::findOrFail($id);
         $this->section_id = $this->currentCourse->id;
         $this->currentCourseSection = CourseSection::where('course_id',$this->section_id)->get();
         $this->participants = Enrollment::all();
+        // dd($id,$this->section_id);
 
-        $this->lessons = Lesson::where('course_id',$id)->where('course_section_id',$this->section_id)->get();
-        $this->exams = Exam::where('course_id',$id)->where('course_section_id',$this->section_id)->get();
-        $this->assignments = Assignment::where('course_id',$id)->where('course_section_id',$this->section_id)->get();
+        // need to filter lessons exams and assignments with relevant course section
+        $this->lessons = Lesson::where('course_id',$id)
+        // ->where('course_section_id',$this->section_id)
+        ->get();
+        $this->exams = Exam::where('course_id',$id)->get();
+        $this->assignments = Assignment::where('course_id',$id)->get();
     }
 
     #[Computed]
     public function currentCourse(){
-
+        // return Course::findOrFail($this->id);
     }
 
     #[Computed]
     public function currentCourseSection(){
-
     }
     #[Computed]
     public function participants(){
