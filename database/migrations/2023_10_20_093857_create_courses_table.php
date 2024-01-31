@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id();
             $table->foreignId("course_category_id")->constrained()->onDelete('cascade');
             $table->string("course_name");
-            $table->string("course_id");
+            $table->string("course_ID");
             $table->date('from_date');
             $table->date('to_date');
             $table->boolean('visible');

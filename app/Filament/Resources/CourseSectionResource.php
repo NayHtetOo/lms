@@ -86,12 +86,13 @@ class CourseSectionResource extends Resource
             ->columns([
                 TextColumn::make('index')->label('No.')->state(
                     static function (Tables\Contracts\HasTable $livewire, \stdClass $rowLoop): string {
-                        return (string) (
-                            $rowLoop->iteration +
-                            ($livewire->getTableRecordsPerPage() * (
-                                $livewire->getTablePage() - 1
-                            ))
-                        );
+                        // return (string) (
+                        //     $rowLoop->iteration +
+                        //     ($livewire->getTableRecordsPerPage() * (
+                        //         $livewire->getTablePage() - 1
+                        //     ))
+                        // );
+                        return 2;
                     }
                 ),
                 TextColumn::make('class')->getStateUsing(function($record){

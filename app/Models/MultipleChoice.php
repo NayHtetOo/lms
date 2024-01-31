@@ -11,9 +11,9 @@ class MultipleChoice extends Model
 
     protected $guarded = [];
 
-    public function multiple_choices(){
+    // public function multiple_choices(){
 
-    }
+    // }
     public function exams(){
         return $this->belongsTo(Exam::class);
     }

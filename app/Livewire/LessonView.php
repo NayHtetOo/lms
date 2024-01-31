@@ -14,7 +14,7 @@ class LessonView extends Component
     public function mount($id)
     {
         $this->lesson = Lesson::findOrFail($id);
-        $this->courseID = Course::findOrFail($this->lesson->course_id)->course_idd;
+        $this->courseID = Course::findOrFail($this->lesson->course_id)->course_ID;
         // dd($this->courseID);
     }
 

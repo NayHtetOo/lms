@@ -87,8 +87,9 @@ class ExamResource extends Resource
                 //     // ->live()
                 //     ->required()
                 // ,
-                Select::make('course_id')->label('Course Name')->options(function () {
-                    return Course::all()->pluck('course_name', 'id');
+                Select::make('course_id')->label('Course Name')->options(function ($record) {
+                    // dd($record->course_id);
+                    return Course::all()->pluck('course_name','id');
                 })->disabled(),
                 Select::make('course_section_id')->label('Section Name')->options(function () {
                     return CourseSection::all()->pluck('section_name', 'id');

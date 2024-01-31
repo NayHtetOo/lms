@@ -13,9 +13,13 @@ use App\Models\TrueOrFalse;
 use App\Models\User;
 use Livewire\Attributes\Computed;
 use Livewire\Component;
+use Livewire\WithoutUrlPagination;
+use Livewire\WithPagination;
 
 class ExamView extends Component
 {
+    use WithPagination,WithoutUrlPagination;
+
     public $id;
     public $courseID;
 
@@ -23,39 +27,43 @@ class ExamView extends Component
     {
         $this->id = $id;
         // dd($this->id);
-        $this->courseID = Course::findOrFail($this->exams->course_id)->course_idd;
+        $this->courseID = Course::findOrFail($this->exams->course_id)->course_ID;
         // dd($this->courseID);
 
     }
 
     #[Computed]
     public function exams(){
+    //    $exam = Exam::findOrFail($this->id);
+    //    dd($exam->toArray());
        return Exam::findOrFail($this->id);
     }
 
     #[Computed]
     public function trueOrfalse(){
-       return TrueOrFalse::findOrFail($this->exams->id)->get();
+        // return  TrueOrFalse::where('exam_id',$this->exams->id)->get();
+        return  TrueOrFalse::paginate(5);
     }
 
     #[Computed]
     public function multipleChoice(){
-       return MultipleChoice::findOrFail($this->exams->id)->get();
+        // dd('hello');
+        return MultipleChoice::where('exam_id',$this->exams->id)->get();
     }
 
     #[Computed]
     public function matching(){
-       return Matching::findOrFail($this->exams->id)->get();
+       return Matching::where('exam_id',$this->exams->id)->get();
     }
 
     #[Computed]
     public function shortQuestion(){
-       return ShortQuestion::findOrFail($this->exams->id)->get();
+       return ShortQuestion::where('exam_id',$this->exams->id)->get();
     }
 
     #[Computed]
     public function essay(){
-       return Essay::findOrFail($this->exams->id)->get();
+       return Essay::where('exam_id',$this->exams->id)->get();
     }
 
     public function render()

@@ -54,7 +54,7 @@ class CourseResource extends Resource
                 TextInput::make('course_name')
                     ->required()
                     ->maxLength(255),
-                TextInput::make('course_idd')
+                TextInput::make('course_ID')
                     ->required()
                     ->maxLength(255),
                 DatePicker::make('from_date')
@@ -76,12 +76,13 @@ class CourseResource extends Resource
             ->columns([
                 TextColumn::make('index')->label('No.')->state(
                     static function (\Filament\Tables\Contracts\HasTable $livewire, \stdClass $rowLoop): string {
-                        return (string) (
-                            $rowLoop->iteration +
-                            ($livewire->getTableRecordsPerPage() * (
-                                $livewire->getTablePage() - 1
-                            ))
-                        );
+                        // return (string) (
+                        //     $rowLoop->iteration +
+                        //     ($livewire->getTableRecordsPerPage() * (
+                        //         $livewire->getTablePage() - 1
+                        //     ))
+                        // );
+                        return 2;
                     }
                 ),
                 TextColumn::make('course_category_id')->label('Class')
@@ -97,7 +98,7 @@ class CourseResource extends Resource
                 ,
                 TextColumn::make('course_name')->label('Course Name')
                     ->searchable(),
-                TextColumn::make('course_id')->label('Course ID')
+                TextColumn::make('course_ID')->label('Course ID')
                     ->searchable(),
                 TextColumn::make('description')->toggleable(),
                 TextColumn::make('from_date')->label('From Date')
