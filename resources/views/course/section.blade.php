@@ -1,4 +1,4 @@
-<div class="p-4 rounded-lg bg-gray-50 dark:bg-gray-800" id="section" role="tabpanel" aria-labelledby="section-tab">
+<div class="p-4 rounded-lg bg-gray-50" id="section" role="tabpanel" aria-labelledby="section-tab">
     {{-- <div>{{ $currentCourseSection }}</div> --}}
     @if ($currentCourseSection->isNotEmpty())
         @foreach ($currentCourseSection as $key => $section)
@@ -95,7 +95,7 @@
                     </ul>
                 </li>
             </ul>
-            {{-- <hr class="my-7 h-0.5 border-t-0 bg-green-700 opacity-100 dark:opacity-10" /> --}}
+            {{-- <hr class="my-7 h-0.5 border-t-0 bg-green-700 opacity-100" /> --}}
         @endforeach
     @else
     <div class="items-center text-xl font-bold text-blue-700">

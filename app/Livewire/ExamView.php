@@ -29,7 +29,27 @@ class ExamView extends Component
         // dd($this->id);
         $this->courseID = Course::findOrFail($this->exams->course_id)->course_ID;
         // dd($this->courseID);
+        // dd($this->questions);
 
+    }
+
+    #[Computed]
+    public function questions(){
+       $trueorfalse = $this->trueOrfalse;
+       $matching = $this->matching;
+       $shortQuestion = $this->shortQuestion;
+       $essay = $this->essay;
+       $multipleChoice = $this->multipleChoice;
+
+       $data = collect([
+            'true_false' => $trueorfalse,
+            'matching'=> $matching,
+            'short_question'=> $shortQuestion,
+            'essay'=> $essay,
+            'multiple_choice'=> $multipleChoice
+        ])->all();
+
+       return $data;
     }
 
     #[Computed]
@@ -41,8 +61,8 @@ class ExamView extends Component
 
     #[Computed]
     public function trueOrfalse(){
-        // return  TrueOrFalse::where('exam_id',$this->exams->id)->get();
-        return  TrueOrFalse::paginate(5);
+        return  TrueOrFalse::where('exam_id',$this->exams->id)->get();
+        // return  TrueOrFalse::paginate(5);
     }
 
     #[Computed]
@@ -68,6 +88,6 @@ class ExamView extends Component
 
     public function render()
     {
-        return view('livewire.exam-view');
+        return view('livewire.exam-view',['questions' => $this->questions]);
     }
 }

@@ -1,6 +1,6 @@
-<div class="hidden p-4 rounded-lg bg-gray-50 dark:bg-gray-800" id="participant" role="tabpanel" aria-labelledby="participant-tab">
+<div class="hidden p-4 rounded-lg bg-gray-50" id="participant" role="tabpanel" aria-labelledby="participant-tab">
     {{-- <div>{{ $participants }}</div> --}}
-    <h2 class="text-lg font-bold text-gray-500 dark:text-black">All Participants
+    <h2 class="text-lg font-bold text-gray-500">All Participants
     </h2>
     <div class="flex h-16 items-center justify-between">
         <div class="flex items-center">
@@ -20,8 +20,8 @@
     <br>
 
     <div class="relative overflow-x-auto shadow-md sm:rounded-lg">
-        <table class="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
-            <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
+        <table class="w-full text-sm text-left rtl:text-right text-gray-500">
+            <thead class="text-xs text-gray-700 uppercase bg-gray-50">
                 <tr class="border-b-2">
                     <th scope="col" class="px-6 py-3">
                         No.
@@ -59,29 +59,24 @@
                 </tr>
             </thead>
             <tbody>
-                @php
-                    $data = [1,2,3,4,5];
-                @endphp
-                @foreach ($data as $dd)
-                    @foreach ($participants as $user)
-                        <tr class="bg-white border-b dark:bg-gray-800 dark:border-gray-700">
-                            <td class="px-6 py-4">
-                                {{ $loop->index + 1 }}
-                            </td>
-                            <th scope="row" class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
-                                {{ $user->user->name }}
-                            </th>
-                            <td class="px-6 py-4">
-                                {{ $user->user->email }}
-                            </td>
-                            <td class="px-6 py-4">
-                                {{ $user->role->name }}
-                            </td>
-                            <td class="px-6 py-4">
-                                {{ $user->status }}
-                            </td>
-                        </tr>
-                    @endforeach
+                @foreach ($participants as $user)
+                    <tr class="border-b">
+                        <td class="px-6 py-4">
+                            {{ $loop->index + 1 }}
+                        </td>
+                        <th scope="row" class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap">
+                            {{ $user->user->name }}
+                        </th>
+                        <td class="px-6 py-4">
+                            {{ $user->user->email }}
+                        </td>
+                        <td class="px-6 py-4">
+                            {{ $user->role->name }}
+                        </td>
+                        <td class="px-6 py-4">
+                            {{ $user->status }}
+                        </td>
+                    </tr>
                 @endforeach
             </tbody>
         </table>

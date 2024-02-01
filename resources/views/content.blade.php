@@ -1,5 +1,5 @@
 {{-- <div class="bg-slate-500 w-full min-h-screen flex justify-center items-center"> --}}
-    <div class="p-2 bg-slate-300 rounded-xl transform transition-all hover:-translate-y-2 duration-300 shadow-lg">
+    <div class="p-2 rounded-xl transform transition-all hover:-translate-y-2 duration-300">
         <div class="row">
             <div class="mx-auto max-w-7xl px-1 sm:px-6 lg:px-8">
                 <div class="flex h-16 items-center justify-between">
@@ -24,7 +24,7 @@
             <!-- card -->
             {{-- <div>{{ $courses }}</div> --}}
             @foreach ($courses as $key => $row)
-                {{-- <div>{{ $row }}</div> --}}
+                <div>{{ $row }}</div>
                 <div class="w-60 p-2 bg-white rounded-xl transform transition-all hover:-translate-y-2 duration-300 shadow-lg hover:shadow-2xl">
                     <!-- image -->
                     <img class="h-40 object-cover rounded-xl" src="{{ asset('images/lms.png') }}" />

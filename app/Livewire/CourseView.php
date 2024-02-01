@@ -8,6 +8,7 @@ use App\Models\CourseSection;
 use App\Models\Enrollment;
 use App\Models\Exam;
 use App\Models\Lesson;
+use App\Models\User;
 use Livewire\Attributes\Computed;
 use Livewire\Component;
 
@@ -28,10 +29,24 @@ class CourseView extends Component
     {
         $this->id = $id;
 
+        $enrollUsers = Enrollment::where('course_id',$id)->pluck('user_id');
+
+        $authorized = $enrollUsers->contains(auth()->user()->id);
+
+        // dd($authorized);
+        // if($authorized){
+
+        // }
+
+
         $this->currentCourse = Course::findOrFail($id);
+        // dd($this->currentCourse->toArray());
+
         $this->section_id = $this->currentCourse->id;
         $this->currentCourseSection = CourseSection::where('course_id',$this->section_id)->get();
-        $this->participants = Enrollment::all();
+
+        $this->participants = Enrollment::where('course_id',$id)->get();
+
         // dd($id,$this->section_id);
 
         // need to filter lessons exams and assignments with relevant course section
