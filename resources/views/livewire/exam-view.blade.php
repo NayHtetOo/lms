@@ -1,18 +1,17 @@
-<!doctype html>
-<html>
-<head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
-
-  @vite('resources/css/app.css')
-</head>
-<body>
+<form wire:submit.prevent="examSubmit" method="POST">
+    @csrf
     <div class="min-h-full">
 
-        {{-- @include('nav') --}}
-        @include('layouts.navigation')
-
+        @if (session()->has('message'))
+            <div class="mx-auto max-w-7xl py-6 sm:px-6 lg:px-8">
+                <div class="p-4 border border-green-400 text-green-700 rounded bg-green-200">
+                    <span class="block sm:inline">{{ session('message') }}</span>
+                    {{-- <span class="absolute top-0 bottom-0 right-0 px-4 py-3">
+                        <svg class="fill-current h-6 w-6 text-red-500" role="button" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><title>Close</title><path d="M14.348 14.849a1.2 1.2 0 0 1-1.697 0L10 11.819l-2.651 3.029a1.2 1.2 0 1 1-1.697-1.697l2.758-3.15-2.759-3.152a1.2 1.2 0 1 1 1.697-1.697L10 8.183l2.651-3.031a1.2 1.2 0 1 1 1.697 1.697l-2.758 3.152 2.758 3.15a1.2 1.2 0 0 1 0 1.698z"/></svg>
+                    </span> --}}
+                </div>
+            </div>
+        @endif
 
         <div class="mx-auto max-w-7xl py-6 sm:px-6 lg:px-8">
             <div class="p-4 bg-slate-300 rounded-xl transform transition-all duration-300 shadow-4xl shadow-lg">
@@ -23,8 +22,8 @@
                 <h2 class="text-2xl mb-1 font-bold">{{ $this->exams->exam_name }}</h2>
                 <div class="relative overflow-x-auto sm:rounded-lg">
                     <table class="w-full text-sm text-left rtl:text-right text-gray-500">
-                        <thead class="text-xs text-gray-700 uppercase bg-gray-50">
-                            <tr class="border-b-2">
+                        <thead class="text-xs text-gray-700 uppercase">
+                            <tr class="border-b-2 border-black">
                                 <th scope="col" class="px-6 py-3">Description</th>
                                 <th scope="col" class="">Start Date</th>
                                 <th scope="col" class="">End Date</th>
@@ -45,7 +44,6 @@
 
             </div>
         </div>
-
         {{-- next page with tab --}}
         {{-- <div>{{ $questions['true_false'] }}</div> --}}
         {{-- <div>{{ $questions['matching'] }}</div> --}}
@@ -53,14 +51,13 @@
         {{-- @foreach ($questions as $q)
             <div>{{ $q }}</div>
         @endforeach --}}
-
         @if ($this->trueOrfalse->isNotEmpty() || $this->multipleChoice->isNotEmpty() || $this->matching->isNotEmpty() || $this->shortQuestion->isNotEmpty() || $this->essay->isNotEmpty())
             <div class="mx-auto max-w-7xl py-1 sm:px-6 lg:px-8">
                 <div class="p-2 rounded-xl shadow-2xl bg-slate-300">
 
                     <div id="question-tab-content">
                         {{-- <div>{{ $this->trueOrfalse }}</div> --}}
-                        <div class="p-4 rounded-lg bg-gray-50" id="question1" role="tabpanel" aria-labelledby="question1-tab">
+                        <div class="p-4 rounded-lg" id="question1" role="tabpanel" aria-labelledby="question1-tab">
                             @if ($this->trueOrfalse->isNotEmpty())
                                 <div class="m-3">
                                     <p class="font-bold">I.True or False Questions.</p>
@@ -68,6 +65,7 @@
                                     <div class="m-2">
                                         @foreach ($this->trueOrfalse as $tof)
                                             <div class="flex justify-between">
+                                                {{-- <div>{{ $tof }}</div> --}}
                                                 <div>
                                                     {{ $tof->question_no }}. {{ $tof->question }}
                                                 </div>
@@ -77,27 +75,24 @@
                                             <p class="p-1">{{ $this->exams->question }}</p>
 
                                             <div class="mb-[0.125rem] block min-h-[1.5rem] pl-[1.5rem] ml-6">
-                                                <input
+                                                {{-- <input
                                                     class="relative float-left -ml-[1.5rem] mr-1 mt-0.5 h-5 w-5 appearance-none rounded-full border-2 border-solid border-neutral-300 before:pointer-events-none before:absolute before:h-4 before:w-4 before:scale-0 before:rounded-full before:bg-transparent before:opacity-0 before:shadow-[0px_0px_0px_13px_transparent] before:content-[''] after:absolute after:z-[1] after:block after:h-4 after:w-4 after:rounded-full after:content-[''] checked:border-primary checked:before:opacity-[0.16] checked:after:absolute checked:after:left-1/2 checked:after:top-1/2 checked:after:h-[0.625rem] checked:after:w-[0.625rem] checked:after:rounded-full checked:after:border-primary checked:after:bg-primary checked:after:content-[''] checked:after:[transform:translate(-50%,-50%)] hover:cursor-pointer hover:before:opacity-[0.04] hover:before:shadow-[0px_0px_0px_13px_rgba(0,0,0,0.6)] focus:shadow-none focus:outline-none focus:ring-0 focus:before:scale-100 focus:before:opacity-[0.12] focus:before:shadow-[0px_0px_0px_13px_rgba(0,0,0,0.6)] focus:before:transition-[box-shadow_0.2s,transform_0.2s] checked:focus:border-primary checked:focus:before:scale-100 checked:focus:before:shadow-[0px_0px_0px_13px_#3b71ca] checked:focus:before:transition-[box-shadow_0.2s,transform_0.2s]"
                                                     type="radio"
-                                                    name="trueOrfalse{{ $tof->id }}"
+                                                    wire:model="trueOrfalse{{ $tof->id }}"
                                                     id="true"
-                                                />
+                                                /> --}}
+                                                <input type="radio" wire:model="trueorfalseAnswer.{{ $tof->id }}" value="true" name="trueOrfalse{{ $tof->id }}" class="relative float-left mr-1 mt-0.5 h-5 w-5" required/>
                                                 <label class="mt-px inline-block pl-[0.15rem] hover:cursor-pointer" for="true">
-                                                True
+                                                    True
                                                 </label>
                                             </div>
                                             <div class="mb-[0.125rem] block min-h-[1.5rem] pl-[1.5rem] ml-6">
-                                                <input
-                                                class="relative float-left -ml-[1.5rem] mr-1 mt-0.5 h-5 w-5 appearance-none rounded-full border-2 border-solid border-neutral-300 before:pointer-events-none before:absolute before:h-4 before:w-4 before:scale-0 before:rounded-full before:bg-transparent before:opacity-0 before:shadow-[0px_0px_0px_13px_transparent] before:content-[''] after:absolute after:z-[1] after:block after:h-4 after:w-4 after:rounded-full after:content-[''] checked:border-primary checked:before:opacity-[0.16] checked:after:absolute checked:after:left-1/2 checked:after:top-1/2 checked:after:h-[0.625rem] checked:after:w-[0.625rem] checked:after:rounded-full checked:after:border-primary checked:after:bg-primary checked:after:content-[''] checked:after:[transform:translate(-50%,-50%)] hover:cursor-pointer hover:before:opacity-[0.04] hover:before:shadow-[0px_0px_0px_13px_rgba(0,0,0,0.6)] focus:shadow-none focus:outline-none focus:ring-0 focus:before:scale-100 focus:before:opacity-[0.12] focus:before:shadow-[0px_0px_0px_13px_rgba(0,0,0,0.6)] focus:before:transition-[box-shadow_0.2s,transform_0.2s] checked:focus:border-primary checked:focus:before:scale-100 checked:focus:before:shadow-[0px_0px_0px_13px_#3b71ca] checked:focus:before:transition-[box-shadow_0.2s,transform_0.2s]"
-                                                type="radio"
-                                                name="trueOrfalse{{ $tof->id }}"
-                                                id="false"
-                                                checked />
+
+                                                <input type="radio" wire:model="trueorfalseAnswer.{{ $tof->id }}" value="false" name="trueOrfalse{{ $tof->id }}" class="relative float-left mr-1 mt-0.5 h-5 w-5" checked required/>
                                                 <label
                                                 class="mt-px inline-block pl-[0.15rem] hover:cursor-pointer"
                                                 for="false">
-                                                False
+                                                    False
                                                 </label>
                                             </div>
 
@@ -118,7 +113,7 @@
                         {{-- Multiple Choice Block --}}
                         {{-- <div>{{ $this->multipleChoice }}</div> --}}
 
-                        <div class="hidden p-4 rounded-lg bg-gray-50" id="question2" role="tabpanel" aria-labelledby="question2-tab">
+                        <div class="hidden p-4 rounded-lg" id="question2" role="tabpanel" aria-labelledby="question2-tab">
                             @if ($this->multipleChoice->isNotEmpty())
                                 <div class="m-3">
                                     <p class="font-bold">II. Multiple Choice Questions.</p>
@@ -201,7 +196,7 @@
 
                         {{-- Matching Block --}}
                         {{-- <div>{{ $this->matching }}</div> --}}
-                        <div class="hidden p-4 rounded-lg bg-gray-50" id="question3" role="tabpanel" aria-labelledby="question3-tab">
+                        <div class="hidden p-4 rounded-lg" id="question3" role="tabpanel" aria-labelledby="question3-tab">
                             {{-- <div>Matching</div> --}}
                             @if ($this->matching->isNotEmpty())
                                 <div class="m-3">
@@ -221,7 +216,7 @@
                                                     <div class="mr-20">
                                                         <select class="py-3 px-4 pe-9 block w-70 border-gray-200 rounded-lg text-sm focus:border-blue-500
                                                             focus:ring-blue-500 disabled:opacity-50 disabled:pointer-events-none
-                                                           ">
+                                                            ">
 
                                                             <option selected class="px-3 py-3">Select One</option>
                                                             <option class="h-50" value="{{ $match->answer_1 }}">{{ $match->answer_1 }}</option>
@@ -235,7 +230,7 @@
                                                     <div class="mr-20">
                                                         <select class="py-3 px-4 pe-9 block w-70 border-gray-200 rounded-lg text-sm focus:border-blue-500
                                                             focus:ring-blue-500 disabled:opacity-50 disabled:pointer-events-none
-                                                           ">
+                                                            ">
 
                                                             <option selected class="px-3 py-3">Select One</option>
                                                             <option class="h-50" value="{{ $match->answer_1 }}">{{ $match->answer_1 }}</option>
@@ -249,7 +244,7 @@
                                                     <div class="mr-20">
                                                         <select class="py-3 px-4 pe-9 block w-70 border-gray-200 rounded-lg text-sm focus:border-blue-500
                                                             focus:ring-blue-500 disabled:opacity-50 disabled:pointer-events-none
-                                                           ">
+                                                            ">
 
                                                             <option selected class="px-3 py-3">Select One</option>
                                                             <option class="h-50" value="{{ $match->answer_1 }}">{{ $match->answer_1 }}</option>
@@ -277,7 +272,7 @@
                         </div>
 
                         {{-- ShortQuestion Block --}}
-                        <div class="hidden p-4 rounded-lg bg-gray-50" id="question4" role="tabpanel" aria-labelledby="question4-tab">
+                        <div class="hidden p-4 rounded-lg" id="question4" role="tabpanel" aria-labelledby="question4-tab">
                             @if ($this->shortQuestion->isNotEmpty())
                                 <div class="m-3">
                                     <p class="font-bold">IV. Short Questions.</p>
@@ -311,7 +306,7 @@
                         </div>
 
                         {{-- Essay Block --}}
-                        <div class="hidden p-4 rounded-lg bg-gray-50" id="question5" role="tabpanel" aria-labelledby="question5-tab">
+                        <div class="hidden p-4 rounded-lg" id="question5" role="tabpanel" aria-labelledby="question5-tab">
                             @if ($this->essay->isNotEmpty())
                                 <div class="m-3">
                                     <p class="font-bold">V. Essay Questions.</p>
@@ -347,7 +342,7 @@
                     </div>
 
                     <div class="text-end">
-                        <button class="mr-4 bg-transparent hover:bg-green-500 text-blue-700 font-semibold hover:text-white py-2 px-4 border border-blue-500 hover:border-transparent rounded">
+                        <button type="submit" class="mr-4 bg-transparent hover:bg-green-500 text-blue-700 font-semibold hover:text-white py-2 px-4 border border-blue-500 hover:border-transparent rounded">
                             Submit
                         </button>
                     </div>
@@ -357,8 +352,8 @@
         @endif
 
     </div>
-</body>
-</html>
+</form>
+
 <script>
     // Get all tab buttons
     const tabButtons = document.querySelectorAll('[data-tabs-target]');

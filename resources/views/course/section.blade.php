@@ -1,4 +1,4 @@
-<div class="p-4 rounded-lg bg-gray-50" id="section" role="tabpanel" aria-labelledby="section-tab">
+<div class="{{ $hidden }} p-4 rounded-lg bg-gray-50" id="section" role="tabpanel" aria-labelledby="section-tab">
     {{-- <div>{{ $currentCourseSection }}</div> --}}
     @if ($currentCourseSection->isNotEmpty())
         @foreach ($currentCourseSection as $key => $section)

@@ -10,6 +10,7 @@ use App\Models\Matching;
 use App\Models\MultipleChoice;
 use App\Models\ShortQuestion;
 use App\Models\TrueOrFalse;
+use App\Models\TrueOrFalseAnswer;
 use App\Models\User;
 use Livewire\Attributes\Computed;
 use Livewire\Component;
@@ -22,34 +23,48 @@ class ExamView extends Component
 
     public $id;
     public $courseID;
+    public $trueorfalseAnswer = [];
 
     public function mount($id)
     {
         $this->id = $id;
-        // dd($this->id);
         $this->courseID = Course::findOrFail($this->exams->course_id)->course_ID;
+        // true or false input to default value false
+        foreach ($this->trueOrfalse as $tof) {
+            $this->trueorfalseAnswer[$tof->id] = 'false';
+        }
         // dd($this->courseID);
-        // dd($this->questions);
-
     }
 
-    #[Computed]
-    public function questions(){
-       $trueorfalse = $this->trueOrfalse;
-       $matching = $this->matching;
-       $shortQuestion = $this->shortQuestion;
-       $essay = $this->essay;
-       $multipleChoice = $this->multipleChoice;
+    public function render()
+    {
+        return view('livewire.exam-view',['questions' => $this->questions]);
+    }
 
-       $data = collect([
-            'true_false' => $trueorfalse,
-            'matching'=> $matching,
-            'short_question'=> $shortQuestion,
-            'essay'=> $essay,
-            'multiple_choice'=> $multipleChoice
-        ])->all();
+    public function examSubmit(){
+        // dd($this->trueorfalseAnswer);
+        foreach ($this->trueorfalseAnswer as $key => $value) {
+            // dd(auth()->user()->id,$key,$value);
+            // TrueOrFalseAnswer::create([
+            //     'user_id' => auth()->user()->id,
+            //     'true_or_false_id' => $key,
+            //     'student_answer' => $value
+            // ]);
+        }
 
-       return $data;
+        foreach($this->multipleChoice as $key => $value){
+            
+            MultipleChoice::create([
+                'user_id' => ,
+                'multiple_choice_id' => ,
+                'student_answer' =>
+            ]);
+        }
+         // After a successful submission, set a session flash message
+        session()->flash('message', 'Form submitted successfully!');
+
+        // return redirect()->route('courses');
+
     }
 
     #[Computed]
@@ -86,8 +101,22 @@ class ExamView extends Component
        return Essay::where('exam_id',$this->exams->id)->get();
     }
 
-    public function render()
-    {
-        return view('livewire.exam-view',['questions' => $this->questions]);
+    #[Computed]
+    public function questions(){
+       $trueorfalse = $this->trueOrfalse;
+       $matching = $this->matching;
+       $shortQuestion = $this->shortQuestion;
+       $essay = $this->essay;
+       $multipleChoice = $this->multipleChoice;
+
+       $data = collect([
+            'true_false' => $trueorfalse,
+            'matching'=> $matching,
+            'short_question'=> $shortQuestion,
+            'essay'=> $essay,
+            'multiple_choice'=> $multipleChoice
+        ])->all();
+
+       return $data;
     }
 }
