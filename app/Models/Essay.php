@@ -10,4 +10,8 @@ class Essay extends Model
     use HasFactory;
 
     protected $guarded = [];
+
+    public function exam(){
+        return $this->hasMany(Exam::class);
+    }
 }

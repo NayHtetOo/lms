@@ -13,6 +13,7 @@ return new class extends Migration
     {
         Schema::create('matching_answers', function (Blueprint $table) {
             $table->id();
+            $table->foreignId('exam_id')->constrained()->onDelete('cascade');
             $table->foreignId('user_id')->constrained()->onDelete('cascade');
             $table->foreignId('matching_id')->constrained()->onDelete('cascade');
             $table->string('student_answer')->nullable();
