@@ -30,4 +30,8 @@ class Course extends Model
     public function exams(){
         return $this->hasMany(Exam::class);
     }
+
+    public function forums () {
+        return $this->hasMany(Forum::class);
+    }
 }

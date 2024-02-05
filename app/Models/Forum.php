@@ -13,4 +13,8 @@ class Forum extends Model
     public function exams(){
         return $this->belongsTo(Exam::class);
     }
+
+    public function courses() {
+        return $this->belongsTo(Course::class);
+    }
 }

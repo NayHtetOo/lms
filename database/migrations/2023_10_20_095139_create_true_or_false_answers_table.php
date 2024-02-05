@@ -16,7 +16,7 @@ return new class extends Migration
             $table->foreignId('exam_id')->constrained()->onDelete('cascade');
             $table->foreignId('user_id')->constrained()->onDelete('cascade');
             $table->foreignId('true_or_false_id')->constrained()->onDelete('cascade');
-            $table->string('student_answer')->nullable();
+            $table->boolean('student_answer')->nullable();
             $table->timestamps();
         });
     }

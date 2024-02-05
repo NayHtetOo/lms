@@ -18,7 +18,6 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        // \App\Models\User::factory(10)->create();
 
         // \App\Models\User::factory()->create([
         //     'name' => 'Admin',
@@ -30,13 +29,14 @@ class DatabaseSeeder extends Seeder
             'email' => 'admin@gmail.com',
             'password' => bcrypt('123')
         ]);
+        \App\Models\User::factory(30)->create();
         $list = ['admin', 'teacher', 'student','guest'];
 
         for ($i = 0; $i < count($list); $i++) {
             \App\Models\Role::create([
                 'name' => $list[$i]
             ]);
-        }
+    }
 
         CourseCategory::factory(3)->has(Course::factory(3),'courses')->create();
 

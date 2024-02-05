@@ -1,31 +1,36 @@
 {{-- <div class="bg-slate-500 w-full min-h-screen flex justify-center items-center"> --}}
-    <div class="p-2 rounded-xl transform transition-all hover:-translate-y-2 duration-300">
-        {{-- <div class="row"> --}}
-            <div class="mx-auto max-w-7xl px-1 sm:px-6 lg:px-2">
-                <div class="flex h-16 items-center justify-between">
-                  <div class="flex items-center">
-                        {{-- <div class="relative inline-block border border-gray-700 rounded-lg">
-                            <button type="button" class="inline-flex w-full justify-center gap-x-1.5 rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50" id="menu-button" aria-expanded="true" aria-haspopup="true">
-                                All
-                                <svg class="-mr-1 h-5 w-5 text-gray-400" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
-                                <path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z" clip-rule="evenodd" />
-                                </svg>
-                            </button>
-                        </div> --}}
-                        <div class="ml-2">
-                            <input type="text" wire:model.live="search" class="w-full px-4 py-2 text-gray-700 bg-white border border-gray-300 rounded-md focus:outline-none focus:border-indigo-500" placeholder="Search by Course Name">
-                        </div>
-                  </div>
+<div>
+    <div class="full flex justify-end">
+        <div class="ml-2 relative">
+            <input class="w-[20rem] px-4 py-2 text-gray-700 bg-white border border-gray-400 rounded-md focus:outline-none focus:border-indigo-500 placeholder-slate-500"
+                   type="text" wire:model.live="search" placeholder="Search by Course Name">
+            <div class="absolute right-3 top-1/2 -translate-y-1/2">
+                <svg class="w-6 h-6 text-blue-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+                     stroke-width="1.5" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round"
+                          d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z" />
+                </svg>
+            </div>
+        </div>
+    </div>
+
+    <div class="grid grid-cols-4 gap-4">
+        <!-- card -->
+        @foreach ($courses as $key => $row)
+            <div class="p-3 bg-white shadow-lg hover:-translate-y-2 duration-300 transition-all rounded-lg">
+                <img class="rounded-2xl" src="{{ asset('images/lms.png') }}" alt="">
+                <p class="text-blue-500 my-3 text-lg font-bold">{{ $row->course_name }}</p>
+                <p class="text-slate-800 ">{{ Str::substr($row->description, 1, 100) }}...</p>
+                <div class="w-full flex justify-end">
+                    <livewire:user-button :buttonLabel="$buttonLabel" />
                 </div>
             </div>
-        {{-- </div> --}}
+        @endforeach
+    </div>
+</div>
+{{-- </div> --}}
 
-        <div class="grid grid-cols-4 gap-4">
-            <!-- card -->
-            {{-- <div>{{ $courses }}</div> --}}
-            @foreach ($courses as $key => $row)
-                {{-- <div>{{ $row }}</div> --}}
-                <div class="w-60 p-2 bg-white rounded-xl transform transition-all hover:-translate-y-2 duration-300 shadow-lg hover:shadow-2xl">
+{{-- <div class="w-60 p-2 bg-white rounded-xl transform transition-all hover:-translate-y-2 duration-300 shadow-lg hover:shadow-2xl">
                     <!-- image -->
                     <img class="h-40 object-cover rounded-xl" src="{{ asset('images/lms.png') }}" />
                     <div class="p-2">
@@ -35,8 +40,4 @@
                     <div class="m-2">
                         <a role="button" href="/course_view/{{ $row->id }}" class="text-white bg-purple-600 px-3 py-2 rounded-md hover:bg-purple-700">Learn More</a>
                     </div>
-                </div>
-            @endforeach
-        </div>
-    </div>
-{{-- </div> --}}
+                </div> --}}

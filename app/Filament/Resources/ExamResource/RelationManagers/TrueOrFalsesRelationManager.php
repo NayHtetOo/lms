@@ -10,6 +10,7 @@ use Filament\Resources\RelationManagers\RelationManager;
 use Filament\Tables;
 use Filament\Tables\Table;
 use Filament\Tables\Columns\TextColumn;
+use Illuminate\Database\Eloquent\Model;
 
 class TrueOrFalsesRelationManager extends RelationManager
 {
@@ -23,8 +24,8 @@ class TrueOrFalsesRelationManager extends RelationManager
                 TextInput::make('mark')->numeric(),
                 RichEditor::make('question')->columnSpanFull()->required(),
                 Select::make('answer')->options([
-                    'true' => 'True',
-                    'false' => 'False',
+                    '1' => 'True',
+                    '0' => 'False',
                 ])->required(),
             ]);
     }
@@ -36,8 +37,8 @@ class TrueOrFalsesRelationManager extends RelationManager
             ->columns([
                 TextColumn::make('question_no')->label('No.')->searchable(),
                 TextColumn::make('question'),
-                TextColumn::make('answer')->getStateUsing(function($record){
-                    $answer = $record->answer == 'true' ? 'True' : 'False';
+                TextColumn::make('answer')->getStateUsing(function ($record) {
+                    $answer = $record->answer == '1' ? 'True' : 'False';
                     return $answer;
                 }),
                 TextColumn::make('mark'),

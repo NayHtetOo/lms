@@ -20,6 +20,7 @@ return new class extends Migration
             $table->date('to_date');
             $table->boolean('visible');
             $table->text('description');
+            $table->string('course_photo_path')->nullable();
             $table->timestamps();
         });
     }

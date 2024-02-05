@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('forums', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('exam_id')->constrained()->onDelete('cascade');
+            $table->foreignId('course_id')->constrained()->onDelete('cascade');
             $table->string('name');
             $table->text('description')->nullable();
             // $table->boolean('visible');

@@ -7,24 +7,28 @@ use App\Models\CourseCategory;
 use Filament\Widgets\StatsOverviewWidget as BaseWidget;
 use Filament\Widgets\StatsOverviewWidget\Stat;
 use Filament\Widgets\StatsOverviewWidget\Card;
+use Illuminate\Support\Facades\DB;
+use NunoMaduro\Collision\Adapters\Phpunit\State;
 
 class CourseOverview extends BaseWidget
 {
     protected function getStats(): array
     {
-        $beginner = Course::join('course_categories as cc','cc.id','=','courses.course_category_id')
-            ->where('cc.category_name','beginner')->count();
-        $advanced = Course::join('course_categories as cc','cc.id','=','courses.course_category_id')
-            ->where('cc.category_name','advanced')->count();
+        $courseCategory = CourseCategory::select()
+                        ->leftJoin('course_categories', 'courses.course_category_id', 'course_categories.id')
+                        ->groupBy('courses.course_category_id')
+                        ->get();
+        dd($courseCategory);
+        $state = [];
+        // foreach ($courses->toArray() as $course) {
+        //     $state[] = Stat::make($course['count'] . ' courses created', $course['category_name']);
+        // }
 
-        return[
-            Card::make('All Course',Course::all()->count()),
-            Card::make('Beginner Class',$beginner),
-            Card::make('Advanced Class',$advanced)
-        ];
+        return $state;
     }
+
     protected function getCards(): array
     {
-       return [];
+        return [];
     }
 }

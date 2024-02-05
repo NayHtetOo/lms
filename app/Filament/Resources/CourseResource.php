@@ -6,6 +6,7 @@ use App\Filament\Resources\CourseResource\Pages;
 use App\Filament\Resources\CourseResource\RelationManagers\CourseSectionsRelationManager;
 use App\Filament\Resources\CourseResource\RelationManagers\EnrollmentsRelationManager;
 use App\Filament\Resources\CourseResource\Widgets\CourseOverview;
+use App\Filament\Resources\ExamResource\RelationManagers\ForumsRelationManager;
 use App\Models\Course;
 use App\Models\CourseCategory;
 use App\Models\CourseSection;
@@ -17,6 +18,7 @@ use Filament\Resources\Resource;
 use Filament\Tables\Table;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\DatePicker;
+use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\Toggle;
@@ -27,6 +29,7 @@ use Filament\Infolists\Infolist;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Actions;
+use Filament\Tables\Columns\ImageColumn;
 
 class CourseResource extends Resource
 {
@@ -49,7 +52,7 @@ class CourseResource extends Resource
         return $form
             ->schema([
                 Select::make('course_category_id')->label('Category Type')->required()->options(
-                   CourseCategory::all()->pluck('category_name','id')
+                    CourseCategory::all()->pluck('category_name', 'id')
                 ),
                 TextInput::make('course_name')
                     ->required()
@@ -61,12 +64,19 @@ class CourseResource extends Resource
                     ->required(),
                 DatePicker::make('to_date')
                     ->required(),
-                Toggle::make('visible')
-                    ->required(),
                 Textarea::make('description')
                     ->required()
                     ->maxLength(65535)
                     ->columnSpanFull(),
+                FileUpload::make('course_photo_path')
+                    ->label('course photo')
+                    ->required()
+                    ->directory('course_photos')
+                    ->visibility('private')
+                    ->columnSpanFull(),
+                Toggle::make('visible')
+                    ->required(),
+
             ]);
     }
 
@@ -74,33 +84,28 @@ class CourseResource extends Resource
     {
         return $table
             ->columns([
-                TextColumn::make('index')->label('No.')->state(
-                    static function (\Filament\Tables\Contracts\HasTable $livewire, \stdClass $rowLoop): string {
-                        // return (string) (
-                        //     $rowLoop->iteration +
-                        //     ($livewire->getTableRecordsPerPage() * (
-                        //         $livewire->getTablePage() - 1
-                        //     ))
-                        // );
-                        return 2;
-                    }
-                ),
+                TextColumn::make('index')->label('No.')
+                        ->rowIndex(),
                 TextColumn::make('course_category_id')->label('Class')
-                    ->getStateUsing(function($record) {
-                        $courseCategory = CourseCategory::find($record->course_category_id);
-                        if($courseCategory){
-                            return $courseCategory->category_name;
-                        }else{
-                            return 'No Category';
+                    ->getStateUsing(
+                        function ($record) {
+                            $courseCategory = CourseCategory::find($record->course_category_id);
+                            if ($courseCategory) {
+                                return $courseCategory->category_name;
+                            } else {
+                                return 'No Category';
+                            }
                         }
-                    }
-                    )
-                ,
+                    ),
                 TextColumn::make('course_name')->label('Course Name')
                     ->searchable(),
+                ImageColumn::make('course_photo_path')
+                    ->width(75)
+                    ->height(75)
+                    ->defaultImageUrl(url('/images/default_course_photo.jpg')),
                 TextColumn::make('course_ID')->label('Course ID')
                     ->searchable(),
-                TextColumn::make('description')->toggleable(),
+                TextColumn::make('description')->toggleable()->limit(30),
                 TextColumn::make('from_date')->label('From Date')
                     ->date()
                     ->sortable(),
@@ -137,64 +142,63 @@ class CourseResource extends Resource
     {
         return $infolist->schema([
             \Filament\Infolists\Components\Grid::make()->schema([
-                TextEntry::make('course_category_id')->label('Class')->getStateUsing(function($record){
+                TextEntry::make('course_category_id')->label('Class')->getStateUsing(function ($record) {
                     $courseCategory = CourseCategory::find($record->course_category_id);
                     return $courseCategory->category_name;
                 }),
-                TextEntry::make('course_id')->label('Course ID')->getStateUsing(function($record){
+                TextEntry::make('course_id')->label('Course ID')->getStateUsing(function ($record) {
                     return $record->course_id;
                 }),
-                TextEntry::make('course_name')->getStateUsing(function($record){
+                TextEntry::make('course_name')->getStateUsing(function ($record) {
                     return $record->course_name;
                 }),
-                TextEntry::make('from_date')->label('From Date')->getStateUsing(function($record){
+                TextEntry::make('from_date')->label('From Date')->getStateUsing(function ($record) {
                     return $record->from_date;
                 }),
-                TextEntry::make('to_date')->label('To Date')->getStateUsing(function($record){
+                TextEntry::make('to_date')->label('To Date')->getStateUsing(function ($record) {
                     return $record->to_date;
                 }),
-                TextEntry::make('visible')->label('Status')->getStateUsing(function($record){
+                TextEntry::make('visible')->label('Status')->getStateUsing(function ($record) {
                     return $record->visible == 1 ? 'Visible' : 'Invisible';
                 }),
             ])->columns(5),
             Fieldset::make('Description')->schema([
-                TextEntry::make('description')->hiddenLabel()->getStateUsing(function($record){
+                TextEntry::make('description')->hiddenLabel()->getStateUsing(function ($record) {
                     return $record->description;
                 })
-                ->columnSpanFull(),
+                    ->columnSpanFull(),
             ]),
             Fieldset::make('Sections')->schema([
-                RepeatableEntry::make('')->getStateUsing(function($record){
-                    $section = CourseSection::where('course_id',$record->id)->get();
+                RepeatableEntry::make('')->getStateUsing(function ($record) {
+                    $section = CourseSection::where('course_id', $record->id)->get();
                     return $section;
                 })->schema([
                     TextEntry::make('section_name')->label('Section Name')
-                        ->getStateUsing(function($record){
+                        ->getStateUsing(function ($record) {
                             return $record->section_name;
-                        })
-                    ,
-                    RepeatableEntry::make('')->getStateUsing(function($record){
-                        $lesson = Lesson::where('course_id',$record->course_id)->where('course_section_id',$record->id)->get();
+                        }),
+                    RepeatableEntry::make('')->getStateUsing(function ($record) {
+                        $lesson = Lesson::where('course_id', $record->course_id)->where('course_section_id', $record->id)->get();
                         return $lesson;
                     })->schema([
-                        TextEntry::make('lesson')->label('Lesson')->getStateUsing(function($record){
-                           return $record->lesson_name;
+                        TextEntry::make('lesson')->label('Lesson')->getStateUsing(function ($record) {
+                            return $record->lesson_name;
                         })->columns(1),
-                        TextEntry::make('content')->label('Content')->getStateUsing(function($record){
+                        TextEntry::make('content')->label('Content')->getStateUsing(function ($record) {
                             return $record->content;
-                         })->columnSpanFull(4),
+                        })->columnSpanFull(4),
                     ]),
                     // exam
-                    RepeatableEntry::make('')->getStateUsing(function($record){
-                        $exam = Exam::where('course_id',$record->course_id)->where('course_section_id',$record->id)->get();
+                    RepeatableEntry::make('')->getStateUsing(function ($record) {
+                        $exam = Exam::where('course_id', $record->course_id)->where('course_section_id', $record->id)->get();
                         return $exam;
                     })->schema([
-                        TextEntry::make('exam')->label('Exam')->getStateUsing(function($record){
-                           return $record->exam_name;
+                        TextEntry::make('exam')->label('Exam')->getStateUsing(function ($record) {
+                            return $record->exam_name;
                         })->columns(1),
-                        TextEntry::make('description')->label('description')->getStateUsing(function($record){
+                        TextEntry::make('description')->label('description')->getStateUsing(function ($record) {
                             return $record->description;
-                         })->columnSpanFull(4),
+                        })->columnSpanFull(4),
                         // question block
                         //  RepeatableEntry::make('Ture or False Questions')->getStateUsing(function($record){
                         //     $trueorfalse = TrueOrFalse::where('exam_id',$record->id)->get();
@@ -218,7 +222,8 @@ class CourseResource extends Resource
     {
         return [
             CourseSectionsRelationManager::class,
-            EnrollmentsRelationManager::class
+            EnrollmentsRelationManager::class,
+            ForumsRelationManager::class,
         ];
     }
 

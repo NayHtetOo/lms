@@ -10,6 +10,7 @@ use Filament\Resources\RelationManagers\RelationManager;
 use Filament\Tables;
 use Filament\Tables\Table;
 use Filament\Forms\Components\TextInput;
+use Filament\Tables\Columns\TextColumn;
 
 class MatchingsRelationManager extends RelationManager
 {
@@ -37,7 +38,10 @@ class MatchingsRelationManager extends RelationManager
             ->recordTitleAttribute('question')
             ->columns([
                 Tables\Columns\TextColumn::make('question_no')->label('No.')->searchable(),
-                Tables\Columns\TextColumn::make('question'),
+                Tables\Columns\TextColumn::make('question')->limit(10),
+                TextColumn::make('question_1')->limit(10),
+                TextColumn::make('question_2')->limit(10),
+                TextColumn::make('question_3')->limit(10),
                 Tables\Columns\TextColumn::make('mark'),
             ])
             ->filters([
