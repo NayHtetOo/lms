@@ -42,15 +42,16 @@
                     </table>
                 </div>
 
+                <div class="relative overflow-x-auto sm:rounded text-end">
+                    @if (! $this->examSubmitted)
+                        <button class="border bg-green-500 py-2 px-3">Answer</button>
+                    @else
+                        <button class="border bg-indigo-400 py-2 px-3 rounded text-white">View</button>
+                    @endif
+                </div>
             </div>
         </div>
-        {{-- next page with tab --}}
-        {{-- <div>{{ $questions['true_false'] }}</div> --}}
-        {{-- <div>{{ $questions['matching'] }}</div> --}}
 
-        {{-- @foreach ($questions as $q)
-            <div>{{ $q }}</div>
-        @endforeach --}}
         @if (! $this->examSubmitted)
             @if ($this->trueOrfalse->isNotEmpty() || $this->multipleChoice->isNotEmpty() || $this->matching->isNotEmpty() || $this->shortQuestion->isNotEmpty() || $this->essay->isNotEmpty())
                 <div class="mx-auto max-w-7xl py-1 sm:px-6 lg:px-8">
@@ -59,59 +60,9 @@
                         <div id="question-tab-content">
 
                             {{-- {{ True or False Block }} --}}
-                            <div class="p-4 rounded-lg" id="question1" role="tabpanel" aria-labelledby="question1-tab">
-                                @if ($this->trueOrfalse->isNotEmpty())
-                                    <div class="m-3">
-                                        <p class="font-bold">I.True or False Questions.</p>
-
-                                        <div class="m-2">
-                                            @foreach ($this->trueOrfalse as $tof)
-                                                <div class="flex justify-between">
-                                                    {{-- <div>{{ $tof }}</div> --}}
-                                                    <div>
-                                                        {{ $tof->question_no }}. {{ strip_tags($tof->question) }}
-                                                    </div>
-                                                    <div> 1 Mark</div>
-                                                </div>
-                                                <label class="m-6 mt-4" for="">Select One : </label>
-                                                <p class="p-1">{{ $this->exams->question }}</p>
-
-                                                <div class="mb-[0.125rem] block min-h-[1.5rem] pl-[1.5rem] ml-6">
-                                                    {{-- <input
-                                                        class="relative float-left -ml-[1.5rem] mr-1 mt-0.5 h-5 w-5 appearance-none rounded-full border-2 border-solid border-neutral-300 before:pointer-events-none before:absolute before:h-4 before:w-4 before:scale-0 before:rounded-full before:bg-transparent before:opacity-0 before:shadow-[0px_0px_0px_13px_transparent] before:content-[''] after:absolute after:z-[1] after:block after:h-4 after:w-4 after:rounded-full after:content-[''] checked:border-primary checked:before:opacity-[0.16] checked:after:absolute checked:after:left-1/2 checked:after:top-1/2 checked:after:h-[0.625rem] checked:after:w-[0.625rem] checked:after:rounded-full checked:after:border-primary checked:after:bg-primary checked:after:content-[''] checked:after:[transform:translate(-50%,-50%)] hover:cursor-pointer hover:before:opacity-[0.04] hover:before:shadow-[0px_0px_0px_13px_rgba(0,0,0,0.6)] focus:shadow-none focus:outline-none focus:ring-0 focus:before:scale-100 focus:before:opacity-[0.12] focus:before:shadow-[0px_0px_0px_13px_rgba(0,0,0,0.6)] focus:before:transition-[box-shadow_0.2s,transform_0.2s] checked:focus:border-primary checked:focus:before:scale-100 checked:focus:before:shadow-[0px_0px_0px_13px_#3b71ca] checked:focus:before:transition-[box-shadow_0.2s,transform_0.2s]"
-                                                        type="radio"
-                                                        wire:model="trueOrfalse{{ $tof->id }}"
-                                                        id="true"
-                                                    /> --}}
-                                                    <input type="radio" wire:model="trueorfalseAnswer.{{ $tof->id }}" value="true" name="trueOrfalse{{ $tof->id }}" class="relative float-left mr-1 mt-0.5 h-5 w-5" />
-                                                    <label class="mt-px inline-block pl-[0.15rem] hover:cursor-pointer" for="true">
-                                                        True
-                                                    </label>
-                                                </div>
-                                                <div class="mb-[0.125rem] block min-h-[1.5rem] pl-[1.5rem] ml-6">
-
-                                                    <input type="radio" wire:model="trueorfalseAnswer.{{ $tof->id }}" value="false" name="trueOrfalse{{ $tof->id }}" class="relative float-left mr-1 mt-0.5 h-5 w-5" checked />
-                                                    <label
-                                                    class="mt-px inline-block pl-[0.15rem] hover:cursor-pointer"
-                                                    for="false">
-                                                        False
-                                                    </label>
-                                                </div>
-
-                                            @endforeach
-                                        </div>
-                                    </div>
-
-                                    @include('exam_view.prev-next-button',[
-                                        'prev_id' => '',
-                                        'prev_target' => '',
-                                        'next_id' => 'question2-tab',
-                                        'next_target' => 'question2'
-                                    ])
-
-                                @endif
-                            </div>
-
+                            @include('exam_view.true-or-false',[
+                                'data' => $this->trueOrfalse
+                            ])
 
                             {{-- Multiple Choice Block --}}
                             <div class="hidden p-4 rounded-lg" id="question2" role="tabpanel" aria-labelledby="question2-tab">
@@ -337,43 +288,61 @@
                     </div>
                 </div>
             @endif
-        @else
-            <div class="mx-auto max-w-7xl py-1 sm:px-6 lg:px-8">
-                <div class="p-4 rounded-xl shadow-2xl bg-slate-300">
-                    <h2 class="font-bold text-xl mb-4">Summary</h2>
-                    <table class="w-full border border-black text-sm text-left text-gray-500">
-                        <thead class="text-xs text-gray-700 uppercase">
-                            <tr class="border-b-2 border-black">
-                                <th scope="col" class="px-6 py-3">No.</th>
-                                <th scope="col" class="px-6 py-3">Status</th>
-                                <th scope="col" class="px-6 py-3">Question</th>
-                                <th scope="col" class="">Marks / {{ $this->numberOfQuestion }}</th>
-                                <th scope="col" class="">Grade / {{ $this->baseTotalMark }}</th>
-                                <th scope="col" class="">Review</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @foreach ($this->examSummary as $key => $row)
-                                <tr class="border-b border-gray-400">
-                                    <td class="px-6 py-3">{{ $loop->index + 1 }}</td>
-                                    {{-- <td class="px-6 py-3">Finished <br> Sumitted {{ $row[0]->created_at }}</td> --}}
-                                    <td class="px-6 py-3">Finished <br> Sumitted {{ $this->examSubmittedDate }}</td>
-                                    <td scope="col" class="px-6 py-3">{{ $key }}</td>
-                                    <td>{{ $row['correct'] }} / {{ $row['origin'] }}</td>
-                                    <td>{{ $row['grade'] }} / {{ $row['total'] }}</td>
-                                    <td><a href="#" class="text-blue-500">Review</a></td>
-                                </tr>
-                            @endforeach
-                        </tbody>
-                   </table>
-                   <div class="m-2 mt-2">
-                        <h2 class="font-bold">Highest grade: {{ $this->gradeMark }} / {{ $this->baseTotalMark }}</h2>
-                   </div>
-                </div>
-            </div>
         @endif
-
     </form>
+
+    @if ($this->summaryView)
+        <div class="mx-auto max-w-7xl py-1 sm:px-6 lg:px-8">
+            <div class="p-4 rounded-xl shadow-2xl bg-slate-300">
+                <h2 class="font-bold text-xl mb-4">Summary</h2>
+                <table class="w-full border border-black text-sm text-left text-gray-500">
+                    <thead class="text-xs text-gray-700 uppercase">
+                        <tr class="border-b-2 border-black">
+                            <th scope="col" class="px-6 py-3">No.</th>
+                            <th scope="col" class="px-6 py-3">Status</th>
+                            <th scope="col" class="px-6 py-3">Question</th>
+                            <th scope="col" class="">Marks / {{ $this->numberOfQuestion }}</th>
+                            <th scope="col" class="">Grade / {{ $this->baseTotalMark }}</th>
+                            <th scope="col" class="">Review</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach ($this->examSummary as $key => $row)
+                            <tr class="border-b border-gray-400">
+                                <td class="px-6 py-3">{{ $loop->index + 1 }}</td>
+                                {{-- <td class="px-6 py-3">Finished <br> Sumitted {{ $row[0]->created_at }}</td> --}}
+                                <td class="px-6 py-3">Finished <br> Sumitted {{ $this->examSubmittedDate }}</td>
+                                <td scope="col" class="px-6 py-3">{{ $key }}</td>
+                                <td>{{ $row['correct'] }} / {{ $row['origin'] }}</td>
+                                <td>{{ $row['grade'] }} / {{ $row['total'] }}</td>
+                                <td>
+                                    {{-- <a href="#" class="text-blue-500">Review</a> --}}
+                                    <button wire:click="review" class="py-2 px-3 bg-indigo-400 text-white rounded">Review</button>
+                                </td>
+                            </tr>
+                        @endforeach
+                    </tbody>
+            </table>
+            <div class="m-2 mt-2">
+                    <h2 class="font-bold">Highest grade: {{ $this->gradeMark }} / {{ $this->baseTotalMark }}</h2>
+            </div>
+            </div>
+        </div>
+    @endif
+
+    @if ($this->reviewQuestion)
+        <div class="mx-auto max-w-7xl py-1 sm:px-6 lg:px-8">
+            <div class="p-4 rounded-xl shadow-2xl bg-slate-300">
+                <div>
+                    <a wire:click="backToSummary" class="text-blue-700 underline">Summary</a> / Review
+                </div><br>
+                <h2 class="font-bold text-xl mb-4">Review</h2>
+                @include('exam_view.true-or-false',[
+                    'data' => $this->trueOrfalse
+                ])
+            </div>
+        </div>
+    @endif
 </div>
 
 <script>

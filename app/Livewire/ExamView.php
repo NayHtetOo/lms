@@ -40,6 +40,11 @@ class ExamView extends Component
     public $baseTotalMark;
     public $examSubmittedDate;
     public $numberOfQuestion;
+    public $matching_corrected;
+    public $received_mark_per_question;
+    public $matching_mark;
+    public $summaryView = false;
+    public $reviewQuestion = false;
 
     public function mount($id)
     {
@@ -52,7 +57,12 @@ class ExamView extends Component
 
         // dd($this->examSubmitted);
         if($this->examSubmitted){
-            $this->examSummary;
+            if($this->reviewQuestion){
+
+            }else{
+                $this->summaryView = true;
+                $this->examSummary;
+            }
         }
         // true or false input to default value false
         foreach ($this->trueOrfalse as $tof) {
@@ -80,6 +90,7 @@ class ExamView extends Component
         // $matchingAnswer = MatchingAnswer::first();
         // $answer = $matchingAnswer->student_answer;
         // dd(unserialize($answer));
+
         // store data to answer table(trueOrfalse,multipleChoice,matching,shortQuestion and Essay)
         $this->answerQuery($this->trueorfalseAnswer,'App\Models\TrueOrFalseAnswer','true_or_false_id');
         $this->answerQuery($this->multipleChoiceAnswer,'App\Models\MultipleChoiceAnswer','multiple_choice_id');
@@ -87,18 +98,16 @@ class ExamView extends Component
         $this->answerQuery($this->shortQuestionAnswer,'App\Models\ShortQuestionAnswer','short_question_id');
         $this->answerQuery($this->essayAnswer,'App\Models\EssayAnswer','essay_id');
 
+        $this->examSubmitted = true;
+
          // After a successful submission, set a session flash message
         session()->flash('message', 'Form submitted successfully!');
-
-
         // return redirect()->route('courses');
 
     }
     #[Computed]
     public function examSummary(){
         // exam submitted
-        // $true_false_data = [];
-        // $multiple_choice_data = [];
 
         $exam = ExamAnswer::where('exam_id',$this->id)->first();
         $this->examSubmittedDate = $exam->created_at;
@@ -110,121 +119,90 @@ class ExamView extends Component
         $short_question_answer = ShortQuestionAnswer::where('exam_id',$this->id)->where('user_id',$this->user_id)->get();
         $essay_answer = EssayAnswer::where('exam_id',$this->id)->where('user_id',$this->user_id)->get();
 
-        //
-        $inputArray = [
-            "question_1" => "answer2",
-            "question_2" => "answer1",
-            "question_3" => "answer3"
-        ];
+        $matching_answer->filter(function($answer){
+            $matching = Matching::find($answer->matching_id);
+            // dump($matching->toArray());
+            $matching_question_count = 3;
+            $received_mark_per_question = $matching->mark / $matching_question_count;
 
-        $compareArray = [
-            "question_1" => "answer1",
-            "question_2" => "answer2",
-            "question_3" => "answer3"
-        ];
+            $compareArray = [
+                "1" => "1", // question 1 must be answer 1
+                "2" => "2", // question 2 must be answer 2
+                "3" => "3"  // question 3 must be answer 3
+            ];
+            // student answered matching array
+            $inputArray = unserialize($answer->student_answer);
 
-        $resultArray = [];
+            // Get elements from $inputArray that are not present in $compareArray
+            $diff = array_diff_assoc($inputArray, $compareArray);
+            // Get elements from $inputArray that are present in $compareArray
+            $intersect = array_intersect_assoc($inputArray, $compareArray);
 
-        // foreach ($inputArray as $questionKey => $answerValue) {
-        //     // Extract question index from the key (e.g., "question_1" -> "1")
-        //     $questionIndex = substr($questionKey, strrpos($questionKey, '_') + 1);
-        //     dump($questionIndex);
-        //     // Create the expected answer key based on the question index
-        //     $expectedAnswerKey = "answer_" . $questionIndex;
-        //     dump($expectedAnswerKey);
-        //     // Check if the answer matches the expected answer from the compare array
-        //     if (isset($compareArray[$questionKey]) && $answerValue === $compareArray[$expectedAnswerKey]) {
-        //         // If the answer matches, add it to the result array
-        //         $resultArray[$questionKey] = $answerValue;
-        //     }
-        // }
-        // dd($resultArray);
+            // Combine the results
+            // $combine = $diff + $intersect;
+            $this->matching_corrected = $this->matching_corrected + count($intersect);
+            // dump($received_mark_per_question);
+            // dump($matching_corrected);
 
-        $corrected_matching = $matching_answer->filter(function ($match) {
-            $primary_matching = Matching::find($match->matching_id);
-            $student_answer = collect(unserialize($match->student_answer));
-
-
-            $filteredPairs = [];
-
-            foreach ($student_answer as $questionIndex => $answerIndex) {
-                $questionKey = "question_" . $questionIndex;
-                $answerKey = "answer_" . $answerIndex;
-
-               dump($questionKey);
-               dump($answerIndex);
-               dump($answerKey);
-               // question_1 must be answer_1 ,question_2 must be answer_2 and question_3 must be answer_3
-
-                if (isset($primary_matching[$questionKey]) && isset($primary_matching[$answerKey])) {
-                    $filteredPairs[$primary_matching[$questionKey]] = $primary_matching[$answerKey];
-                }
-            }
-            dump($filteredPairs);
+            $this->matching_mark = $this->matching_mark + count($intersect) * $received_mark_per_question;
+            // dump(count($diff),count($intersect));
+            // dd($diff,$intersect,$combine);
         });
+        // dump($this->matching_corrected);
 
-
-        $multiple_choice_data = [
-            'correct' => $corrected_matching->count(),
-            'origin' => $multiple_choice_answer->count(),
-            'grade' => $corrected_matching->sum(function ($answer) {
-                $primary_multiple_choice = MultipleChoice::find($answer->multiple_choice_id);
-                return collect($primary_multiple_choice->mark)->sum();
-            }),
-            'total' => $multiple_choice_answer->sum(function ($answer) {
-                $primary_multiple_choice = MultipleChoice::find($answer->multiple_choice_id);
-                return collect($primary_multiple_choice->mark)->sum();
+        $matching_data = [
+            'correct' => $this->matching_corrected,
+            'origin' => $matching_answer->count(),
+            'grade' => $this->matching_mark,
+            'total' => $matching_answer->sum(function ($answer) {
+                $primary_question = Matching::find($answer->matching_id);
+                return collect($primary_question->mark)->sum();
             })
         ];
 
+        $true_false_data = $this->questionsData($true_false_answer,'App\Models\TrueOrFalse','true_or_false_id');
+        $multiple_choice_data = $this->questionsData($multiple_choice_answer,'App\Models\MultipleChoice','multiple_choice_id');
+        $short_quesiton_data = $this->questionsData($short_question_answer,'App\Models\ShortQuestion','short_question_id');
+        $essay_data = $this->questionsData($essay_answer,'App\Models\Essay','essay_id');
 
-        //
-        $corrected_ture_false = $true_false_answer->filter(function ($answer) {
-            $primary_true_false = TrueOrFalse::find($answer->true_or_false_id);
-            return $answer->student_answer == ($primary_true_false->answer == "1" ? "true" : "false");
-        });
-
-        $corrected_multiple_choice = $multiple_choice_answer->filter(function ($answer) {
-            $primary_multiple_choice = MultipleChoice::find($answer->multiple_choice_id);
-            return $answer->student_answer == $primary_multiple_choice->answer;
-        });
-
-        $corrected_short_question = $short_question_answer; // short question need to fix received marks / gieven marks
-        $corrected_essay = $essay_answer; // essay need to fix received marks / gieven marks
-
-
-        $true_false_data = $this->questionsData($corrected_ture_false,$true_false_answer,'App\Models\TrueOrFalse','true_or_false_id');
-        $multiple_choice_data = $this->questionsData($corrected_multiple_choice,$multiple_choice_answer,'App\Models\MultipleChoice','multiple_choice_id');
-        $short_quesiton_data = $this->questionsData($corrected_short_question,$short_question_answer,'App\Models\ShortQuestion','short_question_id');
-        $essay_data = $this->questionsData($corrected_essay,$essay_answer,'App\Models\Essay','essay_id');
-
-        $this->gradeMark = $true_false_data['grade'] + $multiple_choice_data['grade'] + $short_quesiton_data['grade'] + $essay_data['grade'];
-        $this->baseTotalMark = $true_false_data['total'] + $multiple_choice_data['total'] + $short_quesiton_data['total'] + $essay_data['total'];
-        $this->numberOfQuestion = $true_false_data['origin'] + $multiple_choice_data['origin'] + $short_quesiton_data['origin'] + $essay_data['origin'];
+        $this->gradeMark = $true_false_data['grade'] + $multiple_choice_data['grade'] + $matching_data['grade'] + $short_quesiton_data['grade'] + $essay_data['grade'];
+        $this->baseTotalMark = $true_false_data['total'] + $multiple_choice_data['total'] + $matching_data['total'] + $short_quesiton_data['total'] + $essay_data['total'];
+        $this->numberOfQuestion = $true_false_data['origin'] + $multiple_choice_data['origin'] + $matching_data['origin'] + $short_quesiton_data['origin'] + $essay_data['origin'];
 
         $result = collect([
             'True or False' => $true_false_answer->isNotEmpty() ? collect($true_false_data) : null,
             'Multiple Choice' => $multiple_choice_answer->isNotEmpty() ? collect($multiple_choice_data) : null,
-            // 'Matching' => $matching_answer->isNotEmpty() ? $matching_answer : null,
+            'Matching' => $matching_answer->isNotEmpty() ? $matching_data : null,
             'Short Question' => $short_question_answer->isNotEmpty() ? collect($short_quesiton_data) : null,
             'Essay' => $essay_answer->isNotEmpty() ? collect($essay_data) : null,
         ])->filter()->all();
 
         // dd($result);
+
         return $result;
     }
 
-    public function questionsData($corrected,$answer,$modelName,$idField){
+    public function questionsData($answer,$modelName,$idField) {
+        // need to fix for short question and essay
+        if($idField == 'short_question_id' || $idField == 'essay_id'){
+            $corrected = $answer;
+        }else{
+            $corrected = $answer->filter(function ($answer) use($modelName,$idField) {
+                $primary_answer = $modelName::find($answer->$idField);
+                return $answer->student_answer == $primary_answer->answer;
+            });
+        }
+
         return [
             'correct' => $corrected->count(),
             'origin' => $answer->count(),
             'grade' => $corrected->sum(function ($answer) use($modelName,$idField) {
-                $primary_multiple_choice = $modelName::find($answer->$idField);
-                return collect($primary_multiple_choice->mark)->sum();
+                $corrected_question = $modelName::find($answer->$idField);
+                return collect($corrected_question->mark)->sum();
             }),
             'total' => $answer->sum(function ($answer) use($modelName,$idField) {
-                $primary_multiple_choice = $modelName::find($answer->$idField);
-                return collect($primary_multiple_choice->mark)->sum();
+                $primary_question = $modelName::find($answer->$idField);
+                return collect($primary_question->mark)->sum();
             })
         ];
     }
@@ -293,5 +271,15 @@ class ExamView extends Component
         ])->all();
 
        return $data;
+    }
+    public function review(){
+        // dump($this->id,$this->user_id);
+        $this->reviewQuestion = true;
+        $this->summaryView = false;
+    }
+    public function backToSummary(){
+        $this->summaryView = true;
+        $this->reviewQuestion = false;
+
     }
 }
