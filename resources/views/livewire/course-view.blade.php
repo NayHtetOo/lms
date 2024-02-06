@@ -8,56 +8,72 @@
 
     <header class="bg-white shadow">
         <div class="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
-            <h1 class="text-3xl font-bold tracking-tight text-blue-700">{{ $currentCourse->course_name }}</h1>
+            <h1 class="text-3xl font-bold tracking-tight text-slate-700 capitalize">{{ $currentCourse->course_name }}
+            </h1>
         </div>
     </header>
 
     <main>
         <div class="mx-auto max-w-7xl py-6 sm:px-6 lg:px-8">
-        <div class="p-2 rounded-xl shadow-2xl">
-            <div class="mb-4 border-b border-gray-200">
-                <ul class="flex flex-wrap -mb-px text-sm font-medium text-center" id="default-tab" data-tabs-toggle="#default-tab-content" role="tablist">
+            @if ($alertStatus)
+                <div class="w-full bg-red-200 rounded-md p-3 my-3 flex justify-between items-center" wire:transition.500ms>
+                    <span class="text-slate-700">{{ $alertMessage }}</span>
+                    <button wire:click='closeAlertMessage' type="button">
+                        <svg class="w-6 h-6 text-slate-700" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+                            stroke-width="1.5" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12" />
+                        </svg>
+                    </button>
+                </div>
+            @endif
+            <div class=" rounded-xl shadow-lg">
+                <div class="mb-4 border-b border-gray-200">
+                    <ul class="flex flex-wrap -mb-px text-sm font-medium text-center bg-blue-500 rounded-md px-3" id="default-tab"
+                        data-tabs-toggle="#default-tab-content" role="tablist">
+                        <li class="me-2 py-2" role="presentation">
+                            <button class="inline-block text-white text-md p-2
+                         hover:bg-blue-600 hover:text-white"
+                                    id="section-tab" data-tabs-target="#section" type="button" role="tab"
+                                    aria-controls="section" aria-selected="false">Section</button>
+                        </li>
 
-                    <li class="me-2" role="presentation">
-                        <button class="inline-block text-blue-700 p-2 border-b-2 rounded-t-lg hover:text-black
-                         hover:bg-slate-100" id="section-tab" data-tabs-target="#section" type="button" role="tab"
-                         aria-controls="section" aria-selected="false">Section</button>
-                    </li>
+                        <li class="me-2 py-2" role="presentation">
+                            <button class="inline-block text-white p-2
+                         hover:bg-blue-600 hover:text-white text-md"
+                                    id="participant-tab" data-tabs-target="#participant" type="button" role="tab"
+                                    aria-controls="participant" aria-selected="false">Participants</button>
+                        </li>
 
-                    <li class="me-2" role="presentation">
-                        <button class="inline-block text-blue-700 p-2 border-b-2 rounded-t-lg hover:text-black
-                         hover:bg-slate-100" id="participant-tab" data-tabs-target="#participant" type="button" role="tab"
-                          aria-controls="participant" aria-selected="false">Participants</button>
-                    </li>
+                        <li class="me-2 py-2" role="presentation">
+                            <button class="inline-block text-white p-2 hover:bg-blue-600 hover:text-white text-md"
+                                    id="grade-tab" data-tabs-target="#grade" type="button" role="tab"
+                                    aria-controls="grade" aria-selected="false">Grade</button>
+                        </li>
 
-                    <li class="me-2" role="presentation">
-                        <button class="inline-block text-blue-700 p-2 border-b-2 rounded-t-lg hover:text-black hover:bg-slate-100"
-                            id="grade-tab" data-tabs-target="#grade" type="button" role="tab" aria-controls="grade" aria-selected="false">Grade</button>
-                    </li>
+                        <li class="me-2 py-2" role="presentation">
+                            <button class="inline-block text-white p-2 hover:bg-blue-600 hover:text-white text-md"
+                                    id="settings-tab" data-tabs-target="#settings" type="button" role="tab"
+                                    aria-controls="settings" aria-selected="false">Settings</button>
+                        </li>
+                    </ul>
+                </div>
 
-                    <li class="me-2" role="presentation">
-                        <button class="inline-block text-blue-700 p-2 border-b-2 rounded-t-lg hover:text-black hover:bg-slate-100"
-                            id="settings-tab" data-tabs-target="#settings" type="button" role="tab" aria-controls="settings" aria-selected="false">Settings</button>
-                    </li>
-                </ul>
+                <div id="default-tab-content">
+
+                    @include('course.section', [
+                        'hidden' => $this->isParticipantSearch ? 'hidden' : '',
+                    ])
+
+                    @include('course.participants', [
+                        'hidden' => $this->isParticipantSearch ? '' : 'hidden',
+                    ])
+
+                    @include('course.grade')
+
+                    @include('course.setting')
+
+                </div>
             </div>
-
-            <div id="default-tab-content">
-
-                @include('course.section',[
-                    'hidden' =>  $this->isParticipantSearch ? 'hidden' : ''
-                ])
-
-                @include('course.participants',[
-                    'hidden' =>  $this->isParticipantSearch ? '' : 'hidden'
-                ])
-
-                @include('course.grade')
-
-                @include('course.setting')
-
-            </div>
-        </div>
         </div>
     </main>
 
@@ -75,14 +91,14 @@
 
             // Hide all tab contents
             document.querySelectorAll('[role="tabpanel"]').forEach(content => {
-                content.classList.add('hidden');
+                content.classList.add('hidden', );
             });
 
             // Show the target tab content
             targetContent.classList.remove('hidden');
 
             // Update aria-selected attribute for all tab buttons
-            tabButtons.forEach(btn => {
+            tabButtons.forEach((btn, index) => {
                 btn.setAttribute('aria-selected', 'false');
             });
 
@@ -108,6 +124,4 @@
     document.querySelectorAll('[data-te-collapse-init]').forEach(trigger => {
         trigger.addEventListener('click', toggleCollapse);
     });
-
-
 </script>

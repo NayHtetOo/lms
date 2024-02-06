@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\userController;
 use App\Livewire\AssignmentView;
 use App\Livewire\Counter;
 use App\Livewire\Course;
@@ -10,7 +11,6 @@ use App\Livewire\Home;
 use App\Livewire\LessonView;
 use App\Models\Course as ModelsCourse;
 use Illuminate\Support\Facades\Route;
-
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -22,13 +22,7 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::get('/', function () {
-
-    return view('welcome',[
-        'courses' => ModelsCourse::all(),
-        'buttonLabel' => "Learn more"
-    ]);
-});
+Route::get('/', [userController::class, 'index'])->name('welcome');
 
 Route::get('/counter', Counter::class)->name('counter');
 

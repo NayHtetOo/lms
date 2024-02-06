@@ -18,7 +18,9 @@ class CourseOverview extends BaseWidget
         $state = [];
         foreach ($courseCategory as $category) {
             $categories = $category->toArray();
-            $state[] = Stat::make(count($categories["courses"]) . " created the course", $categories["category_name"]);
+            $state[] = Stat::make("", $categories["category_name"])
+                ->description(count($categories["courses"]) . " created the course")
+                ->color('primary');
         }
 
         return $state;

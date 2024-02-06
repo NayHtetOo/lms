@@ -1,4 +1,3 @@
-{{-- <div class="bg-slate-500 w-full min-h-screen flex justify-center items-center"> --}}
 <div>
     <div class="full flex justify-end">
         <div class="ml-2 relative">
@@ -14,11 +13,15 @@
         </div>
     </div>
 
-    <div class="grid grid-cols-4 gap-4">
+    <div class="grid grid-cols-4 gap-4 mt-5">
         <!-- card -->
         @foreach ($courses as $key => $row)
             <div class="p-3 bg-white shadow-lg hover:-translate-y-2 duration-300 transition-all rounded-lg">
-                <img class="rounded-2xl" src="{{ asset('images/lms.png') }}" alt="">
+                @if ($row->course_photo_path)
+                    <img class="rounded-2xl w-full h-[200px]" src="{{ asset('/storage/' . $row->course_photo_path) }}" alt="{{ $row->course_name }}">
+                @else
+                    <img class="rounded-2xl w-full h-[200px] " src="{{ asset('/images/default_course_photo.jpg') }}" alt="no course photo">
+                @endif
                 <p class="text-blue-500 my-3 text-lg font-bold">{{ $row->course_name }}</p>
                 <p class="text-slate-800 overflow-hidden"
                    style="overflow: hidden; text-overflow: ellipsis; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical;">
@@ -31,17 +34,7 @@
             </div>
         @endforeach
     </div>
+        <div class="my-5">
+            {{ $courses->links() }}
+        </div>
 </div>
-{{-- </div> --}}
-
-{{-- <div class="w-60 p-2 bg-white rounded-xl transform transition-all hover:-translate-y-2 duration-300 shadow-lg hover:shadow-2xl">
-                    <!-- image -->
-                    <img class="h-40 object-cover rounded-xl" src="{{ asset('images/lms.png') }}" />
-                    <div class="p-2">
-                        <h2 class="font-bold text-md">{{ $row->course_name }}()</h2>
-                        <p class="text-sm text-gray-600">{{ $row->description }} </p>
-                    </div>
-                    <div class="m-2">
-                        <a role="button" href="/course_view/{{ $row->id }}" class="text-white bg-purple-600 px-3 py-2 rounded-md hover:bg-purple-700">Learn More</a>
-                    </div>
-                </div> --}}

@@ -27,6 +27,8 @@ class CourseView extends Component
     public $search;
     public $isParticipantSearch = false;
     public $role_id;
+    public $alertMessage = "";
+    public $alertStatus = false;
 
     public function mount($id)
     {
@@ -76,6 +78,21 @@ class CourseView extends Component
     #[Computed]
     public function lessons(){
         return Lesson::where('course_id',$this->id)->where('course_section_id',$this->section_id)->get();
+    }
+
+    public function sections($id) {
+        $lessons = CourseSection::with("lessons")->where('id', $id)->get()->toArray();
+        $exams = CourseSection::with("exams")->where('id', $id)->get()->toArray();
+        $assignments = CourseSection::with("assignments")->where('id', $id)->get()->toArray();
+
+        if ($lessons[0]["lessons"] == [] || $exams[0]["exams"] == [] || $assignments[0]["assignments"] == []) {
+            $this->alertStatus = true;
+            $this->alertMessage = "This sections isn't added.";
+        }
+    }
+
+    public function closeAlertMessage() {
+        $this->alertStatus = false;
     }
 
     public function render()

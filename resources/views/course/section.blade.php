@@ -1,4 +1,4 @@
-<div class="{{ $hidden }} p-4 rounded-lg bg-gray-50" id="section" role="tabpanel" aria-labelledby="section-tab">
+<div class="{{ $hidden }} rounded-lg bg-gray-50" id="section" role="tabpanel" aria-labelledby="section-tab">
     {{-- <div>{{ $currentCourseSection }}</div> --}}
     @if ($currentCourseSection->isNotEmpty())
         @foreach ($currentCourseSection as $key => $section)
@@ -11,15 +11,15 @@
 
             <ul>
                 <li class="p-3 border-b pb-7">
-                    <a data-te-collapse-init href="#collapseThree{{ $section->id }}" role="button" aria-expanded="false" aria-controls="collapseThree{{ $section->id }}"
+                    <a data-te-collapse-init wire:click='sections({{ $section->id }})' href="#collapseThree{{ $section->id }}" role="button" aria-expanded="false" aria-controls="collapseThree{{ $section->id }}"
                         class="flex items-center px-2 hover:bg-secondary-100 focus:text-primary active:text-primary">
                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" class="h-4 w-4">
                             <path stroke-linecap="round" stroke-linejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" />
                         </svg>
                         {{-- <p class="font-bold text-2xl ml-2">{{ $section->id }}</p> --}}
-                        <p class="font-bold text-blue-700 text-2xl ml-2">{{ $section->section_name }}</p>
+                        <p class="font-bold text-blue-700 text-xl ml-2">{{ $section->section_name }}</p>
                     </a>
-                    <ul class="!visible hidden" id="collapseThree{{ $section->id }}" data-te-collapse-item>
+                    <ul class="!visible hidden" id="collapseThree{{ $section->id }}" data-te-collapse-item wire:ignore.selft>
 
                         @if ($hasLesson)
                             <li class="ml-4 p-2 text-xl">
@@ -28,13 +28,13 @@
                                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" class="h-4 w-4">
                                         <path stroke-linecap="round" stroke-linejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" />
                                     </svg>
-                                    <label class="ml-4 text-blue-700">Lessons</label>
+                                    <label class="ml-4 text-blue-700 text-lg cursor-pointer">Lessons</label>
                                 </a>
                                 <ul class="!visible hidden" id="lessons{{ $section->id }}" data-te-collapse-item>
                                     @foreach ($lessons as $lson)
                                         @if ($lson->course_section_id == $section->id)
                                             <a href="/lesson_view/{{ $lson->course_id }}/{{ $lson->course_section_id}}/{{ $lson->id }}">
-                                                <li class="ml-10 p-4 text-blue-500 px-2 border-b underline">
+                                                <li class="ml-10 p-4 text-blue-500 px-2 border-b underline text-lg">
                                                     {{ $lson->lesson_name }}
                                                 </li>
                                             </a>
@@ -51,14 +51,14 @@
                                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" class="h-4 w-4">
                                         <path stroke-linecap="round" stroke-linejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" />
                                     </svg>
-                                    <label class="ml-4 text-blue-700">Exams</label>
+                                    <label class="ml-4 text-blue-700 text-lg cursor-pointer">Exams</label>
                                 </a>
                                 <ul class="!visible hidden" id="exams{{ $section->id }}" data-te-collapse-item>
 
                                     @foreach ($exams as $exam)
                                         @if ($exam->course_section_id == $section->id)
                                             <a href="/exam_view/{{ $exam->course_id }}/{{ $exam->course_section_id}}/{{ $exam->id }}">
-                                                <li class="ml-10 p-4 text-blue-500 px-2 border-b underline">
+                                                <li class="ml-10 p-4 text-blue-500 px-2 border-b underline text-lg">
                                                     {{ $exam->exam_name }}
                                                 </li>
                                             </a>
@@ -76,13 +76,13 @@
                                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" class="h-4 w-4">
                                         <path stroke-linecap="round" stroke-linejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" />
                                     </svg>
-                                    <label class="ml-4 text-blue-700">Assignments</label>
+                                    <label class="ml-4 text-blue-700 text-lg cursorpointer">Assignments</label>
                                 </a>
                                 <ul class="!visible hidden" id="assignments{{ $section->id }}" data-te-collapse-item>
                                     @foreach ($assignments as $assignment)
                                         @if ($assignment->course_section_id == $section->id)
                                             <a href="/assignment_view/{{ $assignment->course_id }}/{{ $assignment->course_section_id}}/{{ $assignment->id }}">
-                                                <li class="ml-10 p-4 text-blue-500 px-2 border-b underline">
+                                                <li class="ml-10 p-4 text-blue-500 px-2 border-b underline text-lg">
                                                     {{ $assignment->assignment_name }}
                                                 </li>
                                             </a>

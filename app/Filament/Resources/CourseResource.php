@@ -53,7 +53,7 @@ class CourseResource extends Resource
             ->schema([
                 Select::make('course_category_id')->label('Category Type')->required()->options(
                     CourseCategory::all()->pluck('category_name', 'id')
-                ),
+                )->searchable(),
                 TextInput::make('course_name')
                     ->required()
                     ->maxLength(255),
