@@ -9,6 +9,7 @@ class Home extends Component
 {
     public $search;
     public $courses;
+    public $buttonLabel = "Learn more";
 
     public function render()
     {

@@ -25,7 +25,8 @@ use Illuminate\Support\Facades\Route;
 Route::get('/', function () {
 
     return view('welcome',[
-        'courses' => ModelsCourse::all()
+        'courses' => ModelsCourse::all(),
+        'buttonLabel' => "Learn more"
     ]);
 });
 
@@ -40,7 +41,7 @@ Route::get('/dashboard', function () {
 })->middleware(['auth', 'verified'])->name('dashboard');
 
 Route::middleware('auth')->group(function () {
-    
+
     Route::get('/home', Home::class)->name('home');
     Route::get('/courses', Course::class)->name('courses');
     Route::get('/course_view/{id}', CourseView::class)->name('course_view');
