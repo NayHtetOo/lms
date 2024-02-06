@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\ExamResource\RelationManagers;
 
+use Closure;
 use Filament\Forms;
 use Filament\Forms\Components\RichEditor;
 use Filament\Forms\Components\TextInput;
@@ -20,7 +21,15 @@ class EssaysRelationManager extends RelationManager
         return $form
             ->schema([
                 TextInput::make('question_no'),
-                TextInput::make('mark')->numeric(),
+                TextInput::make('mark')->numeric()->rules([
+                    function () {
+                        return function (string $attribute, $value, Closure $fail) {
+                            if ($value > 100 || $value < 0) {
+                                $fail("The :attribute is invalid and maark field must be between 0 and 100");
+                            }
+                        };
+                    }
+                ]),
                 RichEditor::make('question')->columnSpanFull()->required(),
             ]);
     }
@@ -31,7 +40,7 @@ class EssaysRelationManager extends RelationManager
             ->recordTitleAttribute('question')
             ->columns([
                 TextColumn::make('question_no')->label('No.')->searchable(),
-                TextColumn::make('question'),
+                TextColumn::make('question')->formatStateUsing(fn (string $state) => strip_tags($state)),
                 TextColumn::make('mark'),
             ])
             ->filters([

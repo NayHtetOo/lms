@@ -14,15 +14,12 @@ class CourseOverview extends BaseWidget
 {
     protected function getStats(): array
     {
-        $courseCategory = CourseCategory::select()
-                        ->leftJoin('course_categories', 'courses.course_category_id', 'course_categories.id')
-                        ->groupBy('courses.course_category_id')
-                        ->get();
-        dd($courseCategory);
+        $courseCategory = courseCategory::with("courses")->get();
         $state = [];
-        // foreach ($courses->toArray() as $course) {
-        //     $state[] = Stat::make($course['count'] . ' courses created', $course['category_name']);
-        // }
+        foreach ($courseCategory as $category) {
+            $categories = $category->toArray();
+            $state[] = Stat::make(count($categories["courses"]) . " created the course", $categories["category_name"]);
+        }
 
         return $state;
     }

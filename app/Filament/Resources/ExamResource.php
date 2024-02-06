@@ -313,7 +313,7 @@ class ExamResource extends Resource
             MatchingsRelationManager::class,
             ShortQuestionsRelationManager::class,
             EssaysRelationManager::class,
-            ForumsRelationManager::class
+            // ForumsRelationManager::class
         ];
     }
 

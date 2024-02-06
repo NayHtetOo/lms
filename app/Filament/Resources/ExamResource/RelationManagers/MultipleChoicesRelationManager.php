@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\ExamResource\RelationManagers;
 
+use Closure;
 use Filament\Forms\Components\Grid;
 use Filament\Forms\Components\RichEditor;
 use Filament\Forms\Components\Select;
@@ -21,7 +22,15 @@ class MultipleChoicesRelationManager extends RelationManager
         return $form
             ->schema([
                 TextInput::make('question_no'),
-                TextInput::make('mark')->numeric(),
+                TextInput::make('mark')->numeric()->rules([
+                    function () {
+                        return function (string $attribute, $value, Closure $fail) {
+                            if ($value > 100 || $value < 0) {
+                                $fail("The :attribute is invalid and maark field must be between 0 and 100");
+                            }
+                        };
+                    }
+                ]),
                 RichEditor::make('question')->columnSpanFull()->required(),
                 Grid::make()->schema([
                     TextInput::make('choice_1')->label('A')
@@ -52,7 +61,7 @@ class MultipleChoicesRelationManager extends RelationManager
             ->recordTitleAttribute('question')
             ->columns([
                 TextColumn::make('question_no')->label('No.')->searchable(),
-                TextColumn::make('question'),
+                TextColumn::make('question')->formatStateUsing(fn (string $state) => strip_tags($state)),
                 TextColumn::make('choice_1')->label('A'),
                 TextColumn::make('choice_2')->label('B'),
                 TextColumn::make('choice_3')->label('C'),

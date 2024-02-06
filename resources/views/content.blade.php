@@ -20,9 +20,13 @@
             <div class="p-3 bg-white shadow-lg hover:-translate-y-2 duration-300 transition-all rounded-lg">
                 <img class="rounded-2xl" src="{{ asset('images/lms.png') }}" alt="">
                 <p class="text-blue-500 my-3 text-lg font-bold">{{ $row->course_name }}</p>
-                <p class="text-slate-800 ">{{ Str::substr($row->description, 1, 100) }}...</p>
+                <p class="text-slate-800 overflow-hidden"
+                   style="overflow: hidden; text-overflow: ellipsis; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical;">
+                    {{ $row->description }}
+                </p>
                 <div class="w-full flex justify-end">
-                    <livewire:user-button :buttonLabel="$buttonLabel" />
+                    <a class="bg-blue-500 py-2 px-3 rounded-md text-white my-3" href="/course_view/{{ $row->id }}"
+                       role="button">Learn More</a>
                 </div>
             </div>
         @endforeach

@@ -11,6 +11,10 @@ class Home extends Component
     public $courses;
     public $buttonLabel = "Learn more";
 
+    public function test() {
+        dd("hgello");
+    }
+
     public function render()
     {
         $this->courses = Course::where('course_name','like','%'.$this->search.'%')->get();

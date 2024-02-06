@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\ExamResource\RelationManagers;
 
+use Closure;
 use Filament\Forms;
 use Filament\Forms\Components\RichEditor;
 use Filament\Forms\Components\Textarea;
@@ -21,7 +22,15 @@ class MatchingsRelationManager extends RelationManager
         return $form
             ->schema([
                 TextInput::make('question_no'),
-                TextInput::make('mark')->numeric(),
+                TextInput::make('mark')->numeric()->rules([
+                    function () {
+                        return function (string $attribute, $value, Closure $fail) {
+                            if ($value > 100 || $value < 0) {
+                                $fail("The :attribute is invalid and maark field must be between 0 and 100");
+                            }
+                        };
+                    }
+                ]),
                 Textarea::make('question')->columnSpanFull()->required(),
                 RichEditor::make('question_1')->columnSpanFull()->required(),
                 TextInput::make('answer_1')->required(),
@@ -39,9 +48,9 @@ class MatchingsRelationManager extends RelationManager
             ->columns([
                 Tables\Columns\TextColumn::make('question_no')->label('No.')->searchable(),
                 Tables\Columns\TextColumn::make('question')->limit(10),
-                TextColumn::make('question_1')->limit(10),
-                TextColumn::make('question_2')->limit(10),
-                TextColumn::make('question_3')->limit(10),
+                TextColumn::make('question_1')->limit(10)->formatStateUsing(fn (string $state) => strip_tags($state)),
+                TextColumn::make('question_2')->limit(10)->formatStateUsing(fn (string $state) => strip_tags($state)),
+                TextColumn::make('question_3')->limit(10)->formatStateUsing(fn (string $state) => strip_tags($state)),
                 Tables\Columns\TextColumn::make('mark'),
             ])
             ->filters([
