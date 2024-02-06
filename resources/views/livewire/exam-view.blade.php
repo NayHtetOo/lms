@@ -69,7 +69,7 @@
                                                 <div class="flex justify-between">
                                                     {{-- <div>{{ $tof }}</div> --}}
                                                     <div>
-                                                        {{ $tof->question_no }}. {{ $tof->question }}
+                                                        {{ $tof->question_no }}. {{ strip_tags($tof->question) }}
                                                     </div>
                                                     <div> 1 Mark</div>
                                                 </div>
@@ -347,29 +347,27 @@
                                 <th scope="col" class="px-6 py-3">No.</th>
                                 <th scope="col" class="px-6 py-3">Status</th>
                                 <th scope="col" class="px-6 py-3">Question</th>
-                                <th scope="col" class="">Marks / 10</th>
-                                <th scope="col" class="">Grade / 100</th>
+                                <th scope="col" class="">Marks / {{ $this->numberOfQuestion }}</th>
+                                <th scope="col" class="">Grade / {{ $this->baseTotalMark }}</th>
                                 <th scope="col" class="">Review</th>
                             </tr>
                         </thead>
                         <tbody>
-                            @php
-                                $data = [1,2,3,4,5];
-                            @endphp
-                            @foreach ($data as $row)
+                            @foreach ($this->examSummary as $key => $row)
                                 <tr class="border-b border-gray-400">
                                     <td class="px-6 py-3">{{ $loop->index + 1 }}</td>
-                                    <td class="px-6 py-3">Finished <br> Sumitted {{ Date::now() }}</td>
-                                    <td scope="col" class="px-6 py-3">Ture or False {{ $loop->index + 1 }}</td>
-                                    <td>5 / 10</td>
-                                    <td>5 / 10</td>
-                                    <td><a href="#">Review</a></td>
+                                    {{-- <td class="px-6 py-3">Finished <br> Sumitted {{ $row[0]->created_at }}</td> --}}
+                                    <td class="px-6 py-3">Finished <br> Sumitted {{ $this->examSubmittedDate }}</td>
+                                    <td scope="col" class="px-6 py-3">{{ $key }}</td>
+                                    <td>{{ $row['correct'] }} / {{ $row['origin'] }}</td>
+                                    <td>{{ $row['grade'] }} / {{ $row['total'] }}</td>
+                                    <td><a href="#" class="text-blue-500">Review</a></td>
                                 </tr>
                             @endforeach
                         </tbody>
                    </table>
-                   <div class="m-2">
-                        <h2 class="font-bold">Highest grade: 60.00 / 100.00.</h2>
+                   <div class="m-2 mt-2">
+                        <h2 class="font-bold">Highest grade: {{ $this->gradeMark }} / {{ $this->baseTotalMark }}</h2>
                    </div>
                 </div>
             </div>
