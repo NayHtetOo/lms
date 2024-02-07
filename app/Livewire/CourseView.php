@@ -85,7 +85,7 @@ class CourseView extends Component
         $exams = CourseSection::with("exams")->where('id', $id)->get()->toArray();
         $assignments = CourseSection::with("assignments")->where('id', $id)->get()->toArray();
 
-        if ($lessons[0]["lessons"] == [] || $exams[0]["exams"] == [] || $assignments[0]["assignments"] == []) {
+        if ($lessons[0]["lessons"] == [] && $exams[0]["exams"] == [] && $assignments[0]["assignments"] == []) {
             $this->alertStatus = true;
             $this->alertMessage = "This sections isn't added.";
         }

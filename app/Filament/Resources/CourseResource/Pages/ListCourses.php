@@ -4,6 +4,7 @@ namespace App\Filament\Resources\CourseResource\Pages;
 
 use App\Filament\Resources\CourseResource;
 use App\Filament\Resources\CourseResource\Widgets\CourseOverview;
+use App\Models\Course;
 use Filament\Actions;
 use Filament\Resources\Components\Tab;
 use Filament\Resources\Pages\ListRecords;
@@ -21,12 +22,13 @@ class ListCourses extends ListRecords
             Actions\CreateAction::make(),
         ];
     }
-    protected function getHeaderWidgets(): array
-    {
-        return [
-            CourseOverview::class,
-        ];
-    }
+
+    // protected function getHeaderWidgets(): array
+    // {
+    //     return [
+    //         CourseOverview::class,
+    //     ];
+    // }
 
     public function getTabs():array{
         return [

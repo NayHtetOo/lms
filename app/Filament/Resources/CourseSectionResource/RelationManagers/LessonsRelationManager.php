@@ -33,7 +33,7 @@ class LessonsRelationManager extends RelationManager
             ->recordTitleAttribute('lesson_name')
             ->columns([
                 TextColumn::make('lesson_name')->searchable(),
-                TextColumn::make('content'),
+                TextColumn::make('content')->formatStateUsing(fn (string $state) => strip_tags($state)),
             ])
             ->filters([
                 //

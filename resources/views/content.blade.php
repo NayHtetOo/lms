@@ -16,25 +16,28 @@
     <div class="grid grid-cols-4 gap-4 mt-5">
         <!-- card -->
         @foreach ($courses as $key => $row)
-            <div class="p-3 bg-white shadow-lg hover:-translate-y-2 duration-300 transition-all rounded-lg">
-                @if ($row->course_photo_path)
-                    <img class="rounded-2xl w-full h-[200px]" src="{{ asset('/storage/' . $row->course_photo_path) }}" alt="{{ $row->course_name }}">
-                @else
-                    <img class="rounded-2xl w-full h-[200px] " src="{{ asset('/images/default_course_photo.jpg') }}" alt="no course photo">
-                @endif
-                <p class="text-blue-500 my-3 text-lg font-bold">{{ $row->course_name }}</p>
-                <p class="text-slate-800 overflow-hidden"
-                   style="overflow: hidden; text-overflow: ellipsis; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical;">
-                    {{ $row->description }}
-                </p>
-                <div class="w-full flex justify-end">
-                    <a class="bg-blue-500 py-2 px-3 rounded-md text-white my-3" href="/course_view/{{ $row->id }}"
-                       role="button">Learn More</a>
+            @if ($row->visible == '1')
+                <div class="p-3 bg-white shadow-lg hover:-translate-y-2 duration-300 transition-all rounded-lg">
+                    @if ($row->course_photo_path)
+                        <img class="rounded-2xl w-full h-[200px]"
+                             src="{{ asset('/storage/' . $row->course_photo_path) }}" alt="{{ $row->course_name }}">
+                    @else
+                        <img class="rounded-2xl w-full h-[200px] " src="{{ asset('/images/default_course_photo.jpg') }}"
+                             alt="no course photo">
+                    @endif
+                    <p class="text-blue-500 my-3 text-lg font-bold">{{ $row->course_name }}</p>
+                    <p class="text-slate-800 overflow-hidden h-[4.5rem]"
+                       style="overflow: hidden; text-overflow: ellipsis; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; ">
+                        {{ $row->description }}
+                    </p>
+                    <div class="w-full flex justify-end">
+                        <a class="bg-blue-500 py-2 px-3 rounded-md text-white my-3"
+                           href="/course_view/{{ $row->id }}" role="button">Learn More</a>
+                    </div>
                 </div>
-            </div>
+            @endif
         @endforeach
     </div>
         <div class="my-5">
             {{ $courses->links() }}
         </div>
-</div>

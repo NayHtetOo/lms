@@ -2,9 +2,11 @@
 
 namespace App\Filament\Resources\CourseCategoryResource\Pages;
 
-use App\Filament\Resources\CourseCategoryResource;
 use Filament\Actions;
+use App\Models\Course;
 use Filament\Resources\Pages\ListRecords;
+use App\Filament\Resources\CourseCategoryResource;
+use App\Models\CourseCategory;
 
 class ListCourseCategories extends ListRecords
 {

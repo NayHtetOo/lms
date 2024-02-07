@@ -36,7 +36,7 @@ class AssignmentsRelationManager extends RelationManager
             ->recordTitleAttribute('assignment_name')
             ->columns([
                 TextColumn::make('assignment_name'),
-                TextColumn::make('description'),
+                TextColumn::make('description')->formatStateUsing(fn (string $state) => strip_tags($state)),
             ])
             ->filters([
                 //

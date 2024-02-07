@@ -23,6 +23,7 @@ use Illuminate\Support\Facades\Route;
 */
 
 Route::get('/', [userController::class, 'index'])->name('welcome');
+Route::post('/submit', [userController::class, 'submit']);
 
 Route::get('/counter', Counter::class)->name('counter');
 

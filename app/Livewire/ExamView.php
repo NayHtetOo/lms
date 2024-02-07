@@ -46,6 +46,8 @@ class ExamView extends Component
     public $summaryView = false;
     public $reviewQuestion = false;
 
+    public $showExamDuration = [];
+
     public function mount($id)
     {
         $this->id = $id;
@@ -69,11 +71,16 @@ class ExamView extends Component
             $this->trueorfalseAnswer[$tof->id] = 'false';
         }
         // dd($this->courseID);
+
+        for ($i=1; $i <= 100; $i++) {
+            $this->showExamDuration[] = $i;
+        }
+
     }
 
     public function render()
     {
-        return view('livewire.exam-view',['questions' => $this->questions]);
+        return view('livewire.exam-view',['questions' => $this->questions])->layout('layouts.app');
     }
 
     public function examSubmit(){
