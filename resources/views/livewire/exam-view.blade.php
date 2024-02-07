@@ -395,6 +395,43 @@
         </div>
     @endif
 
+    @if ($this->isTeacher && $this->isExamSubmittedStudent)
+        <div class="mx-auto max-w-7xl py-1 sm:px-6 lg:px-8 mb-10">
+            <div class="p-4 rounded-xl shadow-2xl bg-slate-300">
+                <h2 class="font-bold text-xl mb-4">Submitted Students</h2>
+                <table class="w-full border border-black text-sm text-left text-gray-500">
+                    <thead class="text-xs text-gray-700 uppercase">
+                        <tr class="border-b-2 border-black">
+                            <th class="px-3">No.</th>
+                            <th scope="" class="py-3">Status</th>
+                            <th scope="" class="py-3">Name</th>
+                            <th scope="" class="py-3">Email</th>
+                            <th scope="" class="">View</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach ($this->exam_answered_users as $key => $row)
+                            {{-- <div>{{ $row }}</div> --}}
+                            <tr class="border-b border-gray-400">
+                                <td class="px-3">{{ $loop->index + 1 }}</td>
+                                <td class="py-3">Finished <br> Sumitted {{ $row->created_at }}</td>
+                                <td scope="" class="py-3">{{ $row->user->name }}</td>
+                                <td scope="" class="py-3">{{ $row->user->email }}</td>
+                                <td>
+                                    <button wire:click="checkAnsewer({{ $row->user_id }},{{ $row->exam_id }})" class="py-2 px-3 bg-indigo-400 text-white rounded">Check</button>
+                                </td>
+                            </tr>
+                        @endforeach
+                    </tbody>
+            </table>
+            </div>
+        </div>
+    @endif
+    @if ($this->checkAnsweredPaper)
+        {{-- <h1>Hello</h1> --}}
+        @include('exam_view.exam-answered-paper')
+    @endif
+
     @if ($this->reviewQuestion)
         <div class="mx-auto max-w-7xl py-1 sm:px-6 lg:px-8">
             <div class="p-4 rounded-xl shadow-2xl bg-slate-300">
@@ -468,7 +505,7 @@
         console.log("exam is started");
         const intervalExam = setInterval(() => {
             seconds--;
-            
+
             if (seconds == 0) {
                 examDuration--;
                 seconds = 59;

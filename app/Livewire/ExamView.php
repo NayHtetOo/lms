@@ -3,6 +3,7 @@
 namespace App\Livewire;
 
 use App\Models\Course;
+use App\Models\Enrollment;
 use App\Models\Essay;
 use App\Models\EssayAnswer;
 use App\Models\Exam;
@@ -21,44 +22,35 @@ use Livewire\Attributes\Computed;
 use Livewire\Component;
 use Livewire\WithoutUrlPagination;
 use Livewire\WithPagination;
-use PDO;
-
 class ExamView extends Component
 {
     use WithPagination,WithoutUrlPagination;
 
-    public $id;
-    public $courseID;
-    public $trueorfalseAnswer = [];
-    public $multipleChoiceAnswer = [];
-    public $matchingAnswer = [];
-    public $shortQuestionAnswer = [];
-    public $essayAnswer = [];
-    public $examSubmitted = false;
-    public $user_id;
-    public $gradeMark;
-    public $baseTotalMark;
-    public $examSubmittedDate;
-    public $numberOfQuestion;
-    public $matching_corrected;
-    public $received_mark_per_question;
-    public $matching_mark;
-    public $summaryView = false;
-    public $reviewQuestion = false;
+    public $id,$courseID;
+    public $trueorfalseAnswer, $multipleChoiceAnswer, $matchingAnswer, $shortQuestionAnswer, $essayAnswer = [];
 
-    public $showExamDuration = [];
+    public $user_id,$gradeMark,$baseTotalMark,$examSubmittedDate,$numberOfQuestion,$matching_corrected;
+    public $received_mark_per_question, $matching_mark, $roleName;
+
+    public $isAdmin,$isTeacher,$isStudent,$isGuest = false;
+    public $summaryView,$reviewQuestion,$checkAnsweredPaper,$isExamSubmittedStudent,$examSubmitted = false;
+    public $trueOrfalse,$multipleChoice,$matching,$shortQuestion,$essay,$exam_answered_users,$checkedCurrentUser;
 
     public function mount($id)
     {
         $this->id = $id;
         $this->user_id = auth()->user()->id;
+        // dd($this->user_id);
         $this->courseID = Course::findOrFail($this->exams->course_id)->course_ID;
+        $enrollment = Enrollment::where('user_id',$this->user_id)->where('course_id',$this->exams->course_id)->first();
 
-        $exam_answered_users = ExamAnswer::where('exam_id',$this->id)->pluck('user_id');
-        $this->examSubmitted = $exam_answered_users->contains(auth()->user()->id);
+        $this->role($enrollment->role->name); // defined role [ admin , teacher ,student ]
+
+        $this->exam_answered_users = ExamAnswer::where('exam_id',$this->id)->pluck('user_id');
+        $this->examSubmitted = $this->exam_answered_users->contains(auth()->user()->id);
 
         // dd($this->examSubmitted);
-        if($this->examSubmitted){
+        if($this->examSubmitted && $this->isStudent){
             if($this->reviewQuestion){
 
             }else{
@@ -66,21 +58,121 @@ class ExamView extends Component
                 $this->examSummary;
             }
         }
-        // true or false input to default value false
-        foreach ($this->trueOrfalse as $tof) {
-            $this->trueorfalseAnswer[$tof->id] = 'false';
+        if($this->isTeacher){
+            // dd('I am teacher');
+            // $this->checkAnsweredPaper = true;  // test
+
+            $this->isExamSubmittedStudent = true;
+            $this->submittedStudents;
         }
+
+
+        $this->allQuestion;
+
         // dd($this->courseID);
+    }
+    #[Computed]
+    public function allQuestion(){
 
-        for ($i=1; $i <= 100; $i++) {
-            $this->showExamDuration[] = $i;
+        $this->trueOrfalse = TrueOrFalse::where('exam_id',$this->exams->id)->get();
+        $this->multipleChoice = MultipleChoice::where('exam_id',$this->exams->id)->get();
+        $this->matching = Matching::where('exam_id',$this->exams->id)->get();
+        $this->shortQuestion = ShortQuestion::where('exam_id',$this->exams->id)->get();
+        $this->essay = Essay::where('exam_id',$this->exams->id)->get();
+
+        // true or false input to default value false
+        // foreach ($this->trueOrfalse as $tof) {
+        //     // dump($tof->answer);
+        //     $this->trueorfalseAnswer[$tof->id] = false;
+        // }
+    }
+    #[Computed]
+    public function submittedStudents(){
+        $exam_answered_users = ExamAnswer::where('exam_id',$this->id)->get();
+        $this->exam_answered_users = $exam_answered_users;
+        //    dd($this->trueOrfalse);
+    }
+
+    public function checkAnsewer($userID,$examID){
+        // dd($userID,$examID);
+        $this->isExamSubmittedStudent = false;
+        $this->checkAnsweredPaper = true;
+        $this->checkedCurrentUser = User::find($userID);
+
+        // true or false black check
+        $true_false = TrueOrFalse::where('exam_id',$examID)->get();
+        $this->trueOrfalse = $true_false;
+
+        $true_false_answer = TrueOrFalseAnswer::where('exam_id',$examID)->where('user_id',$userID)->get();
+        $true_false_answer->filter(function($default){
+            // dump($default->toArray());
+            return $this->trueorfalseAnswer[$default->true_or_false_id] = $default->student_answer;
+        });
+
+        // multipel choice block check
+        $multiple_choice = MultipleChoice::where('exam_id',$examID)->get();
+        $this->multipleChoice = $multiple_choice;
+        // dd($this->multipleChoice->toArray());
+        $multiple_choice_answer = MultipleChoiceAnswer::where('exam_id',$examID)->where('user_id',$userID)->get();
+        $multiple_choice_answer->filter(function($default){
+            // dump($default->student_answer);
+            return $this->multipleChoiceAnswer[$default->multiple_choice_id] = $default->student_answer;
+        });
+
+        // multipel choice block check
+        $matching = Matching::where('exam_id',$examID)->get();
+        $this->matching = $matching;
+        // dd($this->multipleChoice->toArray());
+        $matching_answer = MatchingAnswer::where('exam_id',$examID)->where('user_id',$userID)->get();
+        $matching_answer->filter(function($default){
+            // dump($default->student_answer);
+            $inputArray = unserialize($default->student_answer);
+            // dump($inputArray);
+            return $this->matchingAnswer[$default->matching_id] = $inputArray;
+        });
+
+        // dump($this->matchingAnswer);
+        // foreach ($this->matchingAnswer as $key => $ma) {
+        //     foreach ($ma as $m) {
+        //         dump($m);
+        //     }
+        // }
+
+
+
+        // $this->matching->filter(function($row){
+        //     dump($row->toArray());
+        //     dump($row->answer);
+        //     dump($this->matchingAnswer);
+        //     $student_answer = $this->matchingAnswer[$row->id];
+        //     if($row->answer == $student_answer){
+        //         dump('True');
+        //     }else{
+        //         dump('False');
+        //     }
+
+        // });
+
+    }
+    #[Computed]
+    public function role($role){
+        if($role == 'admin'){
+            $this->isAdmin = true;
+        }elseif($role == 'teacher'){
+            // dd('hello');
+            $this->isTeacher = true;
+            $this->summaryView = false;
+
+        }elseif($role == 'student'){
+            $this->isStudent = true;
+        }else{
+            $this->isGuest = true;
         }
-
     }
 
     public function render()
     {
-        return view('livewire.exam-view',['questions' => $this->questions])->layout('layouts.app');
+        return view('livewire.exam-view');
     }
 
     public function examSubmit(){
@@ -229,56 +321,22 @@ class ExamView extends Component
 
     #[Computed]
     public function exams(){
-    //    $exam = Exam::findOrFail($this->id);
-    //    dd($exam->toArray());
+        //    $exam = Exam::findOrFail($this->id);
+        //    dd($exam->toArray());
        return Exam::findOrFail($this->id);
     }
 
-    #[Computed]
-    public function trueOrfalse(){
-        return  TrueOrFalse::where('exam_id',$this->exams->id)->get();
-        // return  TrueOrFalse::paginate(5);
-    }
+    // #[Computed]
+    // public function trueOrfalse(){
+    //     return  TrueOrFalse::where('exam_id',$this->exams->id)->get();
+    // }
 
-    #[Computed]
-    public function multipleChoice(){
-        // dd('hello');
-        return MultipleChoice::where('exam_id',$this->exams->id)->get();
-    }
+    // #[Computed]
+    // public function multipleChoice(){
+    //     // dd('hello');
+    //     return MultipleChoice::where('exam_id',$this->exams->id)->get();
+    // }
 
-    #[Computed]
-    public function matching(){
-       return Matching::where('exam_id',$this->exams->id)->get();
-    }
-
-    #[Computed]
-    public function shortQuestion(){
-       return ShortQuestion::where('exam_id',$this->exams->id)->get();
-    }
-
-    #[Computed]
-    public function essay(){
-       return Essay::where('exam_id',$this->exams->id)->get();
-    }
-
-    #[Computed]
-    public function questions(){
-       $trueorfalse = $this->trueOrfalse;
-       $multipleChoice = $this->multipleChoice;
-       $matching = $this->matching;
-       $shortQuestion = $this->shortQuestion;
-       $essay = $this->essay;
-
-       $data = collect([
-            'true_false' => $trueorfalse,
-            'multiple_choice'=> $multipleChoice,
-            'matching'=> $matching,
-            'short_question'=> $shortQuestion,
-            'essay'=> $essay,
-        ])->all();
-
-       return $data;
-    }
     public function review(){
         // dump($this->id,$this->user_id);
         $this->reviewQuestion = true;
@@ -287,6 +345,9 @@ class ExamView extends Component
     public function backToSummary(){
         $this->summaryView = true;
         $this->reviewQuestion = false;
-
+    }
+    public function backToSumittedStudent(){
+        $this->isExamSubmittedStudent = true;
+        $this->checkAnsweredPaper = false;
     }
 }
