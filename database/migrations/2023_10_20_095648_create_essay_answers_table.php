@@ -17,6 +17,7 @@ return new class extends Migration
             $table->foreignId('user_id')->constrained()->onDelete('cascade');
             $table->foreignId('essay_id')->constrained()->onDelete('cascade');
             $table->longText('student_answer')->nullable();
+            $table->integer('received_mark')->nullable();
             $table->timestamps();
         });
     }

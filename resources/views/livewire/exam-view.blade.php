@@ -73,8 +73,8 @@
                 </div>
             </div>
         </div>
-
-        @if (!$this->examSubmitted)
+        {{-- show questions before exam submit for student --}}        {{-- show questions before exam submit for student --}}
+        @if (!$this->examSubmitted && $this->isStudent)
             @if (
                 $this->trueOrfalse->isNotEmpty() ||
                     $this->multipleChoice->isNotEmpty() ||
@@ -98,10 +98,55 @@
 
                         <div id="question-tab-content">
 
-                            {{-- --}}
-                            {{-- @include('exam_view.true-or-false', [
-                                'data' => $this->trueOrfalse,
-                            ]) --}}
+                            {{-- {{ True or False Block }} --}}
+                            <div class="p-4 rounded-lg" id="question1" role="tabpanel" aria-labelledby="question1-tab">
+                                {{-- <div>{{ $data }}</div> --}}
+                                @if ($trueOrfalse->isNotEmpty())
+                                    <div class="m-3">
+                                        <p class="font-bold">I.True or False Questions.</p>
+
+                                        <div class="m-2">
+                                            @foreach ($trueOrfalse as $tof)
+                                                <div class="flex justify-between">
+                                                    {{-- <div>{{ $tof }}</div> --}}
+                                                    <div>
+                                                        {{ $tof->question_no }}. {{ strip_tags($tof->question) }}
+                                                    </div>
+                                                    <div> 1 Mark</div>
+                                                </div>
+                                                <label class="m-6 mt-4" for="">Select One : </label>
+                                                {{-- <p class="p-1"> {{ $this->exams->question }}</p> --}}
+
+                                                <div class="mb-[0.125rem] block min-h-[1.5rem] pl-[1.5rem] ml-6">
+                                                    <label class="flex items-center">
+                                                        <input type="radio" wire:model="trueorfalseAnswer.{{ $tof->id }}" value="1" name="trueOrfalse{{ $tof->id }}" class="relative float-left mr-1 mt-0.5 h-5 w-5" />
+                                                        <span class="mt-px inline-block pl-[0.15rem] hover:cursor-pointer mr-2">
+                                                            True
+                                                        </span>
+                                                    </label>
+                                                </div>
+                                                <div class="mb-[0.125rem] block min-h-[1.5rem] pl-[1.5rem] ml-6">
+                                                    <label class="flex items-center">
+                                                        <input type="radio" wire:model="trueorfalseAnswer.{{ $tof->id }}" value="0" name="trueOrfalse{{ $tof->id }}" class="relative float-left mr-1 mt-0.5 h-5 w-5" />
+                                                        <span class="mt-px inline-block pl-[0.15rem] hover:cursor-pointer mr-2">
+                                                            False
+                                                        </span>
+                                                    </label>
+                                                </div>
+
+                                            @endforeach
+                                        </div>
+                                    </div>
+
+                                    @include('exam_view.prev-next-button',[
+                                        'prev_id' => '',
+                                        'prev_target' => '',
+                                        'next_id' => 'question2-tab',
+                                        'next_target' => 'question2'
+                                    ])
+
+                                @endif
+                            </div>
 
                             {{-- Multiple Choice Block --}}
                             <div class="hidden p-4 rounded-lg" id="question2" role="tabpanel"
@@ -364,9 +409,9 @@
             @endif
         @endif
     </form>
-
+    {{-- show report for students after sumbmit --}}
     @if ($this->summaryView)
-        <div class="mx-auto max-w-7xl py-1 sm:px-6 lg:px-8">
+        <div class="mx-auto max-w-7xl py-1 sm:px-6 lg:px-8" wire:ignore>
             <div class="p-4 rounded-xl shadow-2xl bg-slate-300">
                 <h2 class="font-bold text-xl mb-4">Summary</h2>
                 <table class="w-full border border-black text-sm text-left text-gray-500">
@@ -377,7 +422,7 @@
                             <th class="px-6 py-3" scope="col">Question</th>
                             <th class="" scope="col">Marks / {{ $this->numberOfQuestion }}</th>
                             <th class="" scope="col">Grade / {{ $this->baseTotalMark }}</th>
-                            <th class="" scope="col">Review</th>
+                            {{-- <th class="" scope="col">Review</th> --}}
                         </tr>
                     </thead>
                     <tbody>
@@ -389,11 +434,7 @@
                                 <td class="px-6 py-3" scope="col">{{ $key }}</td>
                                 <td>{{ $row['correct'] }} / {{ $row['origin'] }}</td>
                                 <td>{{ $row['grade'] }} / {{ $row['total'] }}</td>
-                                <td>
-                                    {{-- <a href="#" class="text-blue-500">Review</a> --}}
-                                    <button class="py-2 px-3 bg-indigo-400 text-white rounded"
-                                            wire:click="review">Review</button>
-                                </td>
+                                {{-- <td> <button class="py-2 px-3 bg-indigo-400 text-white rounded">Review</button> </td> --}}
                             </tr>
                         @endforeach
                     </tbody>
@@ -404,7 +445,7 @@
             </div>
         </div>
     @endif
-
+    {{-- Teacher view for submitted students report --}}
     @if ($this->isTeacher && $this->isExamSubmittedStudent)
         <div class="mx-auto max-w-7xl py-1 sm:px-6 lg:px-8 mb-10">
             <div class="p-4 rounded-xl shadow-2xl bg-slate-300">
@@ -428,8 +469,7 @@
                                 <td class="py-3" scope="">{{ $row->user->name }}</td>
                                 <td class="py-3" scope="">{{ $row->user->email }}</td>
                                 <td>
-                                    <button class="py-2 px-3 bg-indigo-400 text-white rounded"
-                                            wire:click="checkAnsewer({{ $row->user_id }},{{ $row->exam_id }})">Check</button>
+                                    <button wire:click="checkAnswer({{ $row->user_id }},{{ $row->exam_id }})" class="py-2 px-3 bg-indigo-400 text-white rounded">Check</button>
                                 </td>
                             </tr>
                         @endforeach
@@ -438,24 +478,12 @@
             </div>
         </div>
     @endif
-    @if ($this->checkAnsweredPaper)
+
+    @if ($checkAnsweredPaper)
         {{-- <h1>Hello</h1> --}}
         @include('exam_view.exam-answered-paper')
     @endif
 
-    @if ($this->reviewQuestion)
-        <div class="mx-auto max-w-7xl py-1 sm:px-6 lg:px-8">
-            <div class="p-4 rounded-xl shadow-2xl bg-slate-300">
-                <div>
-                    <a class="text-blue-700 underline" wire:click="backToSummary">Summary</a> / Review
-                </div><br>
-                <h2 class="font-bold text-xl mb-4">Review</h2>
-                @include('exam_view.true-or-false', [
-                    'data' => $this->trueOrfalse,
-                ])
-            </div>
-        </div>
-    @endif
 </div>
 
 <script>
