@@ -2,34 +2,36 @@
 
 namespace App\Filament\Resources;
 
-use App\Filament\Resources\CourseResource\Pages;
-use App\Filament\Resources\CourseResource\RelationManagers\CourseSectionsRelationManager;
-use App\Filament\Resources\CourseResource\RelationManagers\EnrollmentsRelationManager;
-use App\Filament\Resources\CourseResource\Widgets\CourseOverview;
-use App\Filament\Resources\ExamResource\RelationManagers\ForumsRelationManager;
-use App\Models\Course;
-use App\Models\CourseCategory;
-use App\Models\CourseSection;
+use Closure;
 use App\Models\Exam;
+use App\Models\Course;
 use App\Models\Lesson;
-use Filament\Facades\Filament;
+use Filament\Forms\Get;
 use Filament\Forms\Form;
-use Filament\Resources\Resource;
 use Filament\Tables\Table;
+use Filament\Tables\Actions;
+use App\Models\CourseSection;
+use App\Models\CourseCategory;
+use Filament\Facades\Filament;
+use Filament\Infolists\Infolist;
+use Filament\Resources\Resource;
+use Filament\Forms\Components\Select;
+use Filament\Forms\Components\Toggle;
+use Filament\Forms\Components\Textarea;
+use Filament\Tables\Columns\IconColumn;
+use Filament\Tables\Columns\TextColumn;
 use Filament\Forms\Components\TextInput;
+use Filament\Tables\Columns\ImageColumn;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\FileUpload;
-use Filament\Forms\Components\Select;
-use Filament\Forms\Components\Textarea;
-use Filament\Forms\Components\Toggle;
 use Filament\Infolists\Components\Fieldset;
-use Filament\Infolists\Components\RepeatableEntry;
 use Filament\Infolists\Components\TextEntry;
-use Filament\Infolists\Infolist;
-use Filament\Tables\Columns\TextColumn;
-use Filament\Tables\Columns\IconColumn;
-use Filament\Tables\Actions;
-use Filament\Tables\Columns\ImageColumn;
+use App\Filament\Resources\CourseResource\Pages;
+use Filament\Infolists\Components\RepeatableEntry;
+use App\Filament\Resources\CourseResource\Widgets\CourseOverview;
+use App\Filament\Resources\ExamResource\RelationManagers\ForumsRelationManager;
+use App\Filament\Resources\CourseResource\RelationManagers\EnrollmentsRelationManager;
+use App\Filament\Resources\CourseResource\RelationManagers\CourseSectionsRelationManager;
 
 class CourseResource extends Resource
 {
@@ -63,7 +65,12 @@ class CourseResource extends Resource
                 DatePicker::make('from_date')
                     ->required(),
                 DatePicker::make('to_date')
-                    ->required(),
+                    ->required()
+                    ->rules([
+                        fn (Get $get): Closure => function (string $attribute, $value, Closure $fail) use ($get) {
+                           dd($get('other_field'), $value);
+                        },
+                    ]),
                 Textarea::make('description')
                     ->required()
                     ->maxLength(65535)
@@ -86,7 +93,7 @@ class CourseResource extends Resource
         return $table
             ->columns([
                 TextColumn::make('index')->label('No.')
-                        ->rowIndex(),
+                    ->rowIndex(),
                 TextColumn::make('course_category_id')->label('Class')
                     ->getStateUsing(
                         function ($record) {

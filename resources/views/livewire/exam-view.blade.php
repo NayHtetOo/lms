@@ -15,62 +15,57 @@
         @csrf
         <div class="mx-auto max-w-7xl py-6 sm:px-6 lg:px-8">
             <div class="p-4 bg-slate-300 rounded-xl transform transition-all duration-300 shadow-4xl shadow-lg">
-                <div>
-                    <a class="text-blue-700 underline"
-                       href="/course_view/{{ $this->exams->course_id }}">{{ $courseID }}</a> /
-                    {{ $this->exams->exam_name }}
-                </div> <br>
+                <div class="flex justify-between items-center w-full">
+                    <a class="bg-green-500 inline-block py-2 px-3 rounded-md text-white"
+                       href="/course_view/{{ $this->exams->course_id }}">{{ $courseID }} /
+                        {{ $this->exams->exam_name }}</a>
+
+                </div>
+
                 {{-- exam info --}}
-                <h2 class="text-2xl mb-1 font-bold">{{ $this->exams->exam_name }}</h2>
+                <h2 class="text-2xl font-bold text-slate-900 my-5 text-center">{{ $this->exams->exam_name }}</h2>
                 <div class="relative overflow-x-auto sm:rounded-lg">
-                    <table class="w-full text-sm text-left rtl:text-right text-gray-500">
-                        <thead class="text-xs text-gray-700 uppercase">
-                            <tr class="border-b-2 border-black">
-                                <th class="px-6 py-3" scope="col">Description</th>
-                                <th class="" scope="col">Start Date</th>
-                                <th class="" scope="col">End Date</th>
-                                <th class="" scope="col">Duration (minutes)</th>
+                    <table class="w-full text-sm text-left rtl:text-right mt-3">
+                        <thead class="text-md uppercase bg-blue-500 text-white">
+                            <tr class="rounded-md">
+                                <th class="w-[30rem] p-3" scope="col">Description</th>
+                                <th class="p-3 text-center" scope="col">Start Date</th>
+                                <th class="p-3 text-center" scope="col">End Date</th>
+                                <th class="p-3 text-center" scope="col">Duration (minutes)</th>
                             </tr>
                         </thead>
                         <tbody>
-                            <td class="px-6 py-3" scope="col"> {{ $this->exams->description }}
+                            <td class="text-justify px-5 py-3 mt-5" scope="col"> {{ $this->exams->description }}
                                 This is exam description This is exam description This is exam description This is exam
                                 description
                                 This is exam description This is exam description This is exam description This is exam
                                 description
                             </td>
 
-                            <td> {{ $this->exams->start_date_time }} </td>
-                            <td> {{ $this->exams->end_date_time }} </td>
-                            <td> {{ $this->exams->duration }} minutes</td>
+                            <td class="mt-3 text-slate-800 text-center" scope="col">
+                                {{ $this->exams->start_date_time }} </td>
+                            <td class="mt-3 text-slate-800 text-center" scope="col">
+                                {{ $this->exams->end_date_time }} </td>
+                            <td class="mt-3 text-slate-800 text-center" scope="col"> {{ $this->exams->duration }}
+                                minutes</td>
                         </tbody>
                     </table>
-                </div>
-
-                hello
-                <div wire:poll.1s>
-                    <span id="examMinutes">
-
-                    </span>
                 </div>
 
                 @php
                     $startDate = \Carbon\Carbon::parse($this->exams->start_date_time);
                     $endDate = \Carbon\Carbon::parse($this->exams->end_date_time);
-                    $date = \Carbon\Carbon::now('Asia/Yangon')->format('y-m-d h:i:s');
+                    $date = \Carbon\Carbon::now('Asia/Yangon')->format('y-m-d H:i:s');
                     $currentDate = \Carbon\Carbon::parse($date);
 
                     $examDuration = $this->exams->duration;
                 @endphp
 
-                <div wire:poll.1s>
-                    {{ $currentDate }}
-                </div>
-
                 <div class="relative overflow-x-auto sm:rounded text-end">
                     @if (!$this->examSubmitted)
                         @if ($currentDate->between($startDate, $endDate))
-                            <button class="border bg-green-500 py-2 px-3">Answer</button>
+                            <button class="border bg-green-500 py-2 px-3 rounded-md text-white"
+                                    wire:click='examSubmit'>Answer</button>
                         @endif
                     @else
                         <button class="border bg-indigo-400 py-2 px-3 rounded text-white">View</button>
@@ -86,15 +81,27 @@
                     $this->matching->isNotEmpty() ||
                     $this->shortQuestion->isNotEmpty() ||
                     $this->essay->isNotEmpty())
+
                 <div class="mx-auto max-w-7xl py-1 sm:px-6 lg:px-8">
                     <div class="p-2 rounded-xl shadow-2xl bg-slate-300">
 
+                        <div class="w-full flex justify-center items-center my-3">
+                            <div class="text-blue-500 font-bold bg-slate-800 px-4 py-2 rounded-md w-[10rem] text-center">
+                                <svg class="w-6 h-6 inline" xmlns="http://www.w3.org/2000/svg" fill="none"
+                                     viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round"
+                                          d="M12 6v6h4.5m4.5 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
+                                </svg>
+                                <span id="examMinutes" wire:ignore></span>
+                            </div>
+                        </div>
+
                         <div id="question-tab-content">
 
-                            {{-- {{ True or False Block }} --}}
-                            @include('exam_view.true-or-false', [
+                            {{-- --}}
+                            {{-- @include('exam_view.true-or-false', [
                                 'data' => $this->trueOrfalse,
-                            ])
+                            ]) --}}
 
                             {{-- Multiple Choice Block --}}
                             <div class="hidden p-4 rounded-lg" id="question2" role="tabpanel"
@@ -209,7 +216,8 @@
                                                                 focus:ring-blue-500 disabled:opacity-50 disabled:pointer-events-none
                                                                 "
                                                                     wire:model="matchingAnswer.{{ $match->id }}.1">
-                                                                <option class="px-3 py-3" selected>Select One</option>
+                                                                <option class="px-3 py-3" selected>Select One
+                                                                </option>
                                                                 <option class="h-50" value="1">
                                                                     {{ $match->answer_1 }}</option>
                                                                 <option class="h-50" value="2">
@@ -225,7 +233,8 @@
                                                             <select class="py-3 px-4 pe-9 block w-70 border-gray-200 rounded-lg text-sm focus:border-blue-500
                                                                 focus:ring-blue-500 disabled:opacity-50 disabled:pointer-events-none"
                                                                     wire:model="matchingAnswer.{{ $match->id }}.2">
-                                                                <option class="px-3 py-3" selected>Select One</option>
+                                                                <option class="px-3 py-3" selected>Select One
+                                                                </option>
                                                                 <option class="h-50" value="1">
                                                                     {{ $match->answer_1 }}</option>
                                                                 <option class="h-50" value="2">
@@ -241,7 +250,8 @@
                                                             <select class="py-3 px-4 pe-9 block w-70 border-gray-200 rounded-lg text-sm focus:border-blue-500
                                                                 focus:ring-blue-500 disabled:opacity-50 disabled:pointer-events-none"
                                                                     wire:model="matchingAnswer.{{ $match->id }}.3">
-                                                                <option class="px-3 py-3" selected>Select One</option>
+                                                                <option class="px-3 py-3" selected>Select One
+                                                                </option>
                                                                 <option class="h-50" value="1">
                                                                     {{ $match->answer_1 }}</option>
                                                                 <option class="h-50" value="2">
@@ -348,9 +358,9 @@
                                 Submit
                             </button>
                         </div>
-
                     </div>
                 </div>
+
             @endif
         @endif
     </form>
@@ -403,10 +413,10 @@
                     <thead class="text-xs text-gray-700 uppercase">
                         <tr class="border-b-2 border-black">
                             <th class="px-3">No.</th>
-                            <th scope="" class="py-3">Status</th>
-                            <th scope="" class="py-3">Name</th>
-                            <th scope="" class="py-3">Email</th>
-                            <th scope="" class="">View</th>
+                            <th class="py-3" scope="">Status</th>
+                            <th class="py-3" scope="">Name</th>
+                            <th class="py-3" scope="">Email</th>
+                            <th class="" scope="">View</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -415,15 +425,16 @@
                             <tr class="border-b border-gray-400">
                                 <td class="px-3">{{ $loop->index + 1 }}</td>
                                 <td class="py-3">Finished <br> Sumitted {{ $row->created_at }}</td>
-                                <td scope="" class="py-3">{{ $row->user->name }}</td>
-                                <td scope="" class="py-3">{{ $row->user->email }}</td>
+                                <td class="py-3" scope="">{{ $row->user->name }}</td>
+                                <td class="py-3" scope="">{{ $row->user->email }}</td>
                                 <td>
-                                    <button wire:click="checkAnsewer({{ $row->user_id }},{{ $row->exam_id }})" class="py-2 px-3 bg-indigo-400 text-white rounded">Check</button>
+                                    <button class="py-2 px-3 bg-indigo-400 text-white rounded"
+                                            wire:click="checkAnsewer({{ $row->user_id }},{{ $row->exam_id }})">Check</button>
                                 </td>
                             </tr>
                         @endforeach
                     </tbody>
-            </table>
+                </table>
             </div>
         </div>
     @endif
@@ -482,16 +493,12 @@
     let startDate = new Date(@json($startDate));
     let endDate = new Date(@json($endDate));
     let currentDate = new Date(@json($currentDate))
-    let seconds = 60;
     let examMinutes = document.getElementById("examMinutes");
-    let examSeconds = document.getElementById("examSeconds");
     let postData = {
         'user_id': userId,
         'exam_id': examId,
         'status': 1,
     }
-    let minutes = "";
-
     let options = {
         method: 'POST',
         headers: {
@@ -500,44 +507,65 @@
         },
         body: JSON.stringify(postData)
     }
+    let getLocalStorage = JSON.parse(localStorage.getItem('storeDuration'));
+    if (!getLocalStorage) {
+        localStorage.setItem('storeDuration', JSON.stringify({
+            storeMinutes: examDuration,
+            storeSeconds: 60,
+        }));
+    }
 
-    if (currentDate > startDate && currentDate < endDate) {
-        console.log("exam is started");
-        const intervalExam = setInterval(() => {
-            seconds--;
+    getLocalStorage = JSON.parse(localStorage.getItem('storeDuration'));
 
-            if (seconds == 0) {
-                examDuration--;
-                seconds = 59;
+    examDurationCount();
 
-                if (examDuration == 0) {
-                    const apiUrl = "/submit";
+    function examDurationCount() {
+        if (currentDate > startDate && currentDate < endDate) {
+            const intervalExam = setInterval(() => {
 
-                    fetch(apiUrl, options)
-                        .then((response) => {
-                            if (!response.ok) {
-                                throw new Error(`Error status ${response.status}`);
-                            }
-                            return response.json();
-                        })
-                        .then((data) => {
-                            clearInterval(intervalExam);
-                        })
-                        .catch(error => {
-                            console.error(`Error ${error}`);
-                        });
-
-                    minutes = examDuration;
-                    // console.log(data);
-                    // console.log(examMinutes);
-                    // console.log(examSeconds);
+                if (getLocalStorage.storeMinutes != null || getLocalStorage.storeSeconds != null) {
+                    getLocalStorage.storeSeconds--;
+                } else {
+                    examMinutes.style.display = "none";
                 }
-            }
 
-            console.log(seconds);
-            console.log(examDuration);
-        }, 1000);
-    } else {
-        console.log("exam is not started");
+                localStorage.setItem('storeDuration', JSON.stringify(getLocalStorage));
+
+                if (getLocalStorage.storeSeconds == 0) {
+                    getLocalStorage.storeMinutes--;
+                    getLocalStorage.storeSeconds = 59;
+
+                    console.log(getLocalStorage.storeMinutes);
+
+                    if (getLocalStorage.storeMinutes == 0) {
+                        console.log(true);
+
+                        const apiUrl = "/submit";
+                        fetch(apiUrl, options)
+                            .then((response) => {
+                                if (!response.ok) {
+                                    throw new Error(`Error status ${response.status}`);
+                                }
+                                return response.json();
+                            })
+                            .then((data) => {
+                                clearInterval(intervalExam);
+                                localStorage.setItem('storeDuration', JSON.stringify({
+                                    storeMinutes: null,
+                                    storeSeconds: null,
+                                }));
+                                examMinutes.textContent = "";
+                            })
+                            .catch(error => {
+                                console.error(`Error ${error}`);
+                            });
+                    }
+                }
+
+                examMinutes.textContent = `${getLocalStorage.storeMinutes} : ${getLocalStorage.storeSeconds}`;
+            }, 1000);
+        } else {
+            console.log("exam is not started");
+        }
     }
 </script>

@@ -24,6 +24,10 @@ use Illuminate\Support\Facades\Route;
 
 Route::get('/', [userController::class, 'index'])->name('welcome');
 Route::post('/submit', [userController::class, 'submit']);
+// Route::get('/admin/login', function () {
+//     return view('auth.login'); // Replace with your custom login view
+// })->name('filament.auth.login');
+
 
 Route::get('/counter', Counter::class)->name('counter');
 

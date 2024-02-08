@@ -1,6 +1,7 @@
 <?php
 
 use App\Filament\Resources\CourseResource\Widgets\CourseOverview;
+use App\Models\Admin;
 
 return [
 
@@ -31,6 +32,8 @@ return [
         // ],
 
     ],
+
+
 
     /*
     |--------------------------------------------------------------------------
@@ -72,5 +75,4 @@ return [
     */
 
     'livewire_loading_delay' => 'default',
-
 ];

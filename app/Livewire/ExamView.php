@@ -35,6 +35,7 @@ class ExamView extends Component
     public $isAdmin,$isTeacher,$isStudent,$isGuest = false;
     public $summaryView,$reviewQuestion,$checkAnsweredPaper,$isExamSubmittedStudent,$examSubmitted = false;
     public $trueOrfalse,$multipleChoice,$matching,$shortQuestion,$essay,$exam_answered_users,$checkedCurrentUser;
+    public $questionStatus = false;
 
     public function mount($id)
     {
@@ -66,6 +67,7 @@ class ExamView extends Component
             $this->submittedStudents;
         }
 
+            // dd("student");
 
         $this->allQuestion;
 
@@ -172,14 +174,16 @@ class ExamView extends Component
 
     public function render()
     {
-        return view('livewire.exam-view');
+        return view('livewire.exam-view')->layout("layouts.app");
     }
 
     public function examSubmit(){
+
+
         // dd($this->trueorfalseAnswer);
         // $user_id = auth()->user()->id;
         // dd($this->id);
-
+        $this->questionStatus = true;
         ExamAnswer::create([
             'user_id' => $this->user_id,
             'exam_id' => $this->id,
