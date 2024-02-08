@@ -8,7 +8,6 @@ use App\Models\Essay;
 use App\Models\EssayAnswer;
 use App\Models\Exam;
 use App\Models\ExamAnswer;
-use App\Models\Lesson;
 use App\Models\Matching;
 use App\Models\MatchingAnswer;
 use App\Models\MultipleChoice;
@@ -27,7 +26,7 @@ class ExamView extends Component
     use WithPagination,WithoutUrlPagination;
 
     public $id,$courseID;
-    public $trueorfalseAnswer = [] = [], $multipleChoiceAnswer = [] = [], $matchingAnswer = [] = [], $shortQuestionAnswer = [] = [], $essayAnswer = [];
+    public $trueorfalseAnswer  = [], $multipleChoiceAnswer = [], $matchingAnswer = [], $shortQuestionAnswer = [], $essayAnswer = [];
 
     public $user_id,$gradeMark,$baseTotalMark,$examSubmittedDate,$numberOfQuestion,$matching_corrected;
     public $received_mark_per_question, $matching_mark, $roleName;
