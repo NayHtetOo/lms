@@ -14,4 +14,7 @@ class Essay extends Model
     public function exam(){
         return $this->hasMany(Exam::class);
     }
+    public function essay_answer(){
+        return $this->hasMany(EssayAnswer::class);
+    }
 }

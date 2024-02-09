@@ -8,6 +8,7 @@ use App\Models\Essay;
 use App\Models\EssayAnswer;
 use App\Models\Exam;
 use App\Models\ExamAnswer;
+use App\Models\Grade;
 use App\Models\Matching;
 use App\Models\MatchingAnswer;
 use App\Models\MultipleChoice;
@@ -35,6 +36,7 @@ class ExamView extends Component
     public $summaryView = false,$checkAnsweredPaper = false,$isExamSubmittedStudent = false,$examSubmitted = false;
     public $trueOrfalse,$multipleChoice,$matching,$shortQuestion,$essay,$exam_answered_users,$checkedCurrentUser;
     public $shortQuestionReceiveMark = [],$essayReceiveMark = [];
+    public $examStatus,$gradeName;
 
     public function mount($id)
     {
@@ -95,88 +97,54 @@ class ExamView extends Component
         // dd($userID,$examID);
         $this->shortQuestionReceiveMark = [];
         $this->essayReceiveMark = [];
-
         $this->isExamSubmittedStudent = false;
         $this->checkAnsweredPaper = true;
         $this->checkedCurrentUser = User::find($userID);
 
         // true or false black check
-        $true_false = TrueOrFalse::where('exam_id',$examID)->get();
-        $this->trueOrfalse = $true_false;
-
-        $true_false_answer = TrueOrFalseAnswer::where('exam_id',$examID)->where('user_id',$userID)->get();
-        $true_false_answer->filter(function($default){
-            // dump($default->toArray());
-            return $this->trueorfalseAnswer[$default->true_or_false_id] = $default->student_answer;
-        });
+            $true_false_answer = TrueOrFalseAnswer::where('exam_id',$examID)->where('user_id',$userID)->get();
+            $true_false_answer->filter(function($default){
+                return $this->trueorfalseAnswer[$default->true_or_false_id] = $default->student_answer;
+            });
+            $this->trueOrfalse = $true_false_answer;
 
         // multiple choice block check
-        $multiple_choice = MultipleChoice::where('exam_id',$examID)->get();
-        $this->multipleChoice = $multiple_choice;
-        // dd($this->multipleChoice->toArray());
-        $multiple_choice_answer = MultipleChoiceAnswer::where('exam_id',$examID)->where('user_id',$userID)->get();
-        $multiple_choice_answer->filter(function($default){
-            // dump($default->student_answer);
-            return $this->multipleChoiceAnswer[$default->multiple_choice_id] = $default->student_answer;
-        });
+            $multiple_choice_answer = MultipleChoiceAnswer::where('exam_id',$examID)->where('user_id',$userID)->get();
+            $multiple_choice_answer->filter(function($default){
+                return $this->multipleChoiceAnswer[$default->multiple_choice_id] = $default->student_answer;
+            });
+            $this->multipleChoice = $multiple_choice_answer;
 
-        // multipel choice block check
-        $matching = Matching::where('exam_id',$examID)->get();
-        $this->matching = $matching;
-        // dd($this->multipleChoice->toArray());
-        $matching_answer = MatchingAnswer::where('exam_id',$examID)->where('user_id',$userID)->get();
-        $matching_answer->filter(function($default){
-            // dump($default->student_answer);
-            $inputArray = unserialize($default->student_answer);
-            // dump($inputArray);
-            return $this->matchingAnswer[$default->matching_id] = $inputArray;
-        });
+
+        // matching block check
+            // $matching = Matching::where('exam_id',$examID)->get();
+            // $this->matching = $matching;
+
+            $matching_answer = MatchingAnswer::where('exam_id',$examID)->where('user_id',$userID)->get();
+            $matching_answer->filter(function($default){
+                $inputArray = unserialize($default->student_answer);
+                return $this->matchingAnswer[$default->matching_id] = $inputArray;
+            });
+            $this->matching = $matching_answer;
 
         // short question block check
-        $short_question = ShortQuestion::where('exam_id',$examID)->get();
-        $this->shortQuestion = $short_question;
-        // dd($this->multipleChoice->toArray());
         $short_question_answer = ShortQuestionAnswer::where('exam_id',$examID)->where('user_id',$userID)->get();
-        // dump($short_question_answer->toArray());
+        $this->shortQuestion = $short_question_answer;
 
         $short_question_answer->filter(function($default){
             // dump($default->student_answer);
-            // dump($default->received_mark);
-            // dump($default->short_question_id);
             $this->shortQuestionReceiveMark[$default->id] = $default->received_mark;
             return $this->shortQuestionAnswer[$default->short_question_id] = $default->student_answer;
         });
 
-        // dump($this->shortQuestionReceiveMark);
-        // dump($this->shortQuestionAnswer);
-
-        // short question block check
-        $essay = Essay::where('exam_id',$examID)->get();
-        $this->essay = $essay;
-        // dd($this->multipleChoice->toArray());
+        // essay block check
         $essay_answer = EssayAnswer::where('exam_id',$examID)->where('user_id',$userID)->get();
+        $this->essay = $essay_answer;
         $essay_answer->filter(function($default){
             // dump($default->student_answer);
             $this->essayReceiveMark[$default->id] = $default->received_mark;
             return $this->essayAnswer[$default->essay_id] = $default->student_answer;
         });
-
-        // dump($this->essayReceiveMark);
-        // dump($this->essayAnswer);
-
-
-        // $this->matching->filter(function($row){
-        //     dump($row->toArray());
-        //     dump($row->answer);
-        //     dump($this->matchingAnswer);
-        //     $student_answer = $this->matchingAnswer[$row->id];
-        //     if($row->answer == $student_answer){
-        //         dump('True');
-        //     }else{
-        //         dump('False');
-        //     }
-
-        // });
 
     }
     #[Computed]
@@ -219,7 +187,6 @@ class ExamView extends Component
         // dd(unserialize($answer));
 
         // store data to answer table(trueOrfalse,multipleChoice,matching,shortQuestion and Essay)
-        // dd($this->trueorfalseAnswer);
         $this->answerQuery($this->trueorfalseAnswer,'App\Models\TrueOrFalseAnswer','true_or_false_id');
         $this->answerQuery($this->multipleChoiceAnswer,'App\Models\MultipleChoiceAnswer','multiple_choice_id');
         $this->answerQuery($this->matchingAnswer,'App\Models\MatchingAnswer','matching_id');
@@ -233,20 +200,24 @@ class ExamView extends Component
         // return redirect()->route('courses');
 
     }
+
     public function examMarkUpdate($submitted_user_id){
-        // dd('hello update mark for student');
+
         // dump($this->shortQuestionReceiveMark);
         // dump($this->essayReceiveMark);
         // dd($submitted_user_id,$this->shortQuestionReceiveMark);
         foreach($this->shortQuestionReceiveMark as $key => $received_mark){
+            // dump($key,$received_mark);
           $short_question = ShortQuestionAnswer::find($key);
           if($short_question){
             $short_question->received_mark = $received_mark;
             $short_question->save();
           }
+        //   dd($short_question->toArray());
         }
 
         foreach($this->essayReceiveMark as $key => $received_mark){
+            // dump($key);
             $essay = EssayAnswer::find($key);
             if($essay){
               $essay->received_mark = $received_mark;
@@ -269,10 +240,13 @@ class ExamView extends Component
     public function examSummary(){
         // exam submitted
 
-        $exam = ExamAnswer::where('exam_id',$this->id)->first();
-        // dd($this->examSubmittedDate);
+        $exam = ExamAnswer::where('exam_id',$this->id)->where('user_id',$this->user_id)->first();
+        // dd($exam->status);
+        $this->examStatus = $exam->status;
+
         if($exam->status == 2){
             $this->summaryView = true;
+
             $this->examSubmittedDate = $exam->created_at;
 
             $true_false_answer = TrueOrFalseAnswer::where('exam_id',$this->id)->where('user_id',$this->user_id)->get();
@@ -327,11 +301,6 @@ class ExamView extends Component
             $short_quesiton_data = $this->questionsData($short_question_answer,'App\Models\ShortQuestion','short_question_id');
             $essay_data = $this->questionsData($essay_answer,'App\Models\Essay','essay_id');
 
-
-            $this->gradeMark = $true_false_data['grade'] + $multiple_choice_data['grade'] + $matching_data['grade'] + $short_quesiton_data['grade'] + $essay_data['grade'];
-            $this->baseTotalMark = $true_false_data['total'] + $multiple_choice_data['total'] + $matching_data['total'] + $short_quesiton_data['total'] + $essay_data['total'];
-            $this->numberOfQuestion = $true_false_data['origin'] + $multiple_choice_data['origin'] + $matching_data['origin'] + $short_quesiton_data['origin'] + $essay_data['origin'];
-
             $result = collect([
                 'True or False' => $true_false_answer->isNotEmpty() ? collect($true_false_data) : null,
                 'Multiple Choice' => $multiple_choice_answer->isNotEmpty() ? collect($multiple_choice_data) : null,
@@ -340,9 +309,33 @@ class ExamView extends Component
                 'Essay' => $essay_answer->isNotEmpty() ? collect($essay_data) : null,
             ])->filter()->all();
 
-            // dd($result);
+            $this->gradeMark = $true_false_data['grade'] + $multiple_choice_data['grade'] + $matching_data['grade'] + $short_quesiton_data['grade'] + $essay_data['grade'];
+            $this->baseTotalMark = $true_false_data['total'] + $multiple_choice_data['total'] + $matching_data['total'] + $short_quesiton_data['total'] + $essay_data['total'];
+            $this->numberOfQuestion = $true_false_data['origin'] + $multiple_choice_data['origin'] + $matching_data['origin'] + $short_quesiton_data['origin'] + $essay_data['origin'];
+
+            $grade_name = $this->getGrade($this->gradeMark, Grade::all());
+
+            $this->gradeName = $grade_name; // 'D';
+            // dump($grade_name);
             return $result;
         }
+
+    }
+
+    public function getGrade($input,$gradesArray){
+
+        foreach ($gradesArray as $grade) {
+            $markRange = explode(',', $grade['mark']);
+            $lowerBound = intval($markRange[0]);
+            $upperBound = intval($markRange[1]);
+
+            if ($input >= $lowerBound && $input <= $upperBound) {
+                return $grade['name'];
+            }
+        }
+
+        // If the input mark doesn't fall into any range, return 'F' or 'Not graded' or any other appropriate indication.
+        return 'F';
 
     }
 
@@ -395,24 +388,24 @@ class ExamView extends Component
 
     #[Computed]
     public function exams(){
-        //    $exam = Exam::findOrFail($this->id);
-        //    dd($exam->toArray());
        return Exam::findOrFail($this->id);
     }
-
-    // #[Computed]
-    // public function trueOrfalse(){
-    //     return  TrueOrFalse::where('exam_id',$this->exams->id)->get();
-    // }
-
-    // #[Computed]
-    // public function multipleChoice(){
-    //     // dd('hello');
-    //     return MultipleChoice::where('exam_id',$this->exams->id)->get();
-    // }
 
     public function backToSumittedStudent(){
         $this->isExamSubmittedStudent = true;
         $this->checkAnsweredPaper = false;
+    }
+    public function loadQuestion($question){
+        /**
+         * 1 => true or false
+         * 2 => multiple choice
+         * 3 => matching
+         * 4 => short question
+         * 5 => essay
+         */
+        dump($question);
+        // if($question == 1){
+        //     dd('');
+        // }
     }
 }

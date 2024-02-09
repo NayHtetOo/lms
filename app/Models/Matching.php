@@ -13,4 +13,7 @@ class Matching extends Model
     public function exams(){
         return $this->belongsTo(Exam::class);
     }
+    public function matching_answer(){
+        return $this->hasMany(MatchingAnswer::class);
+    }
 }

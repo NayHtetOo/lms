@@ -3,11 +3,42 @@
         <form wire:submit.prevent="examMarkUpdate({{ $checkedCurrentUser?->id }})" method="POST">
             @csrf
 
+            <div class=" rounded-xl shadow-lg">
+                <div class="mb-4 border-b border-gray-200">
+                    <ul class="flex flex-wrap -mb-px text-sm font-medium text-center bg-gray-500 rounded-md px-3">
+                        <li class="me-2 py-2">
+                            <button wire:click="loadQuestion(1)" class="inline-block text-white text-md p-2 hover:bg-blue-600 hover:text-white" type="button">True or False</button>
+                        </li>
+
+                        <li class="me-2 py-2">
+                            <button wire:click="loadQuestion(2)" class="inline-block text-white text-md p-2 hover:bg-blue-600 hover:text-white" type="button">Multiple Choice</button>
+                        </li>
+
+                        <li class="me-2 py-2">
+                            <button wire:click="loadQuestion(3)" class="inline-block text-white text-md p-2 hover:bg-blue-600 hover:text-white" type="button">Matching</button>
+                        </li>
+
+                        <li class="me-2 py-2">
+                            <button wire:click="loadQuestion(4)" class="inline-block text-white text-md p-2 hover:bg-blue-600 hover:text-white" type="button">Short Question</button>
+                        </li>
+
+                        <li class="me-2 py-2">
+                            <button wire:click="loadQuestion(5)" class="inline-block text-white text-md p-2 hover:bg-blue-600 hover:text-white" type="button">Essay</button>
+                        </li>
+
+                    </ul>
+                </div>
+
+                <div id="default-tab-content">
+                    <label for="">hello</label>
+                </div>
+            </div>
+
             <div>
                 <span wire:click="backToSumittedStudent" class="text-blue-700 underline">Submitted Students</span> / {{ $checkedCurrentUser?->name }}'s Answer Paper
             </div> <br>
 
-            <h2 class="text-2xl mb-1 font-bold">Checking {{ $checkedCurrentUser?->name }}'s Answer Paper</h2>
+            {{-- <h2 class="text-2xl mb-1 font-bold">Checking {{ $checkedCurrentUser?->name }}'s Answer Paper</h2> --}}
             <div class="items-center flex">
                 <h2 class="text-center mx-auto font-bold">Student Name : {{ $checkedCurrentUser?->name }}</h2>
             </div>
@@ -15,6 +46,7 @@
             <div id="question-tab-content">
                 <!-- {{-- {{ True or False Block }} --}} -->
                 <div class="p-4 rounded-lg" id="question1" role="tabpanel" aria-labelledby="question1-tab">
+                    {{-- this trueOrfalse is assigned trueOrfalse answer in component or studend answered trueOrfalse--}}
                     @if ($trueOrfalse->isNotEmpty())
                         <div class="m-3">
                             <p class="font-bold">I.True or False Questions.</p>
@@ -22,18 +54,17 @@
                             <div class="m-2">
                                 @foreach ($trueOrfalse as $tof)
                                     <div class="flex justify-between">
-
                                         <div>
-                                            {{ $tof->question_no }}. {{ strip_tags($tof->question) }}
+                                            {{ $tof->true_or_false?->question_no }}. {{ strip_tags($tof->true_or_false?->question) }}
                                         </div>
                                         <div> 1 Mark</div>
                                     </div>
                                     <label class="m-6 mt-4" for="">Select One : </label>
-                                    <p class="p-1">{{ $this->exams->question }}</p>
+                                    {{-- <p class="p-1">{{ $this->exams->question }}</p> --}}
 
                                     <div class="mb-[0.125rem] block min-h-[1.5rem] pl-[1.5rem] ml-6">
                                         <label class="flex items-center">
-                                            <input type="radio" disabled wire:model="trueorfalseAnswer.{{ $tof->id }}" value="1" name="trueOrfalse{{ $tof->id }}" class="relative float-left mr-1 mt-0.5 h-5 w-5" />
+                                            <input type="radio" disabled wire:model="trueorfalseAnswer.{{ $tof->true_or_false_id }}" value="1" name="trueOrfalse{{ $tof->true_or_false_id }}" class="relative float-left mr-1 mt-0.5 h-5 w-5" />
                                             <span class="mt-px inline-block pl-[0.15rem] hover:cursor-pointer mr-2">
                                                 True
                                             </span>
@@ -44,7 +75,7 @@
                                     </div>
                                     <div class="mb-[0.125rem] block min-h-[1.5rem] pl-[1.5rem] ml-6">
                                         <label class="flex items-center">
-                                            <input type="radio" disabled wire:model="trueorfalseAnswer.{{ $tof->id }}" value="0" name="trueOrfalse{{ $tof->id }}" class="relative float-left mr-1 mt-0.5 h-5 w-5" />
+                                            <input type="radio" disabled wire:model="trueorfalseAnswer.{{ $tof->true_or_false_id }}" value="0" name="trueOrfalse{{ $tof->true_or_false_id }}" class="relative float-left mr-1 mt-0.5 h-5 w-5" />
                                             <span class="mt-px inline-block pl-[0.15rem] hover:cursor-pointer mr-2">
                                                 False
                                             </span>
@@ -60,18 +91,12 @@
                             </div>
                         </div>
 
-                        @include('exam_view.prev-next-button',[
-                            'prev_id' => '',
-                            'prev_target' => '',
-                            'next_id' => 'question22-tab',
-                            'next_target' => 'question22'
-                        ])
-
                     @endif
                 </div>
 
                 <!-- {{-- Multiple Choice Block --}} -->
                 <div class="p-4 rounded-lg" id="question22" role="tabpanel" aria-labelledby="question22-tab">
+                    {{-- this multipleChoice is assigned multipleChoice answer in component or studend answered multipleChoice--}}
                     @if ($multipleChoice->isNotEmpty())
                         <div class="m-3">
                             <p class="font-bold">II. Multiple Choice Questions.</p>
@@ -79,16 +104,16 @@
                                 @foreach ($multipleChoice as $multi_choice)
                                     <div class="flex justify-between">
                                         <div>
-                                            {{ $multi_choice->question_no }}. {{ $multi_choice->question }}
+                                            {{ $multi_choice->multiple_choice->question_no }}. {{ strip_tags($multi_choice->multiple_choice->question) }}
                                         </div>
-                                        <div> {{ $multi_choice->mark }} Mark</div>
+                                        <div> {{ $multi_choice->multiple_choice->mark }} Mark</div>
                                     </div>
 
                                     <div class="mb-[0.125rem] block min-h-[1.5rem] pl-[1.5rem] ml-6">
                                         <label class="flex items-center">
-                                            <input type="radio" disabled wire:model="multipleChoiceAnswer.{{ $multi_choice->id }}" value="1" name="multiple_choice{{ $multi_choice->id }}" class="relative float-left mr-1 mt-0.5 h-5 w-5" />
-                                            <span class="mt-px inline-block pl-[0.15rem] hover:cursor-pointer mr-2" for="{{ $multi_choice->choice_1 }}">
-                                                (A) {{ $multi_choice->choice_1 }}
+                                            <input type="radio" disabled wire:model="multipleChoiceAnswer.{{ $multi_choice->multiple_choice_id }}" value="1" name="multiple_choice{{ $multi_choice->multiple_choice_id }}" class="relative float-left mr-1 mt-0.5 h-5 w-5" />
+                                            <span class="mt-px inline-block pl-[0.15rem] hover:cursor-pointer mr-2" for="{{ $multi_choice->multiple_choice->choice_1 }}">
+                                                (A) {{ $multi_choice->multiple_choice->choice_1 }}
                                             </span>
 
                                             @include('exam_view.multiple_choice.multiple-choice-check',['check' => 1 ])
@@ -97,9 +122,9 @@
                                     </div>
                                     <div class="mb-[0.125rem] block min-h-[1.5rem] pl-[1.5rem] ml-6">
                                         <label class="flex items-center">
-                                            <input type="radio" disabled wire:model="multipleChoiceAnswer.{{ $multi_choice->id }}" value="2" name="multiple_choice{{ $multi_choice->id }}" class="relative float-left mr-1 mt-0.5 h-5 w-5" />
-                                            <span class="mt-px inline-block pl-[0.15rem] hover:cursor-pointer mr-2" for="{{  $multi_choice->choice_2  }}">
-                                                (B) {{  $multi_choice->choice_2  }}
+                                            <input type="radio" disabled wire:model="multipleChoiceAnswer.{{ $multi_choice->multiple_choice_id }}" value="2" name="multiple_choice{{ $multi_choice->multiple_choice_id }}" class="relative float-left mr-1 mt-0.5 h-5 w-5" />
+                                            <span class="mt-px inline-block pl-[0.15rem] hover:cursor-pointer mr-2" for="{{  $multi_choice->multiple_choice->choice_2  }}">
+                                                (B) {{  $multi_choice->multiple_choice->choice_2  }}
                                             </span>
 
                                             @include('exam_view.multiple_choice.multiple-choice-check',[ 'check' => 2 ])
@@ -108,9 +133,9 @@
                                     </div>
                                     <div class="mb-[0.125rem] block min-h-[1.5rem] pl-[1.5rem] ml-6">
                                         <label class="flex items-center">
-                                            <input type="radio" disabled wire:model="multipleChoiceAnswer.{{ $multi_choice->id }}" value="3" name="multiple_choice{{ $multi_choice->id }}" class="relative float-left mr-1 mt-0.5 h-5 w-5" />
-                                            <span class="mt-px inline-block pl-[0.15rem] hover:cursor-pointer mr-2" for="{{  $multi_choice->choice_3  }}">
-                                                (C) {{  $multi_choice->choice_3  }}
+                                            <input type="radio" disabled wire:model="multipleChoiceAnswer.{{ $multi_choice->multiple_choice_id }}" value="3" name="multiple_choice{{ $multi_choice->multiple_choice_id }}" class="relative float-left mr-1 mt-0.5 h-5 w-5" />
+                                            <span class="mt-px inline-block pl-[0.15rem] hover:cursor-pointer mr-2" for="{{  $multi_choice->multiple_choice->choice_3  }}">
+                                                (C) {{  $multi_choice->multiple_choice->choice_3  }}
                                             </span>
                                             @include('exam_view.multiple_choice.multiple-choice-check',[ 'check' => 3 ])
 
@@ -118,9 +143,9 @@
                                     </div>
                                     <div class="mb-[0.125rem] block min-h-[1.5rem] pl-[1.5rem] ml-6">
                                         <label class="flex items-center">
-                                            <input type="radio" disabled wire:model="multipleChoiceAnswer.{{ $multi_choice->id }}" value="4" name="multiple_choice{{ $multi_choice->id }}" class="relative float-left mr-1 mt-0.5 h-5 w-5" />
-                                            <span class="mt-px inline-block pl-[0.15rem] hover:cursor-pointer mr-2" for="{{  $multi_choice->choice_4 }}">
-                                                (D)  {{  $multi_choice->choice_4 }}
+                                            <input type="radio" disabled wire:model="multipleChoiceAnswer.{{ $multi_choice->multiple_choice_id }}" value="4" name="multiple_choice{{ $multi_choice->multiple_choice_id }}" class="relative float-left mr-1 mt-0.5 h-5 w-5" />
+                                            <span class="mt-px inline-block pl-[0.15rem] hover:cursor-pointer mr-2" for="{{  $multi_choice->multiple_choice->choice_4 }}">
+                                                (D)  {{  $multi_choice->multiple_choice->choice_4 }}
                                             </span>
                                             @include('exam_view.multiple_choice.multiple-choice-check',[ 'check' => 4 ])
 
@@ -135,46 +160,36 @@
                         </div>
                     @endif
 
-                    @include('exam_view.prev-next-button',[
-                        'prev_id' => 'question1-tab',
-                        'prev_target' => 'question1',
-                        'next_id' => 'question3-tab',
-                        'next_target' => 'question3'
-                    ])
                 </div>
 
 
                 <!-- {{-- Matching Block --}} -->
                 <div class="p-4 rounded-lg" id="question3" role="tabpanel" aria-labelledby="question3-tab">
-                    {{-- <div>Matching</div> --}}
+                    {{-- this matching is assigned matching answer in component or studend answered matching--}}
                     @if ($matching->isNotEmpty())
                         <div class="m-3">
                             <p class="font-bold">III. Matching Questions.</p>
                             <div class="m-2">
+
                                 @foreach ($matching as $key => $match)
                                     <div class="flex justify-between">
                                         <div>
-                                            {{ $match->question_no }}. {{ $match->question }}
+                                            {{ $match->matching->question_no }}. {{ $match->matching->question }}
                                         </div>
-                                        <div> {{ $match->mark }} Mark</div>
+                                        <div> {{ $match->matching->mark }} Mark</div>
                                     </div>
 
                                     <div class="ml-5 mt-3">
                                         <div class="flex justify-between">
                                             <div class="mt-2">
                                                 <label class="flex items-center">
-                                                    (A) {{ $match->question_1 }}
-                                                    {{-- <div>{{ $match->answer_1 }}</div>
-                                                    <div>{{ $match->answer_2 }}</div>
-                                                    <div>{{ $match->answer_3 }}</div> --}}
-                                                    {{-- <div>{{ $matchingAnswer[1] }}</div> --}}
-                                                    {{-- <div>{{ $match->id }}</div> --}}
+                                                    (A) {{ strip_tags($match->matching->question_1) }}
                                                     @php
                                                         $value;
                                                         $index = 1;
-                                                        if(isset($matchingAnswer[$match->id])){
-                                                            if(isset($matchingAnswer[$match->id][$index])){
-                                                                $value = $matchingAnswer[$match->id][$index];
+                                                        if(isset($matchingAnswer[$match->matching_id])){
+                                                            if(isset($matchingAnswer[$match->matching_id][$index])){
+                                                                $value = $matchingAnswer[$match->matching_id][$index];
                                                             }
                                                         }
                                                     @endphp
@@ -183,26 +198,26 @@
                                                 </label>
                                             </div>
                                             <div class="mr-20">
-                                                <select disabled wire:model="matchingAnswer.{{ $match->id }}.1" class="py-3 px-4 pe-9 block w-70 border-gray-200 rounded-lg text-sm focus:border-blue-500
+                                                <select disabled wire:model="matchingAnswer.{{ $match->matching_id }}.1" class="py-3 px-4 pe-9 block w-70 border-gray-200 rounded-lg text-sm focus:border-blue-500
                                                     focus:ring-blue-500 disabled:opacity-50 disabled:pointer-events-none
                                                     ">
                                                     <option selected class="px-3 py-3">Select One</option>
-                                                    <option class="h-50" value="1">{{ $match->answer_1 }}</option>
-                                                    <option class="h-50" value="2">{{ $match->answer_2 }}</option>
-                                                    <option class="h-50" value="3">{{ $match->answer_3 }}</option>
+                                                    <option class="h-50" value="1">{{ $match->matching->answer_1 }}</option>
+                                                    <option class="h-50" value="2">{{ $match->matching->answer_2 }}</option>
+                                                    <option class="h-50" value="3">{{ $match->matching->answer_3 }}</option>
                                                 </select>
                                             </div>
                                         </div>
                                         <div class="flex justify-between mt-1">
                                             <div class="mt-2">
                                                 <label class="flex items-center">
-                                                    (B) {{ $match->question_2 }}
+                                                    (B) {{ strip_tags($match->matching->question_2) }}
                                                     @php
                                                         $value;
                                                         $index = 2;
-                                                        if(isset($matchingAnswer[$match->id])){
-                                                            if(isset($matchingAnswer[$match->id][$index])){
-                                                                $value = $matchingAnswer[$match->id][$index];
+                                                        if(isset($matchingAnswer[$match->matching_id])){
+                                                            if(isset($matchingAnswer[$match->matching_id][$index])){
+                                                                $value = $matchingAnswer[$match->matching_id][$index];
                                                             }
                                                         }
                                                     @endphp
@@ -211,25 +226,25 @@
                                                 </label>
                                             </div>
                                             <div class="mr-20">
-                                                <select disabled wire:model="matchingAnswer.{{ $match->id }}.2" class="py-3 px-4 pe-9 block w-70 border-gray-200 rounded-lg text-sm focus:border-blue-500
+                                                <select disabled wire:model="matchingAnswer.{{ $match->matching_id }}.2" class="py-3 px-4 pe-9 block w-70 border-gray-200 rounded-lg text-sm focus:border-blue-500
                                                     focus:ring-blue-500 disabled:opacity-50 disabled:pointer-events-none">
                                                     <option selected class="px-3 py-3">Select One</option>
-                                                    <option class="h-50" value="1">{{ $match->answer_1 }}</option>
-                                                    <option class="h-50" value="2">{{ $match->answer_2 }}</option>
-                                                    <option class="h-50" value="3">{{ $match->answer_3 }}</option>
+                                                    <option class="h-50" value="1">{{ $match->matching->answer_1 }}</option>
+                                                    <option class="h-50" value="2">{{ $match->matching->answer_2 }}</option>
+                                                    <option class="h-50" value="3">{{ $match->matching->answer_3 }}</option>
                                                 </select>
                                             </div>
                                         </div>
                                         <div class="flex justify-between mt-1">
                                             <div class="mt-2">
                                                 <label class="flex items-center">
-                                                    (C) {{ $match->question_3 }}
+                                                    (C) {{ strip_tags($match->matching->question_3) }}
                                                     @php
                                                         $value;
                                                         $index = 3;
-                                                        if(isset($matchingAnswer[$match->id])){
-                                                            if(isset($matchingAnswer[$match->id][$index])){
-                                                                $value = $matchingAnswer[$match->id][$index];
+                                                        if(isset($matchingAnswer[$match->matching_id])){
+                                                            if(isset($matchingAnswer[$match->matching_id][$index])){
+                                                                $value = $matchingAnswer[$match->matching_id][$index];
                                                             }
                                                         }
                                                     @endphp
@@ -239,12 +254,12 @@
                                                 </label>
                                             </div>
                                             <div class="mr-20">
-                                                <select disabled wire:model="matchingAnswer.{{ $match->id }}.3" class="py-3 px-4 pe-9 block w-70 border-gray-200 rounded-lg text-sm focus:border-blue-500
+                                                <select disabled wire:model="matchingAnswer.{{ $match->matching_id }}.3" class="py-3 px-4 pe-9 block w-70 border-gray-200 rounded-lg text-sm focus:border-blue-500
                                                     focus:ring-blue-500 disabled:opacity-50 disabled:pointer-events-none">
                                                     <option selected class="px-3 py-3">Select One</option>
-                                                    <option class="h-50" value="1">{{ $match->answer_1 }}</option>
-                                                    <option class="h-50" value="2">{{ $match->answer_2 }}</option>
-                                                    <option class="h-50" value="3">{{ $match->answer_3 }}</option>
+                                                    <option class="h-50" value="1">{{ $match->matching->answer_1 }}</option>
+                                                    <option class="h-50" value="2">{{ $match->matching->answer_2 }}</option>
+                                                    <option class="h-50" value="3">{{ $match->matching->answer_3 }}</option>
                                                 </select>
                                             </div>
                                         </div>
@@ -258,17 +273,12 @@
                         </div>
                     @endif
 
-                    @include('exam_view.prev-next-button',[
-                        'prev_id' => 'question2-tab',
-                        'prev_target' => 'question2',
-                        'next_id' => 'question4-tab',
-                        'next_target' => 'question4'
-                    ])
                 </div>
 
 
                 <!-- {{-- ShortQuestion Block --}} -->
                 <div class="p-4 rounded-lg" id="question4" role="tabpanel" aria-labelledby="question4-tab">
+                    {{-- this shortQuestion is assigned shortQuestion answer in component && studend answered shortQuestion--}}
                     @if ($shortQuestion->isNotEmpty())
                         <div class="m-3">
                             <p class="font-bold">IV. Short Questions.</p>
@@ -276,13 +286,13 @@
                                 @foreach ($shortQuestion as $key => $shortQ)
                                     <div class="flex justify-between">
                                         <div>
-                                            {{ $shortQ->question_no }}. {{ $shortQ->question }}
+                                            {{ $shortQ->short_question->question_no }}. {{ strip_tags($shortQ->short_question->question) }}
                                         </div>
-                                        <div> {{ $shortQ->mark }} Mark</div>
+                                        <div> {{ $shortQ->short_question->mark }} Mark</div>
                                     </div>
                                     <div class="p-5 pr-20">
                                         {{-- bg-gray-200 appearance-none border-2 border-gray-200 rounded w-full py-2 px-4 text-gray-700 leading-tight focus:outline-none focus:bg-white focus:border-purple-500 --}}
-                                        <textarea disabled wire:model="shortQuestionAnswer.{{ $shortQ->id }}" class="w-full bg-gray-200 h-40 rounded-md"></textarea>
+                                        <textarea disabled wire:model="shortQuestionAnswer.{{ $shortQ->short_question_id }}" class="w-full bg-gray-200 h-40 rounded-md"></textarea>
                                     </div>
 
                                     <div class="md:flex md:items-center mb-6 mr-0">
@@ -291,7 +301,7 @@
                                             Receive Mark
                                             </label>
                                         </div>
-                                        <div class="md:w-1/6 mr-20"> <!-- Adjusted width to 2/3 to fill the rest of the row -->
+                                        <div class="md:w-1/6 mr-20">
                                             <input wire:model="shortQuestionReceiveMark.{{ $shortQ->id }}" class="border border-gray-400 rounded w-full py-2 px-2 text-gray-700 leading-tight focus:outline-none focus:bg-white focus:border-purple-500" id="inline-full-name" type="number">
                                         </div>
                                     </div>
@@ -304,18 +314,12 @@
                         </div>
                     @endif
 
-                    @include('exam_view.prev-next-button',[
-                        'prev_id' => 'question3-tab',
-                        'prev_target' => 'question3',
-                        'next_id' => 'question5-tab',
-                        'next_target' => 'question5'
-                    ])
-
                 </div>
 
 
                 <!-- {{-- Essay Block --}} -->
                 <div class="p-4 rounded-lg" id="question5" role="tabpanel" aria-labelledby="question5-tab">
+                    {{-- this essay is assigned essay answer in component && studend answered essay--}}
                     @if ($essay->isNotEmpty())
                         <div class="m-3">
                             <p class="font-bold">V. Essay Questions.</p>
@@ -323,12 +327,12 @@
                                 @foreach ($essay as $key => $esy)
                                     <div class="flex justify-between">
                                         <div>
-                                            {{ $esy->question_no }}. {{ $esy->question }}
+                                            {{ $esy->essay->question_no }}. {{ strip_tags($esy->essay->question) }}
                                         </div>
-                                        <div> {{ $esy->mark }} Mark</div>
+                                        <div> {{ $esy->essay->mark }} Mark</div>
                                     </div>
                                     <div class="p-5 pr-20">
-                                        <textarea disabled wire:model="essayAnswer.{{ $esy->id }}" class="bg-gray-200 w-full h-40 rounded-md"></textarea>
+                                        <textarea disabled wire:model="essayAnswer.{{ $esy->essay_id }}" class="bg-gray-200 w-full h-40 rounded-md"></textarea>
                                     </div>
 
                                     <div class="md:flex md:items-center mb-6 mr-0">
@@ -337,7 +341,7 @@
                                             Receive Mark
                                             </label>
                                         </div>
-                                        <div class="md:w-1/6 mr-20"> <!-- Adjusted width to 2/3 to fill the rest of the row -->
+                                        <div class="md:w-1/6 mr-20">
                                             <input  wire:model="essayReceiveMark.{{ $esy->id }}" class="appearance-none border border-gray-400 rounded w-full py-2 px-2 text-gray-700 leading-tight focus:outline-none focus:bg-white focus:border-purple-500" id="inline-full-name" type="number">
                                         </div>
                                     </div>
@@ -349,13 +353,6 @@
                             <p class="font-bold">There is no essay</p>
                         </div>
                     @endif
-
-                    @include('exam_view.prev-next-button',[
-                        'prev_id' => 'question4-tab',
-                        'prev_target' => 'question4',
-                        'next_id' => '',
-                        'next_target' => ''
-                    ])
 
                 </div>
                 <!-- {{-- end essay block --}} -->

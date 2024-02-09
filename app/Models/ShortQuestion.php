@@ -14,4 +14,7 @@ class ShortQuestion extends Model
     public function exams(){
         return $this->belongsTo(Exam::class);
     }
+    public function short_question_answer(){
+        return $this->hasMany(ShortQuestionAnswer::class);
+    }
 }

@@ -1,8 +1,5 @@
-@if ($multipleChoiceAnswer[$multi_choice->id] == $check)
-    @php
-        $student_answer = $multipleChoiceAnswer[$multi_choice->id]; // get value
-    @endphp
-    @if ($multi_choice->answer == $student_answer)
+@if ($multipleChoiceAnswer[$multi_choice->multiple_choice_id] == $check)
+    @if ($multi_choice->multiple_choice->answer == $multi_choice->student_answer)
         <span>
             <svg class="h-8 w-8 text-green-500" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
                 <path stroke="none" d="M0 0h24v24H0z"/>

@@ -14,4 +14,7 @@ class TrueOrFalse extends Model
     public function exams(){
         return $this->belongsTo(Exam::class);
     }
+    public function true_or_false_answer(){
+        return $this->hasMany(TrueOrFalseAnswer::class);
+    }
 }

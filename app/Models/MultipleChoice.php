@@ -14,4 +14,7 @@ class MultipleChoice extends Model
     public function exams(){
         return $this->belongsTo(Exam::class);
     }
+    public function multiple_choice_answer(){
+        return $this->hasMany(MultipleChoiceAnswer::class);
+    }
 }

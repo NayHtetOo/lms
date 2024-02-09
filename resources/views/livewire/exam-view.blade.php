@@ -411,10 +411,25 @@
     </div>
 
     {{-- show report for students after sumbmit --}}
-    @if ($this->summaryView)
+    @if ($this->summaryView && $examStatus == 2)
         <div class="mx-auto max-w-7xl py-1 sm:px-6 lg:px-8" wire:ignore>
             <div class="p-4 rounded-xl shadow-2xl bg-slate-300">
-                <h2 class="font-bold text-xl mb-4">Summary</h2>
+                {{-- <h2 class="font-bold text-xl mb-4">Summary</h2>
+                <div>Grade : {{ $gradeName }}</div> --}}
+                <div class="flex justify-between">
+                    <h2 class="font-bold text-xl bg-blue-600 px-2 py-2 rounded text-white mb-4">Result</h2>
+                    <span class="px-3 py-2 rounded text-white mb-4
+                        @if ($gradeName == 'A')
+                            bg-green-800
+                        @elseif ($gradeName == 'B')
+                            bg-blue-800
+                        @elseif ($gradeName == 'C')
+                            bg-orange-500
+                        @else
+                            bg-red-600
+                        @endif"> Grade : {{ $gradeName }}</span>
+                </div>
+
                 <table class="w-full border border-black text-sm text-left text-gray-500">
                     <thead class="text-xs text-gray-700 uppercase">
                         <tr class="border-b-2 border-black">
@@ -441,11 +456,20 @@
                     </tbody>
                 </table>
                 <div class="m-2 mt-2">
-                    <h2 class="font-bold">Highest grade: {{ $this->gradeMark }} / {{ $this->baseTotalMark }}</h2>
+                    <h2 class="font-bold">Highest Mark: {{ $this->gradeMark }} / {{ $this->baseTotalMark }}</h2>
                 </div>
             </div>
         </div>
     @endif
+
+    @if ($this->summaryView && $examStatus == 1)
+        <div class="mx-auto max-w-7xl py-1 sm:px-6 lg:px-8 ">
+            <div class="p-4 rounded shadow-2xl bg-slate-300 text-blue-500">
+                <label class="">Wait for Exam Result</label>
+            </div>
+        </div>
+    @endif
+
     {{-- Teacher view for submitted students report --}}
     @if ($this->isTeacher && $this->isExamSubmittedStudent)
         <div class="mx-auto max-w-7xl py-1 sm:px-6 lg:px-8 mb-10">
@@ -455,23 +479,35 @@
                     <thead class="text-xs text-gray-700 uppercase">
                         <tr class="border-b-2 border-black">
                             <th class="px-3">No.</th>
-                            <th class="py-3" scope="">Status</th>
+                            <th class="py-3" scope="">Sumitted Date</th>
                             <th class="py-3" scope="">Name</th>
                             <th class="py-3" scope="">Email</th>
+                            <th class="py-3" scope="">Status</th>
                             <th class="" scope="">View</th>
                         </tr>
                     </thead>
                     <tbody>
                         @foreach ($this->exam_answered_users as $key => $row)
-                            {{-- <div>{{ $row }}</div> --}}
                             <tr class="border-b border-gray-400">
                                 <td class="px-3">{{ $loop->index + 1 }}</td>
                                 <td class="py-3">Finished <br> Sumitted {{ $row->created_at }}</td>
                                 <td class="py-3" scope="">{{ $row->user->name }}</td>
                                 <td class="py-3" scope="">{{ $row->user->email }}</td>
+                                @if ($row->status == 1)
+                                    <td class="py-3">
+                                        <span class="bg-blue-800 text-white rounded py-1 px-2">
+                                            Inprocess
+                                        </span>
+                                    </td>
+                                @else
+                                    <td class="py-3">
+                                        <span class="bg-green-800 text-white rounded py-1 px-2">
+                                            Checked
+                                        </span>
+                                    </td>
+                                @endif
                                 <td>
-                                    <button class="py-2 px-3 bg-indigo-400 text-white rounded"
-                                            wire:click="checkAnswer({{ $row->user_id }},{{ $row->exam_id }})">Check</button>
+                                    <button wire:click="checkAnswer({{ $row->user_id }},{{ $row->exam_id }})" class="py-2 px-3 bg-gray-600 text-white rounded">show</button>
                                 </td>
                             </tr>
                         @endforeach
