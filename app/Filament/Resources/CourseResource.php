@@ -68,7 +68,7 @@ class CourseResource extends Resource
                     ->required()
                     ->rules([
                         fn (Get $get): Closure => function (string $attribute, $value, Closure $fail) use ($get) {
-                           dd($get('other_field'), $value);
+                        //    dd($get('other_field'), $value);
                         },
                     ]),
                 Textarea::make('description')

@@ -40,10 +40,10 @@ return [
             'driver' => 'session',
             'provider' => 'users',
         ],
-         'admin' => [
+        'admins' => [
             'driver' => 'session',
             'provider' => 'admins',
-        ],
+        ]
     ],
 
     /*
@@ -68,8 +68,7 @@ return [
             'driver' => 'eloquent',
             'model' => App\Models\User::class,
         ],
-
-        'admins' => [
+        'admins' => [ // Ensure this matches the guard configuration
             'driver' => 'eloquent',
             'model' => App\Models\Admin::class,
         ],
@@ -102,6 +101,12 @@ return [
     'passwords' => [
         'users' => [
             'provider' => 'users',
+            'table' => 'password_reset_tokens',
+            'expire' => 60,
+            'throttle' => 60,
+        ],
+        'admins' => [
+            'provider' => 'course_members',
             'table' => 'password_reset_tokens',
             'expire' => 60,
             'throttle' => 60,

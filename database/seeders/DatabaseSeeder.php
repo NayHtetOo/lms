@@ -24,12 +24,12 @@ class DatabaseSeeder extends Seeder
         //     'email' => 'admin@gmail.com',
         // ]);
 
-        \App\Models\User::create([
+        \App\Models\Admin::create([
             'name' => 'Admin',
             'email' => 'admin@gmail.com',
             'password' => bcrypt('123')
         ]);
-        \App\Models\User::factory(30)->create();
+        // \App\Models\CourseMember::factory(30)->create();
         $list = ['admin', 'teacher', 'student','guest'];
 
         for ($i = 0; $i < count($list); $i++) {
