@@ -48,13 +48,23 @@
 
                 <div class="relative overflow-x-auto sm:rounded text-end mt-3">
                     @if (!$this->examSubmitted)
+                        {{ $startAnswer }}
+                        TimeRemaining : {{ $duration }} :: {{ $timer }}
                         @if ($currentDate->between($startDate, $endDate))
-                            <button class="border bg-green-500 py-2 px-3 rounded-md text-white"
-                                    id="answer">Answer</button>
+                            <button class="border bg-green-500 py-2 px-3 rounded-md text-white" id="answer"
+                                    wire:click='answerStart'>Answer</button>
                         @endif
                     @else
                         <button class="border bg-indigo-400 py-2 px-3 rounded text-white">View</button>
                     @endif
+
+                    <script>
+                        setInterval(() => {
+                            if (@this.startAnswer) {
+                                @this.call('decreaseTimer');
+                            }
+                        }, 100);
+                    </script>
                 </div>
             </div>
         </div>
@@ -237,25 +247,40 @@
                                 </div>
 
                                 {{-- Matching Block --}}
-                                {{-- <div>{{ $this->matching }}</div> --}}
                                 <div class="hidden p-4 rounded-lg" id="question3" role="tabpanel"
                                      aria-labelledby="question3-tab">
                                     {{-- <div>Matching</div> --}}
                                     @if ($this->matching->isNotEmpty())
                                         <div class="m-3">
-                                            <p class="font-bold">III. Matching Questions.</p>
+                                            <div class="w-full flex justify-start items-center">
+                                                @include('exam_view.prev-next-button', [
+                                                    'prev_id' => 'question2-tab',
+                                                    'prev_target' => 'question2',
+                                                    'next_id' => 'question4-tab',
+                                                    'next_target' => 'question4',
+                                                ])
+                                            </div>
+                                            <div class="flex justify-between w-full mt-3">
+                                                <p class="font-bold text-slate-800 text-xl ms-2">I.
+                                                    <span class="ms-3">III. Matching Questions.</span>
+                                                </p>
+                                                <p class="font-bold text-slate-800 text-xl">(1 Marks)</p>
+                                            </div>
                                             <div class="m-2">
                                                 @foreach ($this->matching as $key => $match)
                                                     <div class="flex justify-between">
-                                                        <div>
-                                                            {{ $match->question_no }}. {{ $match->question }}
+                                                        <div class="flex justify-between">
+                                                            <div class="text-slate-700 text-md">
+                                                                {{ $match->question_no }}. <span
+                                                                      class="ml-3">{{ strip_tags($match->question) }}</span>
+                                                            </div>
                                                         </div>
-                                                        <div> {{ $match->mark }} Mark</div>
                                                     </div>
 
                                                     <div class="ml-5 mt-3">
                                                         <div class="flex justify-between">
-                                                            <div class="mt-2">(A) {{ $match->question_1 }} </div>
+                                                            <div class="mt-2 text-slate-600">(A)
+                                                                {{ strip_tags($match->question_1) }} </div>
                                                             <div class="mr-20">
                                                                 <select class="py-3 px-4 pe-9 block w-70 border-gray-200 rounded-lg text-sm focus:border-blue-500
                                                                                 focus:ring-blue-500 disabled:opacity-50 disabled:pointer-events-none
@@ -263,34 +288,42 @@
                                                                         wire:model="matchingAnswer.{{ $match->id }}.1">
                                                                     <option class="px-3 py-3" selected>Select One
                                                                     </option>
-                                                                    <option class="h-50" value="1">
+                                                                    <option class="h-50 text-slate-600"
+                                                                            value="1">
                                                                         {{ $match->answer_1 }}</option>
-                                                                    <option class="h-50" value="2">
+                                                                    <option class="h-50 text-slate-600"
+                                                                            value="2">
                                                                         {{ $match->answer_2 }}</option>
-                                                                    <option class="h-50" value="3">
+                                                                    <option class="h-50 text-slate-600"
+                                                                            value="3">
                                                                         {{ $match->answer_3 }}</option>
                                                                 </select>
                                                             </div>
                                                         </div>
                                                         <div class="flex justify-between mt-1">
-                                                            <div class="mt-2">(B) {{ $match->question_2 }} </div>
+                                                            <div class="mt-2 text-slate-600">(B)
+                                                                {{ strip_tags($match->question_2) }} </div>
                                                             <div class="mr-20">
                                                                 <select class="py-3 px-4 pe-9 block w-70 border-gray-200 rounded-lg text-sm focus:border-blue-500
                                                                                 focus:ring-blue-500 disabled:opacity-50 disabled:pointer-events-none"
                                                                         wire:model="matchingAnswer.{{ $match->id }}.2">
                                                                     <option class="px-3 py-3" selected>Select One
                                                                     </option>
-                                                                    <option class="h-50" value="1">
+                                                                    <option class="h-50 text-slate-600"
+                                                                            value="1">
                                                                         {{ $match->answer_1 }}</option>
-                                                                    <option class="h-50" value="2">
+                                                                    <option class="h-50 text-slate-600"
+                                                                            value="2">
                                                                         {{ $match->answer_2 }}</option>
-                                                                    <option class="h-50" value="3">
+                                                                    <option class="h-50 text-slate-600"
+                                                                            value="3">
                                                                         {{ $match->answer_3 }}</option>
                                                                 </select>
                                                             </div>
                                                         </div>
                                                         <div class="flex justify-between mt-1">
-                                                            <div class="mt-2">(C) {{ $match->question_3 }} </div>
+                                                            <div class="mt-2">(C)
+                                                                {{ strip_tags($match->question_3) }} </div>
                                                             <div class="mr-20">
                                                                 <select class="py-3 px-4 pe-9 block w-70 border-gray-200 rounded-lg text-sm focus:border-blue-500
                                                                                 focus:ring-blue-500 disabled:opacity-50 disabled:pointer-events-none"
@@ -316,12 +349,6 @@
                                         </div>
                                     @endif
 
-                                    @include('exam_view.prev-next-button', [
-                                        'prev_id' => 'question2-tab',
-                                        'prev_target' => 'question2',
-                                        'next_id' => 'question4-tab',
-                                        'next_target' => 'question4',
-                                    ])
                                 </div>
 
                                 {{-- ShortQuestion Block --}}
@@ -418,16 +445,16 @@
                 <div>Grade : {{ $gradeName }}</div> --}}
                 <div class="flex justify-between">
                     <h2 class="font-bold text-xl bg-blue-600 px-2 py-2 rounded text-white mb-4">Result</h2>
-                    <span class="px-3 py-2 rounded text-white mb-4
-                        @if ($gradeName == 'A')
-                            bg-green-800
+                    <span
+                          class="px-3 py-2 rounded text-white mb-4
+                        @if ($gradeName == 'A') bg-green-800
                         @elseif ($gradeName == 'B')
                             bg-blue-800
                         @elseif ($gradeName == 'C')
                             bg-orange-500
                         @else
-                            bg-red-600
-                        @endif"> Grade : {{ $gradeName }}</span>
+                            bg-red-600 @endif">
+                        Grade : {{ $gradeName }}</span>
                 </div>
 
                 <table class="w-full border border-black text-sm text-left text-gray-500">
@@ -507,7 +534,8 @@
                                     </td>
                                 @endif
                                 <td>
-                                    <button wire:click="checkAnswer({{ $row->user_id }},{{ $row->exam_id }})" class="py-2 px-3 bg-gray-600 text-white rounded">show</button>
+                                    <button class="py-2 px-3 bg-gray-600 text-white rounded"
+                                            wire:click="checkAnswer({{ $row->user_id }},{{ $row->exam_id }})">show</button>
                                 </td>
                             </tr>
                         @endforeach
@@ -552,136 +580,136 @@
         });
     });
 
-    let examDuration = @json($this->exams->duration);
-    let userId = @json($user_id);
-    let examId = @json($id);
-    const csrfToken = document.getElementById("csrfToken").getAttribute("content");
-    let startDate = new Date(@json($startDate));
-    let endDate = new Date(@json($endDate));
-    let currentDate = new Date(@json($currentDate))
-    let examMinutes = document.getElementById("examMinutes");
-    let examViewContainer = document.getElementById("examViewContainer");
-    let examDescription = document.getElementById("examDescription");
+    // let examDuration = @json($this->exams->duration);
+    // let userId = @json($user_id);
+    // let examId = @json($id);
+    // const csrfToken = document.getElementById("csrfToken").getAttribute("content");
+    // let startDate = new Date(@json($startDate));
+    // let endDate = new Date(@json($endDate));
+    // let currentDate = new Date(@json($currentDate))
+    // let examMinutes = document.getElementById("examMinutes");
+    // let examViewContainer = document.getElementById("examViewContainer");
+    // let examDescription = document.getElementById("examDescription");
 
-    let postData = {
-        'user_id': userId,
-        'exam_id': examId,
-        'status': 1,
-    }
-    let options = {
-        method: 'POST',
-        headers: {
-            'Content-Type': "application/json",
-            'X-CSRF-TOKEN': csrfToken
-        },
-        body: JSON.stringify(postData)
-    }
-    let getLocalStorage = JSON.parse(localStorage.getItem('storeDuration'));
-    let getFormStatus = JSON.parse(localStorage.getItem('formStatus'));
+    // let postData = {
+    //     'user_id': userId,
+    //     'exam_id': examId,
+    //     'status': 1,
+    // }
+    // let options = {
+    //     method: 'POST',
+    //     headers: {
+    //         'Content-Type': "application/json",
+    //         'X-CSRF-TOKEN': csrfToken
+    //     },
+    //     body: JSON.stringify(postData)
+    // }
+    // let getLocalStorage = JSON.parse(localStorage.getItem('storeDuration'));
+    // let getFormStatus = JSON.parse(localStorage.getItem('formStatus'));
 
-    if (!getFormStatus) {
-        let storeFormStatus = localStorage.setItem('formStatus', JSON.stringify({
-            status: false,
-        }));
-    }
+    // if (!getFormStatus) {
+    //     let storeFormStatus = localStorage.setItem('formStatus', JSON.stringify({
+    //         status: false,
+    //     }));
+    // }
 
-    if (!getLocalStorage) {
-        localStorage.setItem('storeDuration', JSON.stringify({
-            storeMinutes: examDuration,
-            storeSeconds: 60,
-        }));
-    }
+    // if (!getLocalStorage) {
+    //     localStorage.setItem('storeDuration', JSON.stringify({
+    //         storeMinutes: examDuration,
+    //         storeSeconds: 60,
+    //     }));
+    // }
 
-    getLocalStorage = JSON.parse(localStorage.getItem('storeDuration'));
-    getFormStatus = JSON.parse(localStorage.getItem('formStatus'));
-    console.log(getFormStatus);
+    // getLocalStorage = JSON.parse(localStorage.getItem('storeDuration'));
+    // getFormStatus = JSON.parse(localStorage.getItem('formStatus'));
+    // console.log(getFormStatus);
 
 
-    document.getElementById("answer").addEventListener("click", function() {
-        localStorage.setItem('formStatus', JSON.stringify({
-            status: true,
-        }));
-        console.log(getFormStatus);
-        FormLoad();
-    });
+    // document.getElementById("answer").addEventListener("click", function() {
+    //     localStorage.setItem('formStatus', JSON.stringify({
+    //         status: true,
+    //     }));
+    //     console.log(getFormStatus);
+    //     FormLoad();
+    // });
 
-    window.addEventListener("load", function() {
-        console.log("load");
-        FormLoad();
-    });
+    // window.addEventListener("load", function() {
+    //     console.log("load");
+    //     FormLoad();
+    // });
 
-    function FormLoad() {
-        getFormStatus = JSON.parse(localStorage.getItem('formStatus'));
-        if (getFormStatus.status == true && getFormStatus) {
-            document.getElementById("form").classList.remove("hidden");
-            examViewContainer.classList.add('flex');
-            examDescription.classList.remove('w-full');
-            examDescription.classList.remove('mx-auto');
-            examDescription.classList.add('w-1/4');
-            examDurationCount();
-        } else {
-            document.getElementById("form").classList.add("hidden");
-            examViewContainer.classList.remove('flex');
-            examDescription.classList.add('w-full');
-            examDescription.classList.add('mx-auto');
-            examDescription.classList.remove('w-1/4');
-        }
-    }
+    // function FormLoad() {
+    //     getFormStatus = JSON.parse(localStorage.getItem('formStatus'));
+    //     if (getFormStatus.status == true && getFormStatus) {
+    //         document.getElementById("form").classList.remove("hidden");
+    //         examViewContainer.classList.add('flex');
+    //         examDescription.classList.remove('w-full');
+    //         examDescription.classList.remove('mx-auto');
+    //         examDescription.classList.add('w-1/4');
+    //         examDurationCount();
+    //     } else {
+    //         document.getElementById("form").classList.add("hidden");
+    //         examViewContainer.classList.remove('flex');
+    //         examDescription.classList.add('w-full');
+    //         examDescription.classList.add('mx-auto');
+    //         examDescription.classList.remove('w-1/4');
+    //     }
+    // }
 
-    function examDurationCount() {
-        if (currentDate > startDate && currentDate < endDate) {
-            console.log('date between')
-            const intervalExam = setInterval(() => {
+    // function examDurationCount() {
+    //     if (currentDate > startDate && currentDate < endDate) {
+    //         console.log('date between')
+    //         const intervalExam = setInterval(() => {
 
-                if (getLocalStorage.storeMinutes != null || getLocalStorage.storeSeconds != null) {
-                    getLocalStorage.storeSeconds--;
-                } else {
-                    examMinutes.style.display = "none";
-                }
+    //             if (getLocalStorage.storeMinutes != null || getLocalStorage.storeSeconds != null) {
+    //                 getLocalStorage.storeSeconds--;
+    //             } else {
+    //                 examMinutes.style.display = "none";
+    //             }
 
-                localStorage.setItem('storeDuration', JSON.stringify(getLocalStorage));
+    //             localStorage.setItem('storeDuration', JSON.stringify(getLocalStorage));
 
-                if (getLocalStorage.storeSeconds == 0) {
-                    if (getLocalStorage.storeMinutes >= 0) {
-                        getLocalStorage.storeMinutes--;
-                        getLocalStorage.storeSeconds = 59;
-                    }
+    //             if (getLocalStorage.storeSeconds == 0) {
+    //                 if (getLocalStorage.storeMinutes >= 0) {
+    //                     getLocalStorage.storeMinutes--;
+    //                     getLocalStorage.storeSeconds = 59;
+    //                 }
 
-                    console.log(getLocalStorage.storeMinutes);
+    //                 console.log(getLocalStorage.storeMinutes);
 
-                    if (getLocalStorage.storeMinutes == 0) {
-                        console.log(getFormStatus.status);
-                        const apiUrl = "/submit";
-                        fetch(apiUrl, options)
-                            .then((response) => {
-                                if (!response.ok) {
-                                    throw new Error(`Error status ${response.status}`);
-                                }
-                                return response.json();
-                            })
-                            .then((data) => {
-                                clearInterval(intervalExam);
-                                localStorage.setItem('storeDuration', JSON.stringify({
-                                    storeMinutes: null,
-                                    storeSeconds: null,
-                                }));
-                                examMinutes.textContent = "";
-                                localStorage.removeItem('formStatus');
-                                document.getElementById("form").classList.add("hidden");
-                                examViewContainer.classList.remove('flex');
-                                examDescription.classList.add('w-full');
-                                examDescription.classList.add('mx-auto');
-                                examDescription.classList.remove('w-1/4');
-                            })
-                            .catch(error => {
-                                console.error(`Error ${error}`);
-                            });
-                    }
-                }
-                examMinutes.textContent = `${getLocalStorage.storeMinutes} : ${getLocalStorage.storeSeconds}`;
-            }, 1000);
-        } else {
-            console.log("exam is not started");
-        }
-    }
+    //                 if (getLocalStorage.storeMinutes == 0) {
+    //                     console.log(getFormStatus.status);
+    //                     const apiUrl = "/submit";
+    //                     fetch(apiUrl, options)
+    //                         .then((response) => {
+    //                             if (!response.ok) {
+    //                                 throw new Error(`Error status ${response.status}`);
+    //                             }
+    //                             return response.json();
+    //                         })
+    //                         .then((data) => {
+    //                             clearInterval(intervalExam);
+    //                             localStorage.setItem('storeDuration', JSON.stringify({
+    //                                 storeMinutes: null,
+    //                                 storeSeconds: null,
+    //                             }));
+    //                             examMinutes.textContent = "";
+    //                             localStorage.removeItem('formStatus');
+    //                             document.getElementById("form").classList.add("hidden");
+    //                             examViewContainer.classList.remove('flex');
+    //                             examDescription.classList.add('w-full');
+    //                             examDescription.classList.add('mx-auto');
+    //                             examDescription.classList.remove('w-1/4');
+    //                         })
+    //                         .catch(error => {
+    //                             console.error(`Error ${error}`);
+    //                         });
+    //                 }
+    //             }
+    //             examMinutes.textContent = `${getLocalStorage.storeMinutes} : ${getLocalStorage.storeSeconds}`;
+    //         }, 1000);
+    //     } else {
+    //         console.log("exam is not started");
+    //     }
+    // }
 </script>
