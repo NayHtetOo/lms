@@ -37,7 +37,7 @@ class ExamView extends Component
     public $summaryView = false, $checkAnsweredPaper = false, $isExamSubmittedStudent = false, $examSubmitted = false;
     public $trueOrfalse, $multipleChoice, $matching, $shortQuestion, $essay, $exam_answered_users, $checkedCurrentUser;
     public $shortQuestionReceiveMark = [], $essayReceiveMark = [];
-    public $examStatus, $gradeName;
+    public $examStatus, $gradeName,$questionType;
     public $timer = 60;
     protected $listener = ["decreaseTimer"];
     public $startAnswer = false;
@@ -169,6 +169,7 @@ class ExamView extends Component
         $this->essayReceiveMark = [];
         $this->isExamSubmittedStudent = false;
         $this->checkAnsweredPaper = true;
+        $this->questionType = 1; // set default to true or false question for teacher
         $this->checkedCurrentUser = User::find($userID);
 
         // true or false black check
@@ -187,34 +188,30 @@ class ExamView extends Component
 
 
         // matching block check
-        // $matching = Matching::where('exam_id',$examID)->get();
-        // $this->matching = $matching;
-
-        $matching_answer = MatchingAnswer::where('exam_id', $examID)->where('user_id', $userID)->get();
-        $matching_answer->filter(function ($default) {
-            $inputArray = unserialize($default->student_answer);
-            return $this->matchingAnswer[$default->matching_id] = $inputArray;
-        });
-        $this->matching = $matching_answer;
+            $matching_answer = MatchingAnswer::where('exam_id',$examID)->where('user_id',$userID)->get();
+            $matching_answer->filter(function($default){
+                $inputArray = unserialize($default->student_answer);
+                return $this->matchingAnswer[$default->matching_id] = $inputArray;
+            });
+            $this->matching = $matching_answer;
 
         // short question block check
-        $short_question_answer = ShortQuestionAnswer::where('exam_id', $examID)->where('user_id', $userID)->get();
-        $this->shortQuestion = $short_question_answer;
-
-        $short_question_answer->filter(function ($default) {
+        $short_question_answer = ShortQuestionAnswer::where('exam_id',$examID)->where('user_id',$userID)->get();
+        $short_question_answer->filter(function($default){
             // dump($default->student_answer);
             $this->shortQuestionReceiveMark[$default->id] = $default->received_mark;
             return $this->shortQuestionAnswer[$default->short_question_id] = $default->student_answer;
         });
+        $this->shortQuestion = $short_question_answer;
 
         // essay block check
-        $essay_answer = EssayAnswer::where('exam_id', $examID)->where('user_id', $userID)->get();
-        $this->essay = $essay_answer;
-        $essay_answer->filter(function ($default) {
-            // dump($default->student_answer);
+        $essay_answer = EssayAnswer::where('exam_id',$examID)->where('user_id',$userID)->get();
+        $essay_answer->filter(function($default){
             $this->essayReceiveMark[$default->id] = $default->received_mark;
             return $this->essayAnswer[$default->essay_id] = $default->student_answer;
         });
+        $this->essay = $essay_answer;
+
     }
     #[Computed]
     public function role($role)
@@ -227,7 +224,8 @@ class ExamView extends Component
             $this->summaryView = false;
         } elseif ($role == 'student') {
             $this->isStudent = true;
-        } else {
+            $this->summaryView = true;
+        }else{
             $this->isGuest = true;
         }
     }
@@ -240,12 +238,6 @@ class ExamView extends Component
     public function examSubmit()
     {
 
-        // dd("submit");
-
-        // dd($this->trueorfalseAnswer);
-        // $user_id = auth()->user()->id;
-        // dd($this->id);
-        // $this->questionStatus = true;
         ExamAnswer::create([
             'user_id' => $this->user_id,
             'exam_id' => $this->id,
@@ -264,6 +256,8 @@ class ExamView extends Component
         $this->answerQuery($this->essayAnswer, 'App\Models\EssayAnswer', 'essay_id');
 
         $this->examSubmitted = true;
+        $this->examSummary;
+
 
         // After a successful submission, set a session flash message
         session()->flash('message', 'Form submitted successfully!');
@@ -311,12 +305,11 @@ class ExamView extends Component
     {
         // exam submitted
 
-        $exam = ExamAnswer::where('exam_id', $this->id)->where('user_id', $this->user_id)->first();
-        // dd($exam->status);
+        $exam = ExamAnswer::where('exam_id',$this->id)->where('user_id',$this->user_id)->first();
+        $this->summaryView = true;
         $this->examStatus = $exam->status;
 
-        if ($exam->status == 2) {
-            $this->summaryView = true;
+        if($exam->status == 2){
 
             $this->examSubmittedDate = $exam->created_at;
 
@@ -467,8 +460,8 @@ class ExamView extends Component
         $this->isExamSubmittedStudent = true;
         $this->checkAnsweredPaper = false;
     }
-    public function loadQuestion($question)
-    {
+
+    public function loadQuestion($question){
         /**
          * 1 => true or false
          * 2 => multiple choice
@@ -476,9 +469,6 @@ class ExamView extends Component
          * 4 => short question
          * 5 => essay
          */
-        dump($question);
-        // if($question == 1){
-        //     dd('');
-        // }
+        $this->questionType = $question;
     }
 }

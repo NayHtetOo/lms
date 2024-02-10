@@ -15,8 +15,10 @@
             </div>
         </div>
     @endif
-
-    <div class="w-full mx-auto mt-3" id="examDescription">
+    {{-- exam information --}}
+    {{-- max-w-7xl py-1 lg:px-8 sm:px-6 --}}
+    {{-- $isTeacher || ($isStudent && $this->summaryView && $examStatus == 2) || ($this->summaryView && $examStatus == 1 ) --}}
+    <div class="w-full mx-auto mt-3 @if ($examSubmitted && $this->isStudent) max-w-7xl py-1 lg:px-8 sm:px-6 @endif" id="examDescription">
         <div class="w-full ">
             <div class="p-4 rounded-xl transform transition-all duration-300 shadow-4xl shadow-lg">
                 <div class="border-b border-slate-500 pb-2">
@@ -44,6 +46,17 @@
                         <span>End date - <span
                                   class="text-blue-500 font-bold">{{ $this->exams->end_date_time }}</span></span>
                     </div>
+                    <div class="text-slate-700 my-3">
+                        <svg class="w-6 h-6 inline" xmlns="http://www.w3.org/2000/svg" fill="none"
+                             viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round"
+                                  d="M12 6v6h4.5m4.5 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
+                        </svg>
+                        <span> Description - <span class="text-blue-500 font-bold py-2 px-2">
+                                {{ $this->exams->description }}
+                            </span>
+                        </span>
+                    </div>
                 </div>
 
                 <div class="relative overflow-x-auto sm:rounded text-end mt-3">
@@ -54,8 +67,6 @@
                             <button class="border bg-green-500 py-2 px-3 rounded-md text-white" id="answer"
                                     wire:click='answerStart'>Answer</button>
                         @endif
-                    @else
-                        <button class="border bg-indigo-400 py-2 px-3 rounded text-white">View</button>
                     @endif
 
                     <script>
@@ -70,10 +81,11 @@
         </div>
     </div>
 
-    <div class="w-3/4 mt-3 h-[85vh] overflow-auto">
-        <form id="form" wire:submit.prevent="examSubmit" method="POST" wire:ignore.self>
-            @csrf
-            @if (!$examSubmitted && $this->isStudent)
+    {{-- exam answer by student block --}}
+    @if (!$examSubmitted && $this->isStudent)
+        <div class="w-3/4 mt-3 h-[85vh] overflow-auto">
+            <form id="form" wire:submit.prevent="examSubmit" method="POST" wire:ignore.self>
+                @csrf
                 @if (
                     $this->trueOrfalse->isNotEmpty() ||
                         $this->multipleChoice->isNotEmpty() ||
@@ -85,11 +97,11 @@
                             <div class="w-full flex justify-end items-center my-3">
                                 <div class=" px-3">
                                     <div
-                                         class="text-white font-bold bg-blue-600 px-4 py-2 rounded-md w-[10rem] text-center">
+                                        class="text-white font-bold bg-blue-600 px-4 py-2 rounded-md w-[10rem] text-center">
                                         <svg class="w-6 h-6 inline" xmlns="http://www.w3.org/2000/svg" fill="none"
-                                             viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                                            viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
                                             <path stroke-linecap="round" stroke-linejoin="round"
-                                                  d="M12 6v6h4.5m4.5 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
+                                                d="M12 6v6h4.5m4.5 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
                                         </svg>
                                         <span id="examMinutes" wire:ignore></span>
                                     </div>
@@ -98,7 +110,7 @@
                             </div>
                             <div class=" px-3" id="question-tab-content">
                                 <div class="rounded-lg relative" id="question1" role="tabpanel"
-                                     aria-labelledby="question1-tab">
+                                    aria-labelledby="question1-tab">
                                     @if ($trueOrfalse->isNotEmpty())
                                         <div class="">
                                             <div class="w-full flex justify-start items-center">
@@ -122,17 +134,17 @@
                                                         <div class="flex justify-between">
                                                             <div class="text-slate-700 text-md">
                                                                 {{ $tof->question_no }}. <span
-                                                                      class="ml-3">{{ strip_tags($tof->question) }}</span>
+                                                                    class="ml-3">{{ strip_tags($tof->question) }}</span>
                                                             </div>
                                                         </div>
                                                         <div class="mb-[0.125rem] block min-h-[1.5rem] ml-6 mt-3">
                                                             <label class="flex items-center">
                                                                 <input class="relative float-left mr-1 mt-0.5 h-5 w-5"
-                                                                       name="trueOrfalse{{ $tof->id }}"
-                                                                       type="radio" value="1"
-                                                                       wire:model="trueorfalseAnswer.{{ $tof->id }}" />
+                                                                    name="trueOrfalse{{ $tof->id }}"
+                                                                    type="radio" value="1"
+                                                                    wire:model="trueorfalseAnswer.{{ $tof->id }}" />
                                                                 <span
-                                                                      class="mt-px inline-block pl-[0.15rem] hover:cursor-pointer mr-2 text-slate-600">
+                                                                    class="mt-px inline-block pl-[0.15rem] hover:cursor-pointer mr-2 text-slate-600">
                                                                     True
                                                                 </span>
                                                             </label>
@@ -140,11 +152,11 @@
                                                         <div class="mb-[0.125rem] block min-h-[1.5rem] ml-6 mt-3">
                                                             <label class="flex items-center">
                                                                 <input class="relative float-left mr-1 mt-0.5 h-5 w-5"
-                                                                       name="trueOrfalse{{ $tof->id }}"
-                                                                       type="radio" value="0"
-                                                                       wire:model="trueorfalseAnswer.{{ $tof->id }}" />
+                                                                    name="trueOrfalse{{ $tof->id }}"
+                                                                    type="radio" value="0"
+                                                                    wire:model="trueorfalseAnswer.{{ $tof->id }}" />
                                                                 <span
-                                                                      class="mt-px inline-block pl-[0.15rem] hover:cursor-pointer mr-2 text-slate-700">
+                                                                    class="mt-px inline-block pl-[0.15rem] hover:cursor-pointer mr-2 text-slate-700">
                                                                     False
                                                                 </span>
                                                             </label>
@@ -158,7 +170,7 @@
 
                                 {{-- Multiple Choice Block --}}
                                 <div class="hidden rounded-lg" id="question2" role="tabpanel"
-                                     aria-labelledby="question2-tab">
+                                    aria-labelledby="question2-tab">
                                     @if ($this->multipleChoice->isNotEmpty())
                                         <div class="">
                                             <div class="w-full flex justify-start items-center">
@@ -181,20 +193,20 @@
                                                         <div class="flex justify-between">
                                                             <div class="text-slate-700 text-md">
                                                                 {{ $multi_choice->question_no }}. <span
-                                                                      class="ml-3">{{ strip_tags($multi_choice->question) }}</span>
+                                                                    class="ml-3">{{ strip_tags($multi_choice->question) }}</span>
                                                             </div>
                                                         </div>
                                                     </div>
 
                                                     <div
-                                                         class="mb-[0.125rem] block min-h-[1.5rem] pl-[1.5rem] ml-6 mt-3">
+                                                        class="mb-[0.125rem] block min-h-[1.5rem] pl-[1.5rem] ml-6 mt-3">
                                                         <label>
                                                             <input class="relative float-left mr-1 mt-0.5 h-5 w-5"
-                                                                   name="multiple_choice{{ $multi_choice->id }}"
-                                                                   type="radio" value="1"
-                                                                   wire:model="multipleChoiceAnswer.{{ $multi_choice->id }}" />
+                                                                name="multiple_choice{{ $multi_choice->id }}"
+                                                                type="radio" value="1"
+                                                                wire:model="multipleChoiceAnswer.{{ $multi_choice->id }}" />
                                                             <span class="mt-px inline-block pl-[0.15rem] hover:cursor-pointer text-slate-600"
-                                                                  for="{{ $multi_choice->choice_1 }}">
+                                                                for="{{ $multi_choice->choice_1 }}">
                                                                 (A)
                                                                 {{ $multi_choice->choice_1 }}
                                                             </span>
@@ -203,11 +215,11 @@
                                                     <div class="mb-[0.125rem] block min-h-[1.5rem] pl-[1.5rem] ml-6">
                                                         <label>
                                                             <input class="relative float-left mr-1 mt-0.5 h-5 w-5"
-                                                                   name="multiple_choice{{ $multi_choice->id }}"
-                                                                   type="radio" value="2"
-                                                                   wire:model="multipleChoiceAnswer.{{ $multi_choice->id }}" />
+                                                                name="multiple_choice{{ $multi_choice->id }}"
+                                                                type="radio" value="2"
+                                                                wire:model="multipleChoiceAnswer.{{ $multi_choice->id }}" />
                                                             <span class="mt-px inline-block pl-[0.15rem] hover:cursor-pointer text-slate-600"
-                                                                  for="{{ $multi_choice->choice_2 }}">
+                                                                for="{{ $multi_choice->choice_2 }}">
                                                                 (B) {{ $multi_choice->choice_2 }}
                                                             </span>
                                                         </label>
@@ -215,11 +227,11 @@
                                                     <div class="mb-[0.125rem] block min-h-[1.5rem] pl-[1.5rem] ml-6">
                                                         <label>
                                                             <input class="relative float-left mr-1 mt-0.5 h-5 w-5"
-                                                                   name="multiple_choice{{ $multi_choice->id }}"
-                                                                   type="radio" value="3"
-                                                                   wire:model="multipleChoiceAnswer.{{ $multi_choice->id }}" />
+                                                                name="multiple_choice{{ $multi_choice->id }}"
+                                                                type="radio" value="3"
+                                                                wire:model="multipleChoiceAnswer.{{ $multi_choice->id }}" />
                                                             <span class="mt-px inline-block pl-[0.15rem] hover:cursor-pointer text-slate-600"
-                                                                  for="{{ $multi_choice->choice_3 }}">
+                                                                for="{{ $multi_choice->choice_3 }}">
                                                                 (C) {{ $multi_choice->choice_3 }}
                                                             </span>
                                                         </label>
@@ -227,11 +239,11 @@
                                                     <div class="mb-[0.125rem] block min-h-[1.5rem] pl-[1.5rem] ml-6">
                                                         <label>
                                                             <input class="relative float-left mr-1 mt-0.5 h-5 w-5"
-                                                                   name="multiple_choice{{ $multi_choice->id }}"
-                                                                   type="radio" value="4"
-                                                                   wire:model="multipleChoiceAnswer.{{ $multi_choice->id }}" />
+                                                                name="multiple_choice{{ $multi_choice->id }}"
+                                                                type="radio" value="4"
+                                                                wire:model="multipleChoiceAnswer.{{ $multi_choice->id }}" />
                                                             <span class="mt-px inline-block pl-[0.15rem] hover:cursor-pointer text-slate-600"
-                                                                  for="{{ $multi_choice->choice_4 }}">
+                                                                for="{{ $multi_choice->choice_4 }}">
                                                                 (D) {{ $multi_choice->choice_4 }}
                                                             </span>
                                                         </label>
@@ -248,7 +260,7 @@
 
                                 {{-- Matching Block --}}
                                 <div class="hidden p-4 rounded-lg" id="question3" role="tabpanel"
-                                     aria-labelledby="question3-tab">
+                                    aria-labelledby="question3-tab">
                                     {{-- <div>Matching</div> --}}
                                     @if ($this->matching->isNotEmpty())
                                         <div class="m-3">
@@ -353,7 +365,7 @@
 
                                 {{-- ShortQuestion Block --}}
                                 <div class="hidden p-4 rounded-lg" id="question4" role="tabpanel"
-                                     aria-labelledby="question4-tab">
+                                    aria-labelledby="question4-tab">
                                     @if ($this->shortQuestion->isNotEmpty())
                                         <div class="m-3">
                                             <p class="font-bold">IV. Short Questions.</p>
@@ -388,7 +400,7 @@
 
                                 {{-- Essay Block --}}
                                 <div class="hidden p-4 rounded-lg" id="question5" role="tabpanel"
-                                     aria-labelledby="question5-tab">
+                                    aria-labelledby="question5-tab">
                                     @if ($this->essay->isNotEmpty())
                                         <div class="m-3">
                                             <p class="font-bold">V. Essay Questions.</p>
@@ -433,9 +445,9 @@
                         </div>
                     </div>
                 @endif
-            @endif
-        </form>
-    </div>
+            </form>
+        </div>
+    @endif
 
     {{-- show report for students after sumbmit --}}
     @if ($this->summaryView && $examStatus == 2)
@@ -545,6 +557,7 @@
         </div>
     @endif
 
+    {{-- check by teacher --}}
     @if ($checkAnsweredPaper)
         {{-- <h1>Hello</h1> --}}
         @include('exam_view.exam-answered-paper')
