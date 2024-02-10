@@ -74,12 +74,8 @@
                         <button class="border bg-blue-600 py-2 px-3 rounded-md text-white"
                                 @click="history.back()">Back</button>
                         @if ($currentDate->between($startDate, $endDate))
-                            {{-- @if ($this->examAnswers->status != 0) --}}
-                                <button class="border bg-green-500 py-2 px-3 rounded-md text-white"
-                                        wire:click='answerStart'>Answer</button>
-                            {{-- @endif --}}
-
-                           
+                            <button class="border bg-green-500 py-2 px-3 rounded-md text-white" id="answer"
+                                    wire:click='answerStart'>Answer</button>
                         @endif
                     @endif
 

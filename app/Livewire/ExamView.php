@@ -18,6 +18,7 @@ use App\Models\ShortQuestionAnswer;
 use App\Models\TrueOrFalse;
 use App\Models\TrueOrFalseAnswer;
 use App\Models\User;
+use Illuminate\Support\Facades\Validator;
 use Livewire\Attributes\Computed;
 use Livewire\Component;
 use Livewire\WithoutUrlPagination;
@@ -196,11 +197,12 @@ class ExamView extends Component
     public function checkAnswer($userID, $examID)
     {
         // dd($userID,$examID);
+
         $this->shortQuestionReceiveMark = [];
         $this->essayReceiveMark = [];
         $this->isExamSubmittedStudent = false;
         $this->checkAnsweredPaper = true;
-        $this->questionType = 1; // set default to true or false question for teacher
+
         $this->checkedCurrentUser = User::find($userID);
 
         // true or false black check
@@ -242,6 +244,11 @@ class ExamView extends Component
             return $this->essayAnswer[$default->essay_id] = $default->student_answer;
         });
         $this->essay = $essay_answer;
+
+        $this->questionType = $true_false_answer->isNotEmpty() ? 1 : ($multiple_choice_answer->isNotEmpty() ? 2 : (
+            $matching_answer->isNotEmpty() ? 3 : ($short_question_answer->isNotEmpty() ? 4 : 5)
+        )); // set default question for teacher
+
     }
     #[Computed]
     public function role($role)
@@ -295,22 +302,89 @@ class ExamView extends Component
         // return redirect()->route('courses');
 
     }
+    public function validateCheck($received_mark,$short_question){
+
+        if ($short_question && $received_mark > $short_question->mark) {
+            $validator = Validator::make([
+                'received_mark' => $received_mark,
+                'short_question_mark' => $short_question->mark,
+            ], [
+                'received_mark' => 'lte:short_question_mark', // Ensure received_mark is less than or equal to short_question_mark
+            ], [
+                'lte' => ':attribute must be under the given mark.', // Custom error message format
+            ]);
+            return $validator;
+        }
+    }
 
     public function examMarkUpdate($submitted_user_id)
     {
+        // $validated = $this->validate([
+        //     'shortQuestionReceiveMark.*' => 'required',
+        // ]);
 
-        // dump($this->shortQuestionReceiveMark);
-        // dump($this->essayReceiveMark);
-        // dd($submitted_user_id,$this->shortQuestionReceiveMark);
+        $errorMessage = [];
         foreach ($this->shortQuestionReceiveMark as $key => $received_mark) {
-            // dump($key,$received_mark);
-            $short_question = ShortQuestionAnswer::find($key);
-            if ($short_question) {
-                $short_question->received_mark = $received_mark;
-                $short_question->save();
-            }
-            //   dd($short_question->toArray());
+            $short_question_answer = ShortQuestionAnswer::find($key);
+            $short_question = ShortQuestion::find($short_question_answer->short_question_id);
+
+            $validator = $this->validateCheck($received_mark,$short_question);
+
+            $errorMessage[] = $validator->errors()->first();
         }
+        // dd($errorMessage);
+
+
+        if ($validator && $validator->fails()) {
+            // dd('fail validate');
+            foreach ($errorMessage as $error) {
+                $this->addError('message', $error);
+            }
+            // return $this->addError('message',$errorMessage);
+        }else{
+            dd('success validation');
+        }
+
+        // if ($this->getErrorBag()->has('shortQuestionReceiveMark')) {
+        //     // Get the first error message associated with shortQuestionReceiveMark
+        //     $errorMessage = $this->getErrorBag()->first('shortQuestionReceiveMark');
+        //     // Dump and die
+        //     dd($errorMessage);
+        // }
+
+        if ($validator && $validator->fails()) {
+            $errorMessage = $validator->errors()->first();
+            return $this->addError("shortQuestionReceiveMark.$key", $errorMessage);
+        }else{
+            foreach ($this->shortQuestionReceiveMark as $key => $received_mark) {
+               $this->resetValidation();
+                $short_question_answer = ShortQuestionAnswer::find($key);
+                $short_question_answer->received_mark = $received_mark;
+                $short_question_answer->save();
+            }
+        }
+
+
+
+        // foreach ($this->shortQuestionReceiveMark as $key => $received_mark) {
+        //     $short_question_answer = ShortQuestionAnswer::find($key);
+        //     $short_question = ShortQuestion::find($short_question_answer->short_question_id);
+
+        //     if ($short_question) {
+        //         if ($received_mark > $short_question->mark) {
+        //             $this->addError('shortQuestionReceiveMark.' . $key, 'Mark Validation Failed');
+        //         }else{
+        //             $short_question_answer->received_mark = $received_mark;
+        //             $short_question_answer->save();
+        //         }
+        //     }
+
+        //     // if ($short_question_answer) {
+        //     //     $short_question_answer->received_mark = $received_mark;
+        //     //     $short_question_answer->save();
+        //     // }
+        // }
+        // dd('check validate');
 
         foreach ($this->essayReceiveMark as $key => $received_mark) {
             // dump($key);

@@ -2,36 +2,60 @@
     <div class="p-2 rounded-xl shadow-2xl bg-slate-300">
         <form wire:submit.prevent="examMarkUpdate({{ $checkedCurrentUser?->id }})" method="POST">
             @csrf
-            <div>
+            <!-- Display error messages -->
+            @if ($errors->has('message'))
+                @foreach ($errors->get('message') as $error)
+                    <p class="error">{{ $error }}</p>
+                @endforeach
+            @endif
+
+            {{-- @foreach ($shortQuestion as $key => $shortQ)
+                @error('shortQuestionReceiveMark.'.$shortQ->id)
+                    <p class="error px-2 py-2 rounded bg-red-400 text-white m-3 mt-3">{{ $message }}</p>
+                @enderror
+                @php
+                    $errorKey = 'shortQuestionReceiveMark.' . $shortQ->id;
+                    $hasError = $errors->has($errorKey);
+                @endphp
+
+                @if ($hasError)
+                    <p class="error px-2 py-2 rounded bg-red-400 text-white m-3 mt-3">{{ $errors->first($errorKey) }}</p>
+                @endif
+            @endforeach --}}
+
+            <div class="px-2 py-2 ">
                 Student Name - {{ $checkedCurrentUser?->name }}
             </div>
             <div class="rounded-xl shadow-lg">
                 <div class="mb-4 border-b border-gray-200">
                     <ul class="flex flex-wrap -mb-px text-sm font-medium text-center bg-gray-500 rounded-md px-3">
+                        @if ($trueOrfalse->isNotEmpty())
+                            <li class="me-2 py-2">
+                                <span wire:click="loadQuestion(1)" class="inline-block cursor-pointer text-white text-md p-2 {{ $questionType == 1 ? 'bg-blue-600' : '' }} hover:bg-blue-600 hover:text-white">True or False</span>
+                            </li>
+                        @endif
+
                         <li class="me-2 py-2">
-                            <button wire:click="loadQuestion(1)" class="inline-block text-white text-md p-2 hover:bg-blue-600 hover:text-white" type="button">True or False</button>
+                            <span wire:click="loadQuestion(2)" class="inline-block cursor-pointer text-white text-md p-2 {{ $questionType == 2 ? 'bg-blue-600' : '' }} hover:bg-blue-600 hover:text-white">Multiple Choice</span>
                         </li>
 
                         <li class="me-2 py-2">
-                            <button wire:click="loadQuestion(2)" class="inline-block text-white text-md p-2 hover:bg-blue-600 hover:text-white" type="button">Multiple Choice</button>
+                            <span wire:click="loadQuestion(3)" class="inline-block cursor-pointer text-white text-md p-2 {{ $questionType == 3 ? 'bg-blue-600' : '' }} hover:bg-blue-600 hover:text-white">Matching</span>
                         </li>
 
                         <li class="me-2 py-2">
-                            <button wire:click="loadQuestion(3)" class="inline-block text-white text-md p-2 hover:bg-blue-600 hover:text-white" type="button">Matching</button>
+                            <span wire:click="loadQuestion(4)" class="inline-block cursor-pointer text-white text-md p-2 {{ $questionType == 4 ? 'bg-blue-600' : '' }} hover:bg-blue-600 hover:text-white">Short Question</span>
                         </li>
 
                         <li class="me-2 py-2">
-                            <button wire:click="loadQuestion(4)" class="inline-block text-white text-md p-2 hover:bg-blue-600 hover:text-white" type="button">Short Question</button>
-                        </li>
-
-                        <li class="me-2 py-2">
-                            <button wire:click="loadQuestion(5)" class="inline-block text-white text-md p-2 hover:bg-blue-600 hover:text-white" type="button">Essay</button>
+                            <span wire:click="loadQuestion(5)" class="inline-block cursor-pointer text-white text-md p-2 {{ $questionType == 5 ? 'bg-blue-600' : '' }} hover:bg-blue-600 hover:text-white">Essay</span>
                         </li>
 
                     </ul>
                 </div>
 
                 <div class="p-2 mb-4 border-b border-gray-200">
+                    {{-- true or false --}}
                     @if ($questionType == 1)
                         @if ($trueOrfalse->isNotEmpty())
                             <div class="m-3">
@@ -83,6 +107,7 @@
                         @endif
                     @endif
 
+                    {{-- Multiple choice --}}
                     @if ($questionType == 2)
                         @if ($multipleChoice->isNotEmpty())
                             <div class="m-3">
@@ -148,6 +173,7 @@
                         @endif
                     @endif
 
+                    {{-- Matching --}}
                     @if ($questionType == 3)
                         @if ($matching->isNotEmpty())
                             <div class="m-3">
@@ -257,6 +283,7 @@
                         @endif
                     @endif
 
+                    {{-- Short Question --}}
                     @if ($questionType == 4)
                         @if ($shortQuestion->isNotEmpty())
                             <div class="m-3">
@@ -332,10 +359,10 @@
                 </div>
 
                 <div class="text-end">
-                    <label wire:click="backToSumittedStudent" class="mb-3 mr-4 bg-transparent hover:bg-green-500 text-blue-700 font-semibold hover:text-white py-2 px-4 border border-blue-500 hover:border-transparent rounded">
+                    <label wire:click="backToSumittedStudent" class="mb-3 mr-4 bg-transparent hover:bg-gray-600 text-gray-700 font-semibold hover:text-white py-2 px-4 border border-blue-500 hover:border-transparent rounded">
                         Back
                     </label>
-                    <button type="submit" class="mb-3 mr-4 bg-transparent hover:bg-green-500 text-blue-700 font-semibold hover:text-white py-2 px-4 border border-blue-500 hover:border-transparent rounded">
+                    <button type="submit" class="mb-3 mr-4 bg-transparent hover:bg-green-500 text-blue-700 font-semibold hover:text-white py-2 px-3 border border-blue-500 hover:border-transparent rounded">
                         Submit
                     </button>
                 </div>
