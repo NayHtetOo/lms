@@ -55,4 +55,8 @@ class Exam extends Model
     public function forums(){
         return $this->hasMany(Forum::class);
     }
+
+    public function examAnswers() {
+        return $this->hasOne(ExamAnswer::class);
+    }
 }

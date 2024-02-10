@@ -1,4 +1,4 @@
-<div class="min-h-full w-full" id="examViewContainer">
+<div class="min-h-full w-full @if ($isExamPaperOpen == true) flex @endif" id="examViewContainer">
     @php
         $startDate = \Carbon\Carbon::parse($this->exams->start_date_time);
         $endDate = \Carbon\Carbon::parse($this->exams->end_date_time);
@@ -15,11 +15,19 @@
             </div>
         </div>
     @endif
+
     {{-- exam information --}}
     {{-- max-w-7xl py-1 lg:px-8 sm:px-6 --}}
     {{-- $isTeacher || ($isStudent && $this->summaryView && $examStatus == 2) || ($this->summaryView && $examStatus == 1 ) --}}
-    <div class="w-full mx-auto mt-3 @if ($examSubmitted && $this->isStudent) max-w-7xl py-1 lg:px-8 sm:px-6 @endif" id="examDescription">
-        <div class="w-full ">
+    <div class="mt-3 @if ($examSubmitted && $this->isStudent && $isExamPaperOpen) w-1/4 py-1 lg:px-8 sm:px-6 @endif" id="examDescription">
+        <div class="w-full my-5">
+            @if ($this->summaryView && $examStatus == 1)
+                <div class="mx-auto max-w-7xl py-1 sm:px-6 lg:px-8 ">
+                    <div class="p-4 rounded shadow-xl bg-slate-300 text-blue-500">
+                        <label class="">Wait for Exam Result</label>
+                    </div>
+                </div>
+            @endif
             <div class="p-4 rounded-xl transform transition-all duration-300 shadow-4xl shadow-lg">
                 <div class="border-b border-slate-500 pb-2">
                     <h2 class="text-xl font-bold text-slate-800">{{ $this->exams->exam_name }}</h2>
@@ -28,425 +36,426 @@
                         Duration - <span class="text-blue-500 font-bold">{{ $this->exams->duration }} minutes</span>
                     </div>
 
-                    <div class="text-slate-700 my-3">
-                        <svg class="w-6 h-6 inline" xmlns="http://www.w3.org/2000/svg" fill="none"
-                             viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round"
-                                  d="M12 6v6h4.5m4.5 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
-                        </svg>
-                        <span>Start date - <span
-                                  class="text-blue-500 font-bold">{{ $this->exams->start_date_time }}</span></span>
+                    <div class="border-b border-slate-700">
+                        <div class="text-slate-700 my-3">
+                            <svg class="w-6 h-6 inline" xmlns="http://www.w3.org/2000/svg" fill="none"
+                                 viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round"
+                                      d="M12 6v6h4.5m4.5 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
+                            </svg>
+                            <span>Start date - <span
+                                      class="text-blue-500 font-bold">{{ $this->exams->start_date_time }}</span></span>
+                        </div>
+                        <div class="text-slate-700 my-3">
+                            <svg class="w-6 h-6 inline" xmlns="http://www.w3.org/2000/svg" fill="none"
+                                 viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round"
+                                      d="M12 6v6h4.5m4.5 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
+                            </svg>
+                            <span>End date - <span
+                                      class="text-blue-500 font-bold">{{ $this->exams->end_date_time }}</span></span>
+                        </div>
                     </div>
                     <div class="text-slate-700 my-3">
-                        <svg class="w-6 h-6 inline" xmlns="http://www.w3.org/2000/svg" fill="none"
+                        <svg class="w-6 h-6 inline text-green-500" xmlns="http://www.w3.org/2000/svg" fill="none"
                              viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round"
-                                  d="M12 6v6h4.5m4.5 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
+                                  d="M19.5 14.25v-2.625a3.375 3.375 0 0 0-3.375-3.375h-1.5A1.125 1.125 0 0 1 13.5 7.125v-1.5a3.375 3.375 0 0 0-3.375-3.375H8.25m3.75 9v6m3-3H9m1.5-12H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 0 0-9-9Z" />
                         </svg>
-                        <span>End date - <span
-                                  class="text-blue-500 font-bold">{{ $this->exams->end_date_time }}</span></span>
-                    </div>
-                    <div class="text-slate-700 my-3">
-                        <svg class="w-6 h-6 inline" xmlns="http://www.w3.org/2000/svg" fill="none"
-                             viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round"
-                                  d="M12 6v6h4.5m4.5 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
-                        </svg>
-                        <span> Description - <span class="text-blue-500 font-bold py-2 px-2">
-                                {{ $this->exams->description }}
-                            </span>
-                        </span>
+                        <span class="text-green-500"> Description </span>
+                        <p class="text-slate-700 mt-2 font-bold py-2 px-2">
+                            {{ $this->exams->description }}
+                        </p>
                     </div>
                 </div>
 
                 <div class="relative overflow-x-auto sm:rounded text-end mt-3">
                     @if (!$this->examSubmitted)
-                        {{ $startAnswer }}
-                        TimeRemaining : {{ $duration }} :: {{ $timer }}
+                        <button class="border bg-blue-600 py-2 px-3 rounded-md text-white"
+                                @click="history.back()">Back</button>
                         @if ($currentDate->between($startDate, $endDate))
-                            <button class="border bg-green-500 py-2 px-3 rounded-md text-white" id="answer"
-                                    wire:click='answerStart'>Answer</button>
+                            {{-- @if ($this->examAnswers->status != 0) --}}
+                                <button class="border bg-green-500 py-2 px-3 rounded-md text-white"
+                                        wire:click='answerStart'>Answer</button>
+                            {{-- @endif --}}
+
+                           
                         @endif
                     @endif
 
-                    <script>
-                        setInterval(() => {
-                            if (@this.startAnswer) {
-                                @this.call('decreaseTimer');
-                            }
-                        }, 100);
-                    </script>
                 </div>
             </div>
         </div>
+        @if ($isExamPaperOpen)
+            <div class=" shadow-lg px-20 py-10 flex justify-center items-center rounded-lg">
+                <svg class="w-6 h-6 inline" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+                     stroke-width="1.5" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round"
+                          d="M12 6v6h4.5m4.5 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
+                </svg>
+                <span class="text-2xl text-slate-700">{{ $duration }} : {{ $timer }}</span>
+            </div>
+        @endif
     </div>
 
     {{-- exam answer by student block --}}
     @if (!$examSubmitted && $this->isStudent)
-        <div class="w-3/4 mt-3 h-[85vh] overflow-auto">
-            <form id="form" wire:submit.prevent="examSubmit" method="POST" wire:ignore.self>
-                @csrf
-                @if (
-                    $this->trueOrfalse->isNotEmpty() ||
-                        $this->multipleChoice->isNotEmpty() ||
-                        $this->matching->isNotEmpty() ||
-                        $this->shortQuestion->isNotEmpty() ||
-                        $this->essay->isNotEmpty())
-                    <div class="mx-auto max-w-7xl py-1 sm:px-6 lg:px-8">
-                        <div class="p-2 rounded-xl shadow-2xl">
-                            <div class="w-full flex justify-end items-center my-3">
-                                <div class=" px-3">
-                                    <div
-                                        class="text-white font-bold bg-blue-600 px-4 py-2 rounded-md w-[10rem] text-center">
-                                        <svg class="w-6 h-6 inline" xmlns="http://www.w3.org/2000/svg" fill="none"
-                                            viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
-                                            <path stroke-linecap="round" stroke-linejoin="round"
-                                                d="M12 6v6h4.5m4.5 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
-                                        </svg>
-                                        <span id="examMinutes" wire:ignore></span>
+        @if ($isExamPaperOpen)
+            <div class="w-3/4 mt-3 h-[85vh] overflow-auto">
+                <form id="form" wire:submit.prevent="examSubmit" method="POST">
+                    @csrf
+                    @if (
+                        $this->trueOrfalse->isNotEmpty() ||
+                            $this->multipleChoice->isNotEmpty() ||
+                            $this->matching->isNotEmpty() ||
+                            $this->shortQuestion->isNotEmpty() ||
+                            $this->essay->isNotEmpty())
+                        <div class="mx-auto max-w-7xl py-1 sm:px-6 lg:px-8">
+                            <div class="p-2 rounded-xl shadow-2xl">
+                                <h2 class="text-blue-800 text-end mt-3">Marks - 100</h2>
+                                <div class=" px-3" id="question-tab-content">
+                                    <div class="rounded-lg relative" id="question1" role="tabpanel"
+                                         aria-labelledby="question1-tab">
+                                        @if ($pageNumber == 1)
+                                            @if ($trueOrfalse->isNotEmpty())
+                                                <div wire:transition.1000ms>
+                                                    <div class="w-full flex justify-start items-center">
+                                                        @include('exam_view.prev-next-button')
+                                                    </div>
+                                                    <div class="flex justify-between w-full mt-3">
+                                                        <p class="font-bold text-slate-800 text-xl ms-2">I.
+                                                            <span class="ms-3">True or False Questions.</span>
+                                                        </p>
+                                                        <p class="font-bold text-slate-800 text-xl">(1 Marks)</p>
+                                                    </div>
+
+                                                    <div class="m-2">
+                                                        @foreach ($trueOrfalse as $tof)
+                                                            <div class="my-5">
+                                                                <div class="flex justify-between">
+                                                                    <div class="text-slate-700 text-md">
+                                                                        {{ $tof->question_no }}. <span
+                                                                              class="ml-3">{{ strip_tags($tof->question) }}</span>
+                                                                    </div>
+                                                                </div>
+                                                                <div
+                                                                     class="mb-[0.125rem] block min-h-[1.5rem] ml-6 mt-3">
+                                                                    <label class="flex items-center">
+                                                                        <input class="relative float-left mr-1 mt-0.5 h-5 w-5"
+                                                                               name="trueOrfalse{{ $tof->id }}"
+                                                                               type="radio" value="1"
+                                                                               wire:model="trueorfalseAnswer.{{ $tof->id }}" />
+                                                                        <span
+                                                                              class="mt-px inline-block pl-[0.15rem] hover:cursor-pointer mr-2 text-slate-600">
+                                                                            True
+                                                                        </span>
+                                                                    </label>
+                                                                </div>
+                                                                <div
+                                                                     class="mb-[0.125rem] block min-h-[1.5rem] ml-6 mt-3">
+                                                                    <label class="flex items-center">
+                                                                        <input class="relative float-left mr-1 mt-0.5 h-5 w-5"
+                                                                               name="trueOrfalse{{ $tof->id }}"
+                                                                               type="radio" value="0"
+                                                                               wire:model="trueorfalseAnswer.{{ $tof->id }}" />
+                                                                        <span
+                                                                              class="mt-px inline-block pl-[0.15rem] hover:cursor-pointer mr-2 text-slate-700">
+                                                                            False
+                                                                        </span>
+                                                                    </label>
+                                                                </div>
+                                                            </div>
+                                                        @endforeach
+                                                    </div>
+                                                </div>
+                                            @endif
+                                        @endif
                                     </div>
-                                    <h2 class="text-blue-800 text-end mt-3">Marks - 100</h2>
-                                </div>
-                            </div>
-                            <div class=" px-3" id="question-tab-content">
-                                <div class="rounded-lg relative" id="question1" role="tabpanel"
-                                    aria-labelledby="question1-tab">
-                                    @if ($trueOrfalse->isNotEmpty())
-                                        <div class="">
-                                            <div class="w-full flex justify-start items-center">
-                                                @include('exam_view.prev-next-button', [
-                                                    'prev_id' => '',
-                                                    'prev_target' => '',
-                                                    'next_id' => 'question2-tab',
-                                                    'next_target' => 'question2',
-                                                ])
-                                            </div>
-                                            <div class="flex justify-between w-full mt-3">
-                                                <p class="font-bold text-slate-800 text-xl ms-2">I.
-                                                    <span class="ms-3">True or False Questions.</span>
-                                                </p>
-                                                <p class="font-bold text-slate-800 text-xl">(1 Marks)</p>
-                                            </div>
 
-                                            <div class="m-2">
-                                                @foreach ($trueOrfalse as $tof)
-                                                    <div class="my-5">
-                                                        <div class="flex justify-between">
-                                                            <div class="text-slate-700 text-md">
-                                                                {{ $tof->question_no }}. <span
-                                                                    class="ml-3">{{ strip_tags($tof->question) }}</span>
-                                                            </div>
-                                                        </div>
-                                                        <div class="mb-[0.125rem] block min-h-[1.5rem] ml-6 mt-3">
-                                                            <label class="flex items-center">
-                                                                <input class="relative float-left mr-1 mt-0.5 h-5 w-5"
-                                                                    name="trueOrfalse{{ $tof->id }}"
-                                                                    type="radio" value="1"
-                                                                    wire:model="trueorfalseAnswer.{{ $tof->id }}" />
-                                                                <span
-                                                                    class="mt-px inline-block pl-[0.15rem] hover:cursor-pointer mr-2 text-slate-600">
-                                                                    True
-                                                                </span>
-                                                            </label>
-                                                        </div>
-                                                        <div class="mb-[0.125rem] block min-h-[1.5rem] ml-6 mt-3">
-                                                            <label class="flex items-center">
-                                                                <input class="relative float-left mr-1 mt-0.5 h-5 w-5"
-                                                                    name="trueOrfalse{{ $tof->id }}"
-                                                                    type="radio" value="0"
-                                                                    wire:model="trueorfalseAnswer.{{ $tof->id }}" />
-                                                                <span
-                                                                    class="mt-px inline-block pl-[0.15rem] hover:cursor-pointer mr-2 text-slate-700">
-                                                                    False
-                                                                </span>
-                                                            </label>
-                                                        </div>
+                                    {{-- Multiple Choice Block --}}
+                                    <div class=" rounded-lg" id="question2" role="tabpanel"
+                                         aria-labelledby="question2-tab">
+                                        @if ($pageNumber == 2)
+                                            @if ($this->multipleChoice->isNotEmpty())
+                                                <div wire:transition.1000ms>
+                                                    <div class="w-full flex justify-start items-center">
+                                                        @include('exam_view.prev-next-button')
                                                     </div>
-                                                @endforeach
-                                            </div>
-                                        </div>
-                                    @endif
-                                </div>
-
-                                {{-- Multiple Choice Block --}}
-                                <div class="hidden rounded-lg" id="question2" role="tabpanel"
-                                    aria-labelledby="question2-tab">
-                                    @if ($this->multipleChoice->isNotEmpty())
-                                        <div class="">
-                                            <div class="w-full flex justify-start items-center">
-                                                @include('exam_view.prev-next-button', [
-                                                    'prev_id' => 'question1-tab',
-                                                    'prev_target' => 'question1',
-                                                    'next_id' => 'question3-tab',
-                                                    'next_target' => 'question3',
-                                                ])
-                                            </div>
-                                            <div class="flex justify-between w-full mt-3">
-                                                <p class="font-bold text-slate-800 text-xl ms-2">I.
-                                                    <span class="ms-3">True or False Questions.</span>
-                                                </p>
-                                                <p class="font-bold text-slate-800 text-xl">(1 Marks)</p>
-                                            </div>
-                                            <div class="m-2">
-                                                @foreach ($this->multipleChoice as $multi_choice)
-                                                    <div class="flex justify-between">
-                                                        <div class="flex justify-between">
-                                                            <div class="text-slate-700 text-md">
-                                                                {{ $multi_choice->question_no }}. <span
-                                                                    class="ml-3">{{ strip_tags($multi_choice->question) }}</span>
-                                                            </div>
-                                                        </div>
+                                                    <div class="flex justify-between w-full mt-3">
+                                                        <p class="font-bold text-slate-800 text-xl ms-2">II.
+                                                            <span class="ms-3">Multiple Choice Questions.</span>
+                                                        </p>
+                                                        <p class="font-bold text-slate-800 text-xl">(1 Marks)</p>
                                                     </div>
+                                                    <div class="m-2">
+                                                        @foreach ($this->multipleChoice as $multi_choice)
+                                                            <div class="flex justify-between">
+                                                                <div class="flex justify-between">
+                                                                    <div class="text-slate-700 text-md">
+                                                                        {{ $multi_choice->question_no }}. <span
+                                                                              class="ml-3">{{ strip_tags($multi_choice->question) }}</span>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
 
-                                                    <div
-                                                        class="mb-[0.125rem] block min-h-[1.5rem] pl-[1.5rem] ml-6 mt-3">
-                                                        <label>
-                                                            <input class="relative float-left mr-1 mt-0.5 h-5 w-5"
-                                                                name="multiple_choice{{ $multi_choice->id }}"
-                                                                type="radio" value="1"
-                                                                wire:model="multipleChoiceAnswer.{{ $multi_choice->id }}" />
-                                                            <span class="mt-px inline-block pl-[0.15rem] hover:cursor-pointer text-slate-600"
-                                                                for="{{ $multi_choice->choice_1 }}">
+                                                            <div
+                                                                 class="mb-[0.125rem] block min-h-[1.5rem] pl-[1.5rem] ml-6 mt-3">
+                                                                <label>
+                                                                    <input class="relative float-left mr-1 mt-0.5 h-5 w-5"
+                                                                           name="multiple_choice{{ $multi_choice->id }}"
+                                                                           type="radio" value="1"
+                                                                           wire:model="multipleChoiceAnswer.{{ $multi_choice->id }}" />
+
+                                                                </label>
+                                                            </div>
+                                                            {{-- multiplce chooic 1 question --}}
+                                                            <span class="mt-px ml-16 block pl-[0.15rem] hover:cursor-pointer text-slate-600"
+                                                                  for="{{ $multi_choice->choice_1 }}">
                                                                 (A)
-                                                                {{ $multi_choice->choice_1 }}
+                                                                {{ strip_tags($multi_choice->choice_1) }}
                                                             </span>
-                                                        </label>
-                                                    </div>
-                                                    <div class="mb-[0.125rem] block min-h-[1.5rem] pl-[1.5rem] ml-6">
-                                                        <label>
-                                                            <input class="relative float-left mr-1 mt-0.5 h-5 w-5"
-                                                                name="multiple_choice{{ $multi_choice->id }}"
-                                                                type="radio" value="2"
-                                                                wire:model="multipleChoiceAnswer.{{ $multi_choice->id }}" />
-                                                            <span class="mt-px inline-block pl-[0.15rem] hover:cursor-pointer text-slate-600"
-                                                                for="{{ $multi_choice->choice_2 }}">
+                                                            <div
+                                                                 class="mb-[0.125rem] block min-h-[1.5rem] pl-[1.5rem] ml-6 my-3">
+                                                                <label>
+                                                                    <input class="relative float-left mr-1 mt-0.5 h-5 w-5"
+                                                                           name="multiple_choice{{ $multi_choice->id }}"
+                                                                           type="radio" value="2"
+                                                                           wire:model="multipleChoiceAnswer.{{ $multi_choice->id }}" />
+                                                                </label>
+                                                            </div>
+                                                            {{-- multiple choice question 2  --}}
+                                                            <span class="mt-px ml-16 block pl-[0.15rem] hover:cursor-pointer text-slate-600"
+                                                                  for="{{ $multi_choice->choice_2 }}">
                                                                 (B) {{ $multi_choice->choice_2 }}
                                                             </span>
-                                                        </label>
-                                                    </div>
-                                                    <div class="mb-[0.125rem] block min-h-[1.5rem] pl-[1.5rem] ml-6">
-                                                        <label>
-                                                            <input class="relative float-left mr-1 mt-0.5 h-5 w-5"
-                                                                name="multiple_choice{{ $multi_choice->id }}"
-                                                                type="radio" value="3"
-                                                                wire:model="multipleChoiceAnswer.{{ $multi_choice->id }}" />
-                                                            <span class="mt-px inline-block pl-[0.15rem] hover:cursor-pointer text-slate-600"
-                                                                for="{{ $multi_choice->choice_3 }}">
+
+                                                            <div
+                                                                 class="mb-[0.125rem] block min-h-[1.5rem] pl-[1.5rem] ml-6 my-3">
+                                                                <label>
+                                                                    <input class="relative float-left mr-1 mt-0.5 h-5 w-5"
+                                                                           name="multiple_choice{{ $multi_choice->id }}"
+                                                                           type="radio" value="3"
+                                                                           wire:model="multipleChoiceAnswer.{{ $multi_choice->id }}" />
+                                                                </label>
+                                                            </div>
+                                                            <span class="mt-px ml-16 inline-block pl-[0.15rem] hover:cursor-pointer text-slate-600"
+                                                                  for="{{ $multi_choice->choice_3 }}">
                                                                 (C) {{ $multi_choice->choice_3 }}
                                                             </span>
-                                                        </label>
-                                                    </div>
-                                                    <div class="mb-[0.125rem] block min-h-[1.5rem] pl-[1.5rem] ml-6">
-                                                        <label>
-                                                            <input class="relative float-left mr-1 mt-0.5 h-5 w-5"
-                                                                name="multiple_choice{{ $multi_choice->id }}"
-                                                                type="radio" value="4"
-                                                                wire:model="multipleChoiceAnswer.{{ $multi_choice->id }}" />
-                                                            <span class="mt-px inline-block pl-[0.15rem] hover:cursor-pointer text-slate-600"
-                                                                for="{{ $multi_choice->choice_4 }}">
+                                                            <div
+                                                                 class="mb-[0.125rem] block min-h-[1.5rem] pl-[1.5rem] ml-6 my-3">
+                                                                <label>
+                                                                    <input class="relative float-left mr-1 mt-0.5 h-5 w-5"
+                                                                           name="multiple_choice{{ $multi_choice->id }}"
+                                                                           type="radio" value="4"
+                                                                           wire:model="multipleChoiceAnswer.{{ $multi_choice->id }}" />
+                                                                </label>
+                                                            </div>
+                                                            <span class="mt-px ml-16 inline-block pl-[0.15rem] hover:cursor-pointer text-slate-600 my-3"
+                                                                  for="{{ $multi_choice->choice_4 }}">
                                                                 (D) {{ $multi_choice->choice_4 }}
                                                             </span>
-                                                        </label>
+                                                        @endforeach
                                                     </div>
-                                                @endforeach
-                                            </div>
-                                        </div>
-                                    @else
-                                        <div class="m-3">
-                                            <p class="font-bold">There is no multiple choice</p>
-                                        </div>
-                                    @endif
-                                </div>
+                                                </div>
+                                            @else
+                                                <div class="m-3">
+                                                    <p class="font-bold">There is no multiple choice</p>
+                                                </div>
+                                            @endif
+                                        @endif
+                                    </div>
 
-                                {{-- Matching Block --}}
-                                <div class="hidden p-4 rounded-lg" id="question3" role="tabpanel"
-                                    aria-labelledby="question3-tab">
-                                    {{-- <div>Matching</div> --}}
-                                    @if ($this->matching->isNotEmpty())
-                                        <div class="m-3">
-                                            <div class="w-full flex justify-start items-center">
-                                                @include('exam_view.prev-next-button', [
-                                                    'prev_id' => 'question2-tab',
-                                                    'prev_target' => 'question2',
-                                                    'next_id' => 'question4-tab',
-                                                    'next_target' => 'question4',
-                                                ])
-                                            </div>
-                                            <div class="flex justify-between w-full mt-3">
-                                                <p class="font-bold text-slate-800 text-xl ms-2">I.
-                                                    <span class="ms-3">III. Matching Questions.</span>
-                                                </p>
-                                                <p class="font-bold text-slate-800 text-xl">(1 Marks)</p>
-                                            </div>
-                                            <div class="m-2">
-                                                @foreach ($this->matching as $key => $match)
-                                                    <div class="flex justify-between">
-                                                        <div class="flex justify-between">
+                                    {{-- Matching Block --}}
+                                    <div class="rounded-lg" id="question3" role="tabpanel"
+                                         aria-labelledby="question3-tab">
+                                        {{-- <div>Matching</div> --}}
+                                        @if ($pageNumber == 3)
+                                            @if ($this->matching->isNotEmpty())
+                                                <div wire:transition.1000ms>
+                                                    <div class="w-full flex justify-start items-center">
+                                                        @include('exam_view.prev-next-button')
+                                                    </div>
+                                                    <div class="flex justify-between w-full mt-3">
+                                                        <p class="font-bold text-slate-800 text-xl ms-2">III.
+                                                            <span class="ms-3"> Matching Questions.</span>
+                                                        </p>
+                                                        <p class="font-bold text-slate-800 text-xl">(1 Marks)</p>
+                                                    </div>
+                                                    <div class="m-2">
+                                                        @foreach ($this->matching as $key => $match)
+                                                            <div class="flex justify-between">
+                                                                <div class="flex justify-between">
+                                                                    <div class="text-slate-700 text-md">
+                                                                        {{ $match->question_no }}. <span
+                                                                              class="ml-3">{{ strip_tags($match->question) }}</span>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+
+                                                            <div class="ml-5 mt-3 w-full">
+                                                                <div class="flex justify-between w-full">
+                                                                    <div class="mt-2 text-slate-600">(A)
+                                                                        {{ strip_tags($match->question_1) }} </div>
+                                                                    <div class=" ">
+                                                                        <select class="py-3 px-4 pe-9 block w-50 border-gray-200 rounded-lg text-sm focus:border-blue-500
+                                                                                        focus:ring-blue-500 disabled:opacity-50 disabled:pointer-events-none
+                                                                                        "
+                                                                                wire:model="matchingAnswer.{{ $match->id }}.1">
+                                                                            <option class="px-3 py-3" selected>Select
+                                                                                One
+                                                                            </option>
+                                                                            <option class="h-50 text-slate-600"
+                                                                                    value="1">
+                                                                                {{ $match->answer_1 }}</option>
+                                                                            <option class="h-50 text-slate-600"
+                                                                                    value="2">
+                                                                                {{ $match->answer_2 }}</option>
+                                                                            <option class="h-50 text-slate-600"
+                                                                                    value="3">
+                                                                                {{ $match->answer_3 }}</option>
+                                                                        </select>
+                                                                    </div>
+                                                                </div>
+                                                                <div class="flex justify-between mt-1 w-full">
+                                                                    <div class="mt-2 text-slate-600">(B)
+                                                                        {{ strip_tags($match->question_2) }} </div>
+                                                                    <div class="">
+                                                                        <select class="py-3 px-4 pe-9 block w-70 border-gray-200 rounded-lg text-sm focus:border-blue-500
+                                                                                        focus:ring-blue-500 disabled:opacity-50 disabled:pointer-events-none"
+                                                                                wire:model="matchingAnswer.{{ $match->id }}.2">
+                                                                            <option class="px-3 py-3" selected>Select
+                                                                                One
+                                                                            </option>
+                                                                            <option class="h-50 text-slate-600"
+                                                                                    value="1">
+                                                                                {{ $match->answer_1 }}</option>
+                                                                            <option class="h-50 text-slate-600"
+                                                                                    value="2">
+                                                                                {{ $match->answer_2 }}</option>
+                                                                            <option class="h-50 text-slate-600"
+                                                                                    value="3">
+                                                                                {{ $match->answer_3 }}</option>
+                                                                        </select>
+                                                                    </div>
+                                                                </div>
+                                                                <div class="flex justify-between mt-1 w-full">
+                                                                    <div class="mt-2 text-slate-600">(C)
+                                                                        {{ strip_tags($match->question_3) }} </div>
+                                                                    <div class="">
+                                                                        <select class="py-3 px-4 pe-9 block w-70 border-gray-200 rounded-lg text-sm focus:border-blue-500
+                                                                                        focus:ring-blue-500 disabled:opacity-50 disabled:pointer-events-none"
+                                                                                wire:model="matchingAnswer.{{ $match->id }}.3">
+                                                                            <option class="px-3 py-3" selected>Select
+                                                                                One
+                                                                            </option>
+                                                                            <option class="h-50 text-slate-600"
+                                                                                    value="1">
+                                                                                {{ $match->answer_1 }}</option>
+                                                                            <option class="h-50 text-slate-600"
+                                                                                    value="2">
+                                                                                {{ $match->answer_2 }}</option>
+                                                                            <option class="h-50 text-slate-600"
+                                                                                    value="3">
+                                                                                {{ $match->answer_3 }}</option>
+                                                                        </select>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        @endforeach
+                                                    </div>
+                                                </div>
+                                            @else
+                                                <div class="m-3">
+                                                    <p class="font-bold">There is no matching choice</p>
+                                                </div>
+                                            @endif
+                                        @endif
+                                    </div>
+
+                                    {{-- ShortQuestion Block --}}
+                                    <div class="rounded-lg" id="question4" role="tabpanel"
+                                         aria-labelledby="question4-tab">
+                                        @if ($pageNumber == 4)
+                                            @if ($this->shortQuestion->isNotEmpty())
+                                                <div wire:transition.1000ms>
+                                                    <div class="w-full flex justify-start items-center">
+                                                        @include('exam_view.prev-next-button')
+                                                    </div>
+                                                    <div class="flex justify-between w-full mt-3">
+                                                        <p class="font-bold text-slate-800 text-xl ms-2">IV.
+                                                            <span class="ms-3"> Short Questions.</span>
+                                                        </p>
+                                                        <p class="font-bold text-slate-800 text-xl">(1 Marks)</p>
+                                                    </div>
+                                                    <div class="m-2">
+                                                        @foreach ($this->shortQuestion as $key => $shortQ)
                                                             <div class="text-slate-700 text-md">
-                                                                {{ $match->question_no }}. <span
-                                                                      class="ml-3">{{ strip_tags($match->question) }}</span>
+                                                                {{ $shortQ->question_no }}.
+                                                                {{ strip_tags($shortQ->question) }}
                                                             </div>
-                                                        </div>
+                                                            <div class="p-5 pr-20">
+                                                                <textarea class="w-full h-40 rounded-md" wire:model="shortQuestionAnswer.{{ $shortQ->id }}"></textarea>
+                                                            </div>
+                                                        @endforeach
                                                     </div>
+                                                </div>
+                                            @else
+                                                <div class="m-3">
+                                                    <p class="font-bold">There is no short question</p>
+                                                </div>
+                                            @endif
+                                        @endif
+                                    </div>
 
-                                                    <div class="ml-5 mt-3">
-                                                        <div class="flex justify-between">
-                                                            <div class="mt-2 text-slate-600">(A)
-                                                                {{ strip_tags($match->question_1) }} </div>
-                                                            <div class="mr-20">
-                                                                <select class="py-3 px-4 pe-9 block w-70 border-gray-200 rounded-lg text-sm focus:border-blue-500
-                                                                                focus:ring-blue-500 disabled:opacity-50 disabled:pointer-events-none
-                                                                                "
-                                                                        wire:model="matchingAnswer.{{ $match->id }}.1">
-                                                                    <option class="px-3 py-3" selected>Select One
-                                                                    </option>
-                                                                    <option class="h-50 text-slate-600"
-                                                                            value="1">
-                                                                        {{ $match->answer_1 }}</option>
-                                                                    <option class="h-50 text-slate-600"
-                                                                            value="2">
-                                                                        {{ $match->answer_2 }}</option>
-                                                                    <option class="h-50 text-slate-600"
-                                                                            value="3">
-                                                                        {{ $match->answer_3 }}</option>
-                                                                </select>
-                                                            </div>
-                                                        </div>
-                                                        <div class="flex justify-between mt-1">
-                                                            <div class="mt-2 text-slate-600">(B)
-                                                                {{ strip_tags($match->question_2) }} </div>
-                                                            <div class="mr-20">
-                                                                <select class="py-3 px-4 pe-9 block w-70 border-gray-200 rounded-lg text-sm focus:border-blue-500
-                                                                                focus:ring-blue-500 disabled:opacity-50 disabled:pointer-events-none"
-                                                                        wire:model="matchingAnswer.{{ $match->id }}.2">
-                                                                    <option class="px-3 py-3" selected>Select One
-                                                                    </option>
-                                                                    <option class="h-50 text-slate-600"
-                                                                            value="1">
-                                                                        {{ $match->answer_1 }}</option>
-                                                                    <option class="h-50 text-slate-600"
-                                                                            value="2">
-                                                                        {{ $match->answer_2 }}</option>
-                                                                    <option class="h-50 text-slate-600"
-                                                                            value="3">
-                                                                        {{ $match->answer_3 }}</option>
-                                                                </select>
-                                                            </div>
-                                                        </div>
-                                                        <div class="flex justify-between mt-1">
-                                                            <div class="mt-2">(C)
-                                                                {{ strip_tags($match->question_3) }} </div>
-                                                            <div class="mr-20">
-                                                                <select class="py-3 px-4 pe-9 block w-70 border-gray-200 rounded-lg text-sm focus:border-blue-500
-                                                                                focus:ring-blue-500 disabled:opacity-50 disabled:pointer-events-none"
-                                                                        wire:model="matchingAnswer.{{ $match->id }}.3">
-                                                                    <option class="px-3 py-3" selected>Select One
-                                                                    </option>
-                                                                    <option class="h-50" value="1">
-                                                                        {{ $match->answer_1 }}</option>
-                                                                    <option class="h-50" value="2">
-                                                                        {{ $match->answer_2 }}</option>
-                                                                    <option class="h-50" value="3">
-                                                                        {{ $match->answer_3 }}</option>
-                                                                </select>
-                                                            </div>
-                                                        </div>
+                                    {{-- Essay Block --}}
+                                    <div class="rounded-lg" id="question5" role="tabpanel"
+                                         aria-labelledby="question5-tab">
+                                        @if ($pageNumber == 5)
+                                            @if ($this->essay->isNotEmpty())
+                                                <div class="w-full flex justify-start items-center">
+                                                    @include('exam_view.prev-next-button')
+                                                </div>
+                                                <div wire:transition.1000ms>
+                                                    <div class="flex justify-between w-full mt-3">
+                                                        <p class="font-bold text-slate-800 text-xl ms-2">V.
+                                                            <span class="ms-3"> Eassay Questions.</span>
+                                                        </p>
+                                                        <p class="font-bold text-slate-800 text-xl">(1 Marks)</p>
                                                     </div>
-                                                @endforeach
-                                            </div>
-                                        </div>
-                                    @else
-                                        <div class="m-3">
-                                            <p class="font-bold">There is no matching choice</p>
-                                        </div>
-                                    @endif
-
+                                                    <div class="m-2">
+                                                        @foreach ($this->essay as $key => $esy)
+                                                            <div class="text-slate-700 text-md">
+                                                                {{ $esy->question_no }}.
+                                                                {{ strip_tags($esy->question) }}
+                                                            </div>
+                                                            <div class="p-5 pr-20">
+                                                                <textarea class="w-full h-40 rounded-md" wire:model="essayAnswer.{{ $esy->id }}"></textarea>
+                                                            </div>
+                                                        @endforeach
+                                                    </div>
+                                                </div>
+                                            @else
+                                                <div class="m-3">
+                                                    <p class="font-bold">There is no essay</p>
+                                                </div>
+                                            @endif
+                                        @endif
+                                    </div>
                                 </div>
 
-                                {{-- ShortQuestion Block --}}
-                                <div class="hidden p-4 rounded-lg" id="question4" role="tabpanel"
-                                    aria-labelledby="question4-tab">
-                                    @if ($this->shortQuestion->isNotEmpty())
-                                        <div class="m-3">
-                                            <p class="font-bold">IV. Short Questions.</p>
-                                            <div class="m-2">
-                                                @foreach ($this->shortQuestion as $key => $shortQ)
-                                                    <div class="flex justify-between">
-                                                        <div>
-                                                            {{ $shortQ->question_no }}. {{ $shortQ->question }}
-                                                        </div>
-                                                        <div> {{ $shortQ->mark }} Mark</div>
-                                                    </div>
-                                                    <div class="p-5 pr-20">
-                                                        <textarea class="w-full h-40 rounded-md" wire:model="shortQuestionAnswer.{{ $shortQ->id }}"></textarea>
-                                                    </div>
-                                                @endforeach
-                                            </div>
-                                        </div>
-                                    @else
-                                        <div class="m-3">
-                                            <p class="font-bold">There is no short question</p>
-                                        </div>
-                                    @endif
-
-                                    @include('exam_view.prev-next-button', [
-                                        'prev_id' => 'question3-tab',
-                                        'prev_target' => 'question3',
-                                        'next_id' => 'question5-tab',
-                                        'next_target' => 'question5',
-                                    ])
-
+                                <div class="text-end">
+                                    <button class="mr-4 bg-transparent hover:bg-green-500 text-blue-700 font-semibold hover:text-white py-2 px-4 border border-blue-500 hover:border-transparent rounded"
+                                            type="submit">
+                                        Submit
+                                    </button>
                                 </div>
-
-                                {{-- Essay Block --}}
-                                <div class="hidden p-4 rounded-lg" id="question5" role="tabpanel"
-                                    aria-labelledby="question5-tab">
-                                    @if ($this->essay->isNotEmpty())
-                                        <div class="m-3">
-                                            <p class="font-bold">V. Essay Questions.</p>
-                                            <div class="m-2">
-                                                @foreach ($this->essay as $key => $esy)
-                                                    <div class="flex justify-between">
-                                                        <div>
-                                                            {{ $esy->question_no }}. {{ $esy->question }}
-                                                        </div>
-                                                        <div> {{ $esy->mark }} Mark</div>
-                                                    </div>
-                                                    <div class="p-5 pr-20">
-                                                        <textarea class="w-full h-40 rounded-md" wire:model="essayAnswer.{{ $esy->id }}"></textarea>
-                                                    </div>
-                                                @endforeach
-                                            </div>
-                                        </div>
-                                    @else
-                                        <div class="m-3">
-                                            <p class="font-bold">There is no essay</p>
-                                        </div>
-                                    @endif
-
-                                    @include('exam_view.prev-next-button', [
-                                        'prev_id' => 'question4-tab',
-                                        'prev_target' => 'question4',
-                                        'next_id' => '',
-                                        'next_target' => '',
-                                    ])
-
-                                </div>
-                                {{-- end essay block --}}
-
-                            </div>
-
-                            <div class="text-end">
-                                <button class="mr-4 bg-transparent hover:bg-green-500 text-blue-700 font-semibold hover:text-white py-2 px-4 border border-blue-500 hover:border-transparent rounded"
-                                        type="submit">
-                                    Submit
-                                </button>
                             </div>
                         </div>
-                    </div>
-                @endif
-            </form>
-        </div>
+                    @endif
+                </form>
+            </div>
+        @endif
     @endif
 
     {{-- show report for students after sumbmit --}}
@@ -497,14 +506,6 @@
                 <div class="m-2 mt-2">
                     <h2 class="font-bold">Highest Mark: {{ $this->gradeMark }} / {{ $this->baseTotalMark }}</h2>
                 </div>
-            </div>
-        </div>
-    @endif
-
-    @if ($this->summaryView && $examStatus == 1)
-        <div class="mx-auto max-w-7xl py-1 sm:px-6 lg:px-8 ">
-            <div class="p-4 rounded shadow-2xl bg-slate-300 text-blue-500">
-                <label class="">Wait for Exam Result</label>
             </div>
         </div>
     @endif
@@ -593,136 +594,9 @@
         });
     });
 
-    // let examDuration = @json($this->exams->duration);
-    // let userId = @json($user_id);
-    // let examId = @json($id);
-    // const csrfToken = document.getElementById("csrfToken").getAttribute("content");
-    // let startDate = new Date(@json($startDate));
-    // let endDate = new Date(@json($endDate));
-    // let currentDate = new Date(@json($currentDate))
-    // let examMinutes = document.getElementById("examMinutes");
-    // let examViewContainer = document.getElementById("examViewContainer");
-    // let examDescription = document.getElementById("examDescription");
-
-    // let postData = {
-    //     'user_id': userId,
-    //     'exam_id': examId,
-    //     'status': 1,
-    // }
-    // let options = {
-    //     method: 'POST',
-    //     headers: {
-    //         'Content-Type': "application/json",
-    //         'X-CSRF-TOKEN': csrfToken
-    //     },
-    //     body: JSON.stringify(postData)
-    // }
-    // let getLocalStorage = JSON.parse(localStorage.getItem('storeDuration'));
-    // let getFormStatus = JSON.parse(localStorage.getItem('formStatus'));
-
-    // if (!getFormStatus) {
-    //     let storeFormStatus = localStorage.setItem('formStatus', JSON.stringify({
-    //         status: false,
-    //     }));
-    // }
-
-    // if (!getLocalStorage) {
-    //     localStorage.setItem('storeDuration', JSON.stringify({
-    //         storeMinutes: examDuration,
-    //         storeSeconds: 60,
-    //     }));
-    // }
-
-    // getLocalStorage = JSON.parse(localStorage.getItem('storeDuration'));
-    // getFormStatus = JSON.parse(localStorage.getItem('formStatus'));
-    // console.log(getFormStatus);
-
-
-    // document.getElementById("answer").addEventListener("click", function() {
-    //     localStorage.setItem('formStatus', JSON.stringify({
-    //         status: true,
-    //     }));
-    //     console.log(getFormStatus);
-    //     FormLoad();
-    // });
-
-    // window.addEventListener("load", function() {
-    //     console.log("load");
-    //     FormLoad();
-    // });
-
-    // function FormLoad() {
-    //     getFormStatus = JSON.parse(localStorage.getItem('formStatus'));
-    //     if (getFormStatus.status == true && getFormStatus) {
-    //         document.getElementById("form").classList.remove("hidden");
-    //         examViewContainer.classList.add('flex');
-    //         examDescription.classList.remove('w-full');
-    //         examDescription.classList.remove('mx-auto');
-    //         examDescription.classList.add('w-1/4');
-    //         examDurationCount();
-    //     } else {
-    //         document.getElementById("form").classList.add("hidden");
-    //         examViewContainer.classList.remove('flex');
-    //         examDescription.classList.add('w-full');
-    //         examDescription.classList.add('mx-auto');
-    //         examDescription.classList.remove('w-1/4');
-    //     }
-    // }
-
-    // function examDurationCount() {
-    //     if (currentDate > startDate && currentDate < endDate) {
-    //         console.log('date between')
-    //         const intervalExam = setInterval(() => {
-
-    //             if (getLocalStorage.storeMinutes != null || getLocalStorage.storeSeconds != null) {
-    //                 getLocalStorage.storeSeconds--;
-    //             } else {
-    //                 examMinutes.style.display = "none";
-    //             }
-
-    //             localStorage.setItem('storeDuration', JSON.stringify(getLocalStorage));
-
-    //             if (getLocalStorage.storeSeconds == 0) {
-    //                 if (getLocalStorage.storeMinutes >= 0) {
-    //                     getLocalStorage.storeMinutes--;
-    //                     getLocalStorage.storeSeconds = 59;
-    //                 }
-
-    //                 console.log(getLocalStorage.storeMinutes);
-
-    //                 if (getLocalStorage.storeMinutes == 0) {
-    //                     console.log(getFormStatus.status);
-    //                     const apiUrl = "/submit";
-    //                     fetch(apiUrl, options)
-    //                         .then((response) => {
-    //                             if (!response.ok) {
-    //                                 throw new Error(`Error status ${response.status}`);
-    //                             }
-    //                             return response.json();
-    //                         })
-    //                         .then((data) => {
-    //                             clearInterval(intervalExam);
-    //                             localStorage.setItem('storeDuration', JSON.stringify({
-    //                                 storeMinutes: null,
-    //                                 storeSeconds: null,
-    //                             }));
-    //                             examMinutes.textContent = "";
-    //                             localStorage.removeItem('formStatus');
-    //                             document.getElementById("form").classList.add("hidden");
-    //                             examViewContainer.classList.remove('flex');
-    //                             examDescription.classList.add('w-full');
-    //                             examDescription.classList.add('mx-auto');
-    //                             examDescription.classList.remove('w-1/4');
-    //                         })
-    //                         .catch(error => {
-    //                             console.error(`Error ${error}`);
-    //                         });
-    //                 }
-    //             }
-    //             examMinutes.textContent = `${getLocalStorage.storeMinutes} : ${getLocalStorage.storeSeconds}`;
-    //         }, 1000);
-    //     } else {
-    //         console.log("exam is not started");
-    //     }
-    // }
+    setInterval(() => {
+        if (@this.startAnswer) {
+            @this.call('decreaseTimer');
+        }
+    }, 1000);
 </script>

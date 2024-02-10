@@ -26,6 +26,7 @@
                     </button>
                 </div>
             @endif
+
             <div class=" rounded-xl shadow-lg">
                 <div class="mb-4 border-b border-gray-200">
                     <ul class="flex flex-wrap -mb-px text-sm font-medium text-center bg-blue-500 rounded-md px-3" id="default-tab"
@@ -40,6 +41,14 @@
                         <li class="me-2 py-2" role="presentation">
                             <button class="inline-block text-white p-2
                          hover:bg-blue-600 hover:text-white text-md"
+                                    id="forum-tab" data-tabs-target="#forum" type="button" role="tab"
+                                    aria-controls="forum" aria-selected="false">Forums</button>
+                        </li>
+
+
+                        <li class="me-2 py-2" role="presentation">
+                            <button class="inline-block text-white p-2
+                         hover:bg-blue-600 hover:text-white text-md"
                                     id="participant-tab" data-tabs-target="#participant" type="button" role="tab"
                                     aria-controls="participant" aria-selected="false">Participants</button>
                         </li>
@@ -50,11 +59,14 @@
                                     aria-controls="grade" aria-selected="false">Grade</button>
                         </li>
 
-                        <li class="me-2 py-2" role="presentation">
-                            <button class="inline-block text-white p-2 hover:bg-blue-600 hover:text-white text-md"
-                                    id="settings-tab" data-tabs-target="#settings" type="button" role="tab"
-                                    aria-controls="settings" aria-selected="false">Settings</button>
-                        </li>
+                        @if ($this->enrollmentUser->role_id == 2)
+                            <li class="me-2 py-2" role="presentation">
+                                <button class="inline-block text-white p-2 hover:bg-blue-600 hover:text-white text-md"
+                                        id="settings-tab" data-tabs-target="#settings" type="button" role="tab"
+                                        aria-controls="settings" aria-selected="false">Settings</button>
+                            </li>
+                        @endif
+
                     </ul>
                 </div>
 
@@ -63,6 +75,8 @@
                     @include('course.section', [
                         'hidden' => $this->isParticipantSearch ? 'hidden' : '',
                     ])
+                    
+                    @include('course.forum')
 
                     @include('course.participants', [
                         'hidden' => $this->isParticipantSearch ? '' : 'hidden',
@@ -71,6 +85,7 @@
                     @include('course.grade')
 
                     @include('course.setting')
+
 
                 </div>
             </div>

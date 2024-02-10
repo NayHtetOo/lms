@@ -37,12 +37,14 @@ class ExamView extends Component
     public $summaryView = false, $checkAnsweredPaper = false, $isExamSubmittedStudent = false, $examSubmitted = false;
     public $trueOrfalse, $multipleChoice, $matching, $shortQuestion, $essay, $exam_answered_users, $checkedCurrentUser;
     public $shortQuestionReceiveMark = [], $essayReceiveMark = [];
-    public $examStatus, $gradeName,$questionType;
+    public $examStatus, $gradeName, $questionType;
     public $timer = 60;
     protected $listener = ["decreaseTimer"];
     public $startAnswer = false;
     public $examDuration = 180;
     public $duration;
+    public $isExamPaperOpen = false;
+    public $pageNumber = 1;
 
     public function mount($id)
     {
@@ -70,24 +72,27 @@ class ExamView extends Component
             $this->isExamSubmittedStudent = true;
             $this->submittedStudents;
         }
-
-        // dd("student");
         // student
         $this->allQuestion;
         $this->duration = $this->exams->duration;
 
-        if (session_status() == PHP_SESSION_NONE) {
-            session_start();
-        }
+        $startDate = \Carbon\Carbon::parse($this->exams->start_date_time);
+        $endDate = \Carbon\Carbon::parse($this->exams->end_date_time);
+        $todayDate = \Carbon\Carbon::now('Asia/Yangon')->format('y-m-d H:i:s');
+        $currentDate = \Carbon\Carbon::parse($todayDate);
 
-        if (isset($_SESSION['startAnswer']) || isset($_SESSION['timer']) || isset($_SESSION['minutes'])) {
-            $this->startAnswer = true;
-            $this->timer = $_SESSION['timer'];
-            // $this->duration = $_SESSION['minutes'];
 
-            // dd($_SESSION['timer'], $_SESSION['startAnswer'], $_SESSION['minutes']);
+        if ($currentDate > $startDate && $currentDate < $endDate) {
+            if (session_status() == PHP_SESSION_NONE) {
+                session_start();
+            }
+
+            if (isset($_SESSION['startAnswer']) && isset($_SESSION['timer']) && isset($_SESSION['minutes'])) {
+                $this->startAnswer = true;
+                $this->timer = $_SESSION['timer'];
+                $this->duration = $_SESSION['minutes'];
+            }
         }
-        // dd($this->courseID);
     }
 
     public function answerStart()
@@ -95,9 +100,8 @@ class ExamView extends Component
         if (session_status() == PHP_SESSION_NONE) {
             session_start();
         }
-
+        $this->isExamPaperOpen = true;
         $this->startAnswer = true;
-
         $_SESSION['startAnswer'] = $this->startAnswer;
     }
 
@@ -109,34 +113,61 @@ class ExamView extends Component
         $currentDate = \Carbon\Carbon::parse($todayDate);
 
         if ($currentDate > $startDate && $currentDate < $endDate) {
-            if ($this->timer > 0) {
 
+            if ($this->timer > 0) {
+                $this->timer--;
                 if (session_status() == PHP_SESSION_NONE) {
                     session_start();
                 }
-                $this->timer--;
                 $_SESSION['timer'] = $this->timer;
 
                 if ($this->timer == 0) {
-                    if ($this->examDuration > 0) {
 
+                    if ($this->examDuration > 0) {
                         if (session_status() == PHP_SESSION_NONE) {
                             session_start();
                         }
 
                         $this->examDuration--;
+                        $this->timer = 59;
+
                         $this->duration = $this->examDuration;
 
-                        $_SESSION['minutes'] = $this->exanDuration;
-                        // $this->examSubmit();
+                        $_SESSION['minutes'] = $this->duration;
+                        $_SESSION['timer'] = $this->timer;
+
+                        if ($this->duration == 0) {
+                            $this->examSubmit();
+                            session_destroy();
+                        }
                     }
-                    $this->timer = 59;
                 }
             } else {
                 $this->startAnswer = false;
             }
         }
     }
+
+     public function goToNextPage() {
+        if ($this->pageNumber < 5) {
+            $this->pageNumber++;
+        }
+    }
+
+    public function goToPrevPage() {
+        if ($this->pageNumber > 1) {
+            $this->pageNumber--;
+        }
+    }
+
+    #[Computed]
+    public function examAnswers() {
+        $id = $this->exams->id;
+        $examAnswer = ExamAnswer::where('exam_id', $id)->first();
+
+        return $examAnswer;
+    }
+
 
     #[Computed]
     public function allQuestion()
@@ -188,16 +219,16 @@ class ExamView extends Component
 
 
         // matching block check
-            $matching_answer = MatchingAnswer::where('exam_id',$examID)->where('user_id',$userID)->get();
-            $matching_answer->filter(function($default){
-                $inputArray = unserialize($default->student_answer);
-                return $this->matchingAnswer[$default->matching_id] = $inputArray;
-            });
-            $this->matching = $matching_answer;
+        $matching_answer = MatchingAnswer::where('exam_id', $examID)->where('user_id', $userID)->get();
+        $matching_answer->filter(function ($default) {
+            $inputArray = unserialize($default->student_answer);
+            return $this->matchingAnswer[$default->matching_id] = $inputArray;
+        });
+        $this->matching = $matching_answer;
 
         // short question block check
-        $short_question_answer = ShortQuestionAnswer::where('exam_id',$examID)->where('user_id',$userID)->get();
-        $short_question_answer->filter(function($default){
+        $short_question_answer = ShortQuestionAnswer::where('exam_id', $examID)->where('user_id', $userID)->get();
+        $short_question_answer->filter(function ($default) {
             // dump($default->student_answer);
             $this->shortQuestionReceiveMark[$default->id] = $default->received_mark;
             return $this->shortQuestionAnswer[$default->short_question_id] = $default->student_answer;
@@ -205,13 +236,12 @@ class ExamView extends Component
         $this->shortQuestion = $short_question_answer;
 
         // essay block check
-        $essay_answer = EssayAnswer::where('exam_id',$examID)->where('user_id',$userID)->get();
-        $essay_answer->filter(function($default){
+        $essay_answer = EssayAnswer::where('exam_id', $examID)->where('user_id', $userID)->get();
+        $essay_answer->filter(function ($default) {
             $this->essayReceiveMark[$default->id] = $default->received_mark;
             return $this->essayAnswer[$default->essay_id] = $default->student_answer;
         });
         $this->essay = $essay_answer;
-
     }
     #[Computed]
     public function role($role)
@@ -225,7 +255,7 @@ class ExamView extends Component
         } elseif ($role == 'student') {
             $this->isStudent = true;
             $this->summaryView = true;
-        }else{
+        } else {
             $this->isGuest = true;
         }
     }
@@ -237,6 +267,7 @@ class ExamView extends Component
 
     public function examSubmit()
     {
+        $this->isExamPaperOpen = false;
 
         ExamAnswer::create([
             'user_id' => $this->user_id,
@@ -305,11 +336,11 @@ class ExamView extends Component
     {
         // exam submitted
 
-        $exam = ExamAnswer::where('exam_id',$this->id)->where('user_id',$this->user_id)->first();
+        $exam = ExamAnswer::where('exam_id', $this->id)->where('user_id', $this->user_id)->first();
         $this->summaryView = true;
         $this->examStatus = $exam->status;
 
-        if($exam->status == 2){
+        if ($exam->status == 2) {
 
             $this->examSubmittedDate = $exam->created_at;
 
@@ -461,7 +492,8 @@ class ExamView extends Component
         $this->checkAnsweredPaper = false;
     }
 
-    public function loadQuestion($question){
+    public function loadQuestion($question)
+    {
         /**
          * 1 => true or false
          * 2 => multiple choice

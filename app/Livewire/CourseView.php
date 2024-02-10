@@ -52,6 +52,12 @@ class CourseView extends Component
     }
 
     #[Computed]
+    public function enrollmentUser() {
+        $enrollmentUser = Enrollment::where('user_id', auth()->user()->id)->first();
+        return $enrollmentUser;
+    }
+
+    #[Computed]
     public function currentCourse(){
         // return Course::findOrFail($this->id);
     }
