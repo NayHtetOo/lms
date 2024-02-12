@@ -23,7 +23,7 @@ class Course extends Component
     {
         $search_name = $this->search;
         $enrollment = Enrollment::where('user_id', auth()->user()->id)->pluck('course_id');
-        
+
         if ($search_name) {
             $courses = ModelsCourse::whereIn('id', $enrollment)
                 ->where('course_name', 'LIKE', '%' . $search_name . '%')
@@ -40,6 +40,6 @@ class Course extends Component
         return view('livewire.course', [
             'courses' => $courses,
             'search' => $this->search
-        ]);
+        ])->layout('layouts.app');
     }
 }

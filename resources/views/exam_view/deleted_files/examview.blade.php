@@ -20,3 +20,8 @@
         </button>
     @endif
 </div>
+
+
+    {{-- exam information --}}
+    {{-- max-w-7xl py-1 lg:px-8 sm:px-6 --}}
+    {{-- $isTeacher || ($isStudent && $this->summaryView && $examStatus == 2) || ($this->summaryView && $examStatus == 1 ) --}}

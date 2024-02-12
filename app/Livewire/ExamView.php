@@ -82,28 +82,20 @@ class ExamView extends Component
         $todayDate = \Carbon\Carbon::now('Asia/Yangon')->format('y-m-d H:i:s');
         $currentDate = \Carbon\Carbon::parse($todayDate);
 
+        // session()->forget(['startAnswer', 'timer', 'minutes']);
 
         if ($currentDate > $startDate && $currentDate < $endDate) {
-            if (session_status() == PHP_SESSION_NONE) {
-                session_start();
-            }
-
-            if (isset($_SESSION['startAnswer']) && isset($_SESSION['timer']) && isset($_SESSION['minutes'])) {
-                $this->startAnswer = true;
-                $this->timer = $_SESSION['timer'];
-                $this->duration = $_SESSION['minutes'];
-            }
+            $this->startAnswer = session('startAnswer', false);
+            $this->timer = session('timer', 60);
+            $this->duration = session('minutes', $this->exams->duration);
         }
     }
 
     public function answerStart()
     {
-        if (session_status() == PHP_SESSION_NONE) {
-            session_start();
-        }
         $this->isExamPaperOpen = true;
         $this->startAnswer = true;
-        $_SESSION['startAnswer'] = $this->startAnswer;
+        session(['startAnswer' => $this->startAnswer]);
     }
 
     public function decreaseTimer()
@@ -114,32 +106,21 @@ class ExamView extends Component
         $currentDate = \Carbon\Carbon::parse($todayDate);
 
         if ($currentDate > $startDate && $currentDate < $endDate) {
-
             if ($this->timer > 0) {
                 $this->timer--;
-                if (session_status() == PHP_SESSION_NONE) {
-                    session_start();
-                }
-                $_SESSION['timer'] = $this->timer;
-
+                session(['timer' => $this->timer]);
                 if ($this->timer == 0) {
-
                     if ($this->examDuration > 0) {
-                        if (session_status() == PHP_SESSION_NONE) {
-                            session_start();
-                        }
-
                         $this->examDuration--;
                         $this->timer = 59;
-
                         $this->duration = $this->examDuration;
 
-                        $_SESSION['minutes'] = $this->duration;
-                        $_SESSION['timer'] = $this->timer;
+                        session(['minutes' => $this->duration, 'timer' => $this->timer]);
 
                         if ($this->duration == 0) {
+                            //    dd(true);
+                            session()->forget(['startAnswer', 'timer', 'minutes']);
                             $this->examSubmit();
-                            session_destroy();
                         }
                     }
                 }
@@ -149,24 +130,25 @@ class ExamView extends Component
         }
     }
 
-     public function goToNextPage() {
+    public function goToNextPage()
+    {
         if ($this->pageNumber < 5) {
             $this->pageNumber++;
         }
     }
 
-    public function goToPrevPage() {
+    public function goToPrevPage()
+    {
         if ($this->pageNumber > 1) {
             $this->pageNumber--;
         }
     }
 
     #[Computed]
-    public function examAnswers() {
-        $id = $this->exams->id;
-        $examAnswer = ExamAnswer::where('exam_id', $id)->first();
-
-        return $examAnswer;
+    public function studentAccess()
+    {
+        $enrollment = Enrollment::where('user_id', auth()->user()->id)->first();
+        return $enrollment;
     }
 
 
@@ -274,6 +256,9 @@ class ExamView extends Component
 
     public function examSubmit()
     {
+        session()->forget([
+            'startAnswer', 'timer', 'minutes'
+        ]);
         $this->isExamPaperOpen = false;
 
         ExamAnswer::create([

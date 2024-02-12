@@ -16,10 +16,10 @@
         </div>
     @endif
 
-    {{-- exam information --}}
-    {{-- max-w-7xl py-1 lg:px-8 sm:px-6 --}}
-    {{-- $isTeacher || ($isStudent && $this->summaryView && $examStatus == 2) || ($this->summaryView && $examStatus == 1 ) --}}
-    <div class="mt-3 @if ($examSubmitted && $this->isStudent && $isExamPaperOpen) w-1/4 py-1 lg:px-8 sm:px-6 @endif" id="examDescription">
+    {{-- {{ session()->get('timer') }} - {{ session()->get('minutes') }} - {{ session()->get('startAnswer') }} --}}
+    <div class="mt-3  max-w-6xl mx-auto
+        @if ($isExamPaperOpen) w-1/4 py-1 ms-2 @endif
+    ">
         <div class="w-full my-5">
             @if ($this->summaryView && $examStatus == 1)
                 <div class="mx-auto max-w-7xl py-1 sm:px-6 lg:px-8 ">
@@ -68,17 +68,22 @@
                         </p>
                     </div>
                 </div>
-
                 <div class="relative overflow-x-auto sm:rounded text-end mt-3">
                     @if (!$this->examSubmitted)
                         <button class="border bg-blue-600 py-2 px-3 rounded-md text-white"
                                 @click="history.back()">Back</button>
                         @if ($currentDate->between($startDate, $endDate))
+<<<<<<< Updated upstream
                             <button class="border bg-green-500 py-2 px-3 rounded-md text-white" id="answer"
                                     wire:click='answerStart'>Answer</button>
+=======
+                            @if ($this->studentAccess->role_id == 3)
+                                <button class="border bg-green-500 py-2 px-3 rounded-md text-white"
+                                        wire:click='answerStart'>Answer</button>
+                            @endif
+>>>>>>> Stashed changes
                         @endif
                     @endif
-
                 </div>
             </div>
         </div>
@@ -98,7 +103,7 @@
     @if (!$examSubmitted && $this->isStudent)
         @if ($isExamPaperOpen)
             <div class="w-3/4 mt-3 h-[85vh] overflow-auto">
-                <form id="form" wire:submit.prevent="examSubmit" method="POST">
+                <form id="form" wire:submit.prevent="examSubmit" method="POST" >
                     @csrf
                     @if (
                         $this->trueOrfalse->isNotEmpty() ||
@@ -129,7 +134,7 @@
                                                         @foreach ($trueOrfalse as $tof)
                                                             <div class="my-5">
                                                                 <div class="flex justify-between">
-                                                                    <div class="text-slate-700 text-md">
+                                                                    <div class="text-slate-900 text-md">
                                                                         {{ $tof->question_no }}. <span
                                                                               class="ml-3">{{ strip_tags($tof->question) }}</span>
                                                                     </div>
@@ -164,6 +169,10 @@
                                                         @endforeach
                                                     </div>
                                                 </div>
+                                            @else
+                                                <div class="m-3">
+                                                    <p class="font-bold">There is no true/false</p>
+                                                </div>
                                             @endif
                                         @endif
                                     </div>
@@ -187,7 +196,7 @@
                                                         @foreach ($this->multipleChoice as $multi_choice)
                                                             <div class="flex justify-between">
                                                                 <div class="flex justify-between">
-                                                                    <div class="text-slate-700 text-md">
+                                                                    <div class="text-slate-900 text-md">
                                                                         {{ $multi_choice->question_no }}. <span
                                                                               class="ml-3">{{ strip_tags($multi_choice->question) }}</span>
                                                                     </div>
@@ -202,14 +211,17 @@
                                                                            type="radio" value="1"
                                                                            wire:model="multipleChoiceAnswer.{{ $multi_choice->id }}" />
 
+                                                                    <div class="flex">
+                                                                        <span class="mt-px ml-2 block pl-[0.15rem] hover:cursor-pointer text-slate-600"
+                                                                              for="{{ $multi_choice->choice_1 }}">
+                                                                            (A)
+                                                                        </span>
+                                                                        <span
+                                                                              class="block ml-2 w-full text-slate-600">{{ strip_tags($multi_choice->choice_1) }}</span>
+                                                                    </div>
                                                                 </label>
                                                             </div>
                                                             {{-- multiplce chooic 1 question --}}
-                                                            <span class="mt-px ml-16 block pl-[0.15rem] hover:cursor-pointer text-slate-600"
-                                                                  for="{{ $multi_choice->choice_1 }}">
-                                                                (A)
-                                                                {{ strip_tags($multi_choice->choice_1) }}
-                                                            </span>
                                                             <div
                                                                  class="mb-[0.125rem] block min-h-[1.5rem] pl-[1.5rem] ml-6 my-3">
                                                                 <label>
@@ -217,13 +229,17 @@
                                                                            name="multiple_choice{{ $multi_choice->id }}"
                                                                            type="radio" value="2"
                                                                            wire:model="multipleChoiceAnswer.{{ $multi_choice->id }}" />
+
+                                                                    <div class="flex">
+                                                                        <span class="mt-px ml-2 block pl-[0.15rem] hover:cursor-pointer text-slate-600"
+                                                                              for="{{ $multi_choice->choice_2 }}">
+                                                                            (B)
+                                                                        </span>
+                                                                        <span
+                                                                              class="block ml-2 w-full text-slate-600">{{ strip_tags($multi_choice->choice_2) }}</span>
+                                                                    </div>
                                                                 </label>
                                                             </div>
-                                                            {{-- multiple choice question 2  --}}
-                                                            <span class="mt-px ml-16 block pl-[0.15rem] hover:cursor-pointer text-slate-600"
-                                                                  for="{{ $multi_choice->choice_2 }}">
-                                                                (B) {{ $multi_choice->choice_2 }}
-                                                            </span>
 
                                                             <div
                                                                  class="mb-[0.125rem] block min-h-[1.5rem] pl-[1.5rem] ml-6 my-3">
@@ -232,12 +248,16 @@
                                                                            name="multiple_choice{{ $multi_choice->id }}"
                                                                            type="radio" value="3"
                                                                            wire:model="multipleChoiceAnswer.{{ $multi_choice->id }}" />
+                                                                    <div class="flex">
+                                                                        <span class="mt-px ml-2 block pl-[0.15rem] hover:cursor-pointer text-slate-600"
+                                                                              for="{{ $multi_choice->choice_3 }}">
+                                                                            (C)
+                                                                        </span>
+                                                                        <span
+                                                                              class="block ml-2 w-full text-slate-600">{{ strip_tags($multi_choice->choice_3) }}</span>
+                                                                    </div>
                                                                 </label>
                                                             </div>
-                                                            <span class="mt-px ml-16 inline-block pl-[0.15rem] hover:cursor-pointer text-slate-600"
-                                                                  for="{{ $multi_choice->choice_3 }}">
-                                                                (C) {{ $multi_choice->choice_3 }}
-                                                            </span>
                                                             <div
                                                                  class="mb-[0.125rem] block min-h-[1.5rem] pl-[1.5rem] ml-6 my-3">
                                                                 <label>
@@ -245,12 +265,16 @@
                                                                            name="multiple_choice{{ $multi_choice->id }}"
                                                                            type="radio" value="4"
                                                                            wire:model="multipleChoiceAnswer.{{ $multi_choice->id }}" />
+                                                                    <div class="flex">
+                                                                        <span class="mt-px ml-2 block pl-[0.15rem] hover:cursor-pointer text-slate-600"
+                                                                              for="{{ $multi_choice->choice_4 }}">
+                                                                            (D)
+                                                                        </span>
+                                                                        <span
+                                                                              class="block ml-2 w-full text-slate-600">{{ strip_tags($multi_choice->choice_4) }}</span>
+                                                                    </div>
                                                                 </label>
                                                             </div>
-                                                            <span class="mt-px ml-16 inline-block pl-[0.15rem] hover:cursor-pointer text-slate-600 my-3"
-                                                                  for="{{ $multi_choice->choice_4 }}">
-                                                                (D) {{ $multi_choice->choice_4 }}
-                                                            </span>
                                                         @endforeach
                                                     </div>
                                                 </div>
@@ -276,7 +300,7 @@
                                                         <p class="font-bold text-slate-800 text-xl ms-2">III.
                                                             <span class="ms-3"> Matching Questions.</span>
                                                         </p>
-                                                        <p class="font-bold text-slate-800 text-xl">(1 Marks)</p>
+                                                        <p class="font-bold text-slate-900 text-xl">(1 Marks)</p>
                                                     </div>
                                                     <div class="m-2">
                                                         @foreach ($this->matching as $key => $match)
@@ -291,8 +315,11 @@
 
                                                             <div class="ml-5 mt-3 w-full">
                                                                 <div class="flex justify-between w-full">
-                                                                    <div class="mt-2 text-slate-600">(A)
-                                                                        {{ strip_tags($match->question_1) }} </div>
+                                                                    <div class="mt-2 text-slate-600 ml-5 flex w-full">
+                                                                        (A)
+                                                                        <span class="text-slate-700 block w-full ml-2">
+                                                                            {{ strip_tags($match->question_1) }}</span>
+                                                                    </div>
                                                                     <div class=" ">
                                                                         <select class="py-3 px-4 pe-9 block w-50 border-gray-200 rounded-lg text-sm focus:border-blue-500
                                                                                         focus:ring-blue-500 disabled:opacity-50 disabled:pointer-events-none
@@ -314,8 +341,11 @@
                                                                     </div>
                                                                 </div>
                                                                 <div class="flex justify-between mt-1 w-full">
-                                                                    <div class="mt-2 text-slate-600">(B)
-                                                                        {{ strip_tags($match->question_2) }} </div>
+                                                                    <div class="mt-2 text-slate-600 ml-5 flex w-full">
+                                                                        (B)
+                                                                        <span class="text-slate-700 block w-full ml-2">
+                                                                            {{ strip_tags($match->question_2) }}</span>
+                                                                    </div>
                                                                     <div class="">
                                                                         <select class="py-3 px-4 pe-9 block w-70 border-gray-200 rounded-lg text-sm focus:border-blue-500
                                                                                         focus:ring-blue-500 disabled:opacity-50 disabled:pointer-events-none"
@@ -336,8 +366,11 @@
                                                                     </div>
                                                                 </div>
                                                                 <div class="flex justify-between mt-1 w-full">
-                                                                    <div class="mt-2 text-slate-600">(C)
-                                                                        {{ strip_tags($match->question_3) }} </div>
+                                                                    <div class="mt-2 text-slate-600 ml-5 flex w-full">
+                                                                        (C)
+                                                                        <span class="text-slate-700 block w-full ml-2">
+                                                                            {{ strip_tags($match->question_3) }}</span>
+                                                                    </div>
                                                                     <div class="">
                                                                         <select class="py-3 px-4 pe-9 block w-70 border-gray-200 rounded-lg text-sm focus:border-blue-500
                                                                                         focus:ring-blue-500 disabled:opacity-50 disabled:pointer-events-none"
@@ -594,5 +627,5 @@
         if (@this.startAnswer) {
             @this.call('decreaseTimer');
         }
-    }, 1000);
+    }, 100);
 </script>
