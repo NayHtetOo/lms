@@ -8,4 +8,9 @@ use Illuminate\Database\Eloquent\Model;
 class ForumDiscussion extends Model
 {
     use HasFactory;
+    protected $guarded = [];
+
+    public function forums(){
+        return $this->belongsTo(Forum::class);
+    }
 }

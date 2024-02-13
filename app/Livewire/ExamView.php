@@ -46,6 +46,7 @@ class ExamView extends Component
     public $duration;
     public $isExamPaperOpen = false;
     public $pageNumber = 1;
+    public $flattenedErrors;
 
     public function mount($id)
     {
@@ -287,7 +288,7 @@ class ExamView extends Component
         // return redirect()->route('courses');
 
     }
-    public function validateCheck($received_mark,$short_question){
+    public function validateCheck($key,$received_mark,$short_question){
 
         if ($short_question && $received_mark > $short_question->mark) {
             $validator = Validator::make([
@@ -298,7 +299,8 @@ class ExamView extends Component
             ], [
                 'lte' => ':attribute must be under the given mark.', // Custom error message format
             ]);
-            return $validator;
+
+            return $validator && $validator->fails() ? $validator->errors() : [];
         }
     }
 
@@ -308,87 +310,61 @@ class ExamView extends Component
         //     'shortQuestionReceiveMark.*' => 'required',
         // ]);
 
+        // validation rule for marks (teacher gave marks are less than or equal origin assigned marks)
         $errorMessage = [];
+
         foreach ($this->shortQuestionReceiveMark as $key => $received_mark) {
             $short_question_answer = ShortQuestionAnswer::find($key);
             $short_question = ShortQuestion::find($short_question_answer->short_question_id);
-
-            $validator = $this->validateCheck($received_mark,$short_question);
-
-            $errorMessage[] = $validator->errors()->first();
+            $errorMessage[] = $this->validateCheck($key,$received_mark,$short_question);
         }
-        // dd($errorMessage);
-
-
-        if ($validator && $validator->fails()) {
-            // dd('fail validate');
-            foreach ($errorMessage as $error) {
-                $this->addError('message', $error);
-            }
-            // return $this->addError('message',$errorMessage);
-        }else{
-            dd('success validation');
-        }
-
-        // if ($this->getErrorBag()->has('shortQuestionReceiveMark')) {
-        //     // Get the first error message associated with shortQuestionReceiveMark
-        //     $errorMessage = $this->getErrorBag()->first('shortQuestionReceiveMark');
-        //     // Dump and die
-        //     dd($errorMessage);
-        // }
-
-        if ($validator && $validator->fails()) {
-            $errorMessage = $validator->errors()->first();
-            return $this->addError("shortQuestionReceiveMark.$key", $errorMessage);
-        }else{
-            foreach ($this->shortQuestionReceiveMark as $key => $received_mark) {
-               $this->resetValidation();
-                $short_question_answer = ShortQuestionAnswer::find($key);
-                $short_question_answer->received_mark = $received_mark;
-                $short_question_answer->save();
-            }
-        }
-
-
-
-        // foreach ($this->shortQuestionReceiveMark as $key => $received_mark) {
-        //     $short_question_answer = ShortQuestionAnswer::find($key);
-        //     $short_question = ShortQuestion::find($short_question_answer->short_question_id);
-
-        //     if ($short_question) {
-        //         if ($received_mark > $short_question->mark) {
-        //             $this->addError('shortQuestionReceiveMark.' . $key, 'Mark Validation Failed');
-        //         }else{
-        //             $short_question_answer->received_mark = $received_mark;
-        //             $short_question_answer->save();
-        //         }
-        //     }
-
-        //     // if ($short_question_answer) {
-        //     //     $short_question_answer->received_mark = $received_mark;
-        //     //     $short_question_answer->save();
-        //     // }
-        // }
-        // dd('check validate');
 
         foreach ($this->essayReceiveMark as $key => $received_mark) {
-            // dump($key);
-            $essay = EssayAnswer::find($key);
-            if ($essay) {
-                $essay->received_mark = $received_mark;
-                $essay->save();
+            $essay_answer = EssayAnswer::find($key);
+            $essay = Essay::find($essay_answer->essay_id);
+            $errorMessage[] =  $this->validateCheck($key,$received_mark,$essay);
+        }
+
+        $flattenedErrors = collect($errorMessage)->flatMap(function ($messageBag) {
+            if ($messageBag instanceof \Illuminate\Support\MessageBag && $messageBag->has('received_mark')) {
+                return $messageBag->get('received_mark', []);
+            } else {
+                return [];
             }
-        }
+        })->all();
 
-        $examStatusChange = ExamAnswer::where('user_id', $submitted_user_id)->where('exam_id', $this->id)->first();
-        // dump($examStatusChange->toArray());
-        if ($examStatusChange) {
-            $examStatusChange->status = 2;
-            $examStatusChange->save();
-        }
+        if ($flattenedErrors) {
+            return $this->flattenedErrors = $flattenedErrors;
 
-        $this->isExamSubmittedStudent = true;
-        $this->checkAnsweredPaper = false;
+        }else{
+            $this->flattenedErrors = [];
+
+            foreach ($this->shortQuestionReceiveMark as $key => $received_mark) {
+                $short_question_answer = ShortQuestionAnswer::find($key);
+                if($short_question_answer){
+                    $short_question_answer->received_mark = $received_mark;
+                    $short_question_answer->save();
+                }
+            }
+
+            foreach ($this->essayReceiveMark as $key => $received_mark) {
+                $essay_answer = EssayAnswer::find($key);
+                if ($essay_answer) {
+                    $essay_answer->received_mark = $received_mark;
+                    $essay_answer->save();
+                }
+            }
+
+            $examStatusChange = ExamAnswer::where('user_id', $submitted_user_id)->where('exam_id', $this->id)->first();
+            if ($examStatusChange) {
+                $examStatusChange->status = 2;
+                $examStatusChange->save();
+            }
+
+            $this->isExamSubmittedStudent = true;
+            $this->checkAnsweredPaper = false;
+
+        }
     }
     #[Computed]
     public function examSummary()
@@ -547,6 +523,7 @@ class ExamView extends Component
 
     public function backToSumittedStudent()
     {
+        $this->flattenedErrors = [];
         $this->isExamSubmittedStudent = true;
         $this->checkAnsweredPaper = false;
     }

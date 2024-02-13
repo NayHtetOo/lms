@@ -3,29 +3,16 @@
         <form wire:submit.prevent="examMarkUpdate({{ $checkedCurrentUser?->id }})" method="POST">
             @csrf
             <!-- Display error messages -->
-            @if ($errors->has('message'))
-                @foreach ($errors->get('message') as $error)
-                    <p class="error">{{ $error }}</p>
+            @if ($flattenedErrors)
+                @foreach ($flattenedErrors as $error)
+                    <p class="px-2 py-2 bg-red-400 m-1 text-white rounded">{{ $error }}</p>
                 @endforeach
             @endif
-
-            {{-- @foreach ($shortQuestion as $key => $shortQ)
-                @error('shortQuestionReceiveMark.'.$shortQ->id)
-                    <p class="error px-2 py-2 rounded bg-red-400 text-white m-3 mt-3">{{ $message }}</p>
-                @enderror
-                @php
-                    $errorKey = 'shortQuestionReceiveMark.' . $shortQ->id;
-                    $hasError = $errors->has($errorKey);
-                @endphp
-
-                @if ($hasError)
-                    <p class="error px-2 py-2 rounded bg-red-400 text-white m-3 mt-3">{{ $errors->first($errorKey) }}</p>
-                @endif
-            @endforeach --}}
 
             <div class="px-2 py-2 ">
                 Student Name - {{ $checkedCurrentUser?->name }}
             </div>
+            
             <div class="rounded-xl shadow-lg">
                 <div class="mb-4 border-b border-gray-200">
                     <ul class="flex flex-wrap -mb-px text-sm font-medium text-center bg-gray-500 rounded-md px-3">

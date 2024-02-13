@@ -73,15 +73,10 @@
                         <button class="border bg-blue-600 py-2 px-3 rounded-md text-white"
                                 @click="history.back()">Back</button>
                         @if ($currentDate->between($startDate, $endDate))
-<<<<<<< Updated upstream
-                            <button class="border bg-green-500 py-2 px-3 rounded-md text-white" id="answer"
-                                    wire:click='answerStart'>Answer</button>
-=======
                             @if ($this->studentAccess->role_id == 3)
                                 <button class="border bg-green-500 py-2 px-3 rounded-md text-white"
                                         wire:click='answerStart'>Answer</button>
                             @endif
->>>>>>> Stashed changes
                         @endif
                     @endif
                 </div>

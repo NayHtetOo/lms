@@ -7,6 +7,7 @@ use App\Models\Course;
 use App\Models\CourseSection;
 use App\Models\Enrollment;
 use App\Models\Exam;
+use App\Models\Forum;
 use App\Models\Lesson;
 use App\Models\User;
 use Livewire\Attributes\Computed;
@@ -22,6 +23,7 @@ class CourseView extends Component
     public $lessons;
     public $exams;
     public $assignments;
+    public $forum;
     public $section_id;
     public $id;
     public $search;
@@ -29,6 +31,11 @@ class CourseView extends Component
     public $role_id;
     public $alertMessage = "";
     public $alertStatus = false;
+    public $currentUser;
+    public $discussion,$isForumList;
+    public $isSectionTab = true,$isForumTab,$isParticipantTab,$isSettingTab;
+    public $expandedSections = [],$expandedLessons = [] ,$expandedExams = [],$expandedAssignments = [];
+    public $currentForum;
 
     public function mount($id)
     {
@@ -57,29 +64,16 @@ class CourseView extends Component
         return $enrollmentUser;
     }
 
-    #[Computed]
-    public function currentCourse(){
-        // return Course::findOrFail($this->id);
-    }
+    // #[Computed]
+    // public function currentCourse(){
+    //     // return Course::findOrFail($this->id);
+    // }
 
-    #[Computed]
-    public function currentCourseSection(){
-    }
+    // #[Computed]
+    // public function participants(){
 
-    #[Computed]
-    public function participants(){
+    // }
 
-    }
-
-    #[Computed]
-    public function exams(){
-
-    }
-
-    #[Computed]
-    public function assignments(){
-
-    }
 
     #[Computed]
     public function lessons(){
@@ -87,6 +81,8 @@ class CourseView extends Component
     }
 
     public function sections($id) {
+        $this->expandedSections[$id] = ! isset($this->expandedSections[$id]) || !$this->expandedSections[$id];
+        // dd('Clicked section');
         $lessons = CourseSection::with("lessons")->where('id', $id)->get()->toArray();
         $exams = CourseSection::with("exams")->where('id', $id)->get()->toArray();
         $assignments = CourseSection::with("assignments")->where('id', $id)->get()->toArray();
@@ -95,6 +91,16 @@ class CourseView extends Component
             $this->alertStatus = true;
             $this->alertMessage = "This sections isn't added.";
         }
+    }
+    public function lessonsExpand($id) {
+        $this->expandedLessons[$id] = ! isset($this->expandedLessons[$id]) || !$this->expandedLessons[$id];
+    }
+
+    public function examsExpand($id) {
+        $this->expandedExams[$id] = ! isset($this->expandedExams[$id]) || !$this->expandedExams[$id];
+    }
+    public function assignmentsExpand($id){
+        $this->expandedAssignments[$id] = ! isset($this->expandedAssignments[$id]) || !$this->expandedAssignments[$id];
     }
 
     public function closeAlertMessage() {
@@ -122,11 +128,68 @@ class CourseView extends Component
             $this->participants = Enrollment::where('course_id',$this->id)->get();
         }
 
+        $this->forum = Forum::where('course_id',$this->id)->get();
         $this->lessons = Lesson::where('course_id',$this->id)->get();
         $this->exams = Exam::where('course_id',$this->id)->get();
         $this->assignments = Assignment::where('course_id',$this->id)->get();
 
         // dump($this->participants);
         return view('livewire.course-view');
+    }
+
+    public function forumDiscussion($forum_id){
+        // dd($forum_id);
+        $this->isForumList = false;
+        $this->discussion = true;
+
+        $user_id = auth()->user()->id;
+        $this->currentUser = User::find($user_id);
+
+        $this->currentForum = Forum::find($forum_id);
+
+    }
+    public function switchTab($tab){
+        /**
+         * 1 => section tab
+         * 2 => forum tab
+         * 3 => participant tab
+         * 4 => setting tab
+         */
+        if($tab == 1){
+            $this->isSectionTab = true;
+            $this->isForumTab = false;
+            $this->isParticipantTab = false;
+            $this->isSettingTab = false;
+            $this->isParticipantSearch = false;
+        }
+        if($tab == 2){
+            $this->isSectionTab = false;
+            $this->isForumTab = true;
+            $this->isParticipantTab = false;
+            $this->isSettingTab = false;
+
+            $this->isForumList = true;
+            $this->discussion = false;
+
+        }
+        if($tab == 3){
+            $this->isSectionTab = false;
+            $this->isForumTab = false;
+            $this->isParticipantTab = true;
+            $this->isSettingTab = false;
+            $this->isParticipantSearch = true;
+        }
+        if($tab == 4){
+            $this->isSectionTab = false;
+            $this->isForumTab = false;
+            $this->isParticipantTab = false;
+            $this->isSettingTab = true;
+        }
+
+    }
+    public function backToForum(){
+        // dd('hello');
+        $this->discussion = false;
+        $this->isForumList = true;
     }
 }
