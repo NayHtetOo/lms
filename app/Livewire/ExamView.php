@@ -91,6 +91,17 @@ class ExamView extends Component
             // dd($this->exams->duration);
             $this->duration = session('minutes', $this->exams->duration);
         }
+
+        $this->pageNumber = $this->findFirstNonEmptyPage();
+    }
+
+    public function findFirstNonEmptyPage()
+    {
+        $pageNumber = 1;
+        while ($pageNumber <= 5 && !$this->isNotEmptyPage($pageNumber)) {
+            $pageNumber++;
+        }
+        return $pageNumber <= 5 ? $pageNumber : 1;
     }
 
     public function answerStart()
@@ -134,15 +145,53 @@ class ExamView extends Component
 
     public function goToNextPage()
     {
-        if ($this->pageNumber < 5) {
-            $this->pageNumber++;
+        $nextPageNumber = $this->pageNumber + 1;
+        // loop to reach the value is empty
+        while ($nextPageNumber <= 5 && !$this->isNotEmptyPage($nextPageNumber)) {
+            $nextPageNumber++;
+        }
+        // value is not empty and display the current page
+        if ($nextPageNumber <= 5) {
+            $this->pageNumber = $nextPageNumber;
         }
     }
 
     public function goToPrevPage()
     {
-        if ($this->pageNumber > 1) {
-            $this->pageNumber--;
+        $prevPageNumber = $this->pageNumber - 1;
+        // loop to reach the value is empty
+        while ($prevPageNumber >= 1 && !$this->isNotEmptyPage($prevPageNumber)) {
+            $prevPageNumber--;
+        }
+
+        if ($prevPageNumber >= 1) {
+            $this->pageNumber = $prevPageNumber;
+        }
+    }
+
+
+    public function isNotEmptyPage($pageNumber)
+    {
+        // dd($pageNumber);
+        $this->trueOrfalse = TrueOrFalse::where('exam_id', $this->exams->id)->get();
+        $this->multipleChoice = MultipleChoice::where('exam_id', $this->exams->id)->get();
+        $this->matching = Matching::where('exam_id', $this->exams->id)->get();
+        $this->shortQuestion = ShortQuestion::where('exam_id', $this->exams->id)->get();
+        $this->essay = Essay::where('exam_id', $this->exams->id)->get();
+
+        switch ($pageNumber) {
+            case 1:
+                return $this->trueOrfalse->isNotEmpty() ? 1 : 0;
+            case 2:
+                return $this->multipleChoice->isNotEmpty() ? 2 : 0;
+            case 3:
+                return $this->matching->isNotEmpty() ? 3 : 0;
+            case 4:
+                return $this->shortQuestion->isNotEmpty() ? 4 : 0;
+            case 5:
+                return $this->essay->isNotEmpty() ? 5 : 0;
+            default:
+                return 0;
         }
     }
 
@@ -157,19 +206,13 @@ class ExamView extends Component
     #[Computed]
     public function allQuestion()
     {
-
         $this->trueOrfalse = TrueOrFalse::where('exam_id', $this->exams->id)->get();
         $this->multipleChoice = MultipleChoice::where('exam_id', $this->exams->id)->get();
         $this->matching = Matching::where('exam_id', $this->exams->id)->get();
         $this->shortQuestion = ShortQuestion::where('exam_id', $this->exams->id)->get();
         $this->essay = Essay::where('exam_id', $this->exams->id)->get();
-
-        // true or false input to default value false
-        // foreach ($this->trueOrfalse as $tof) {
-        //     // dump($tof->answer);
-        //     $this->trueorfalseAnswer[$tof->id] = false;
-        // }
     }
+
     #[Computed]
     public function submittedStudents()
     {
@@ -307,6 +350,7 @@ class ExamView extends Component
 
     public function examMarkUpdate($submitted_user_id)
     {
+        // dd($submitted_user_id);
         // $validated = $this->validate([
         //     'shortQuestionReceiveMark.*' => 'required',
         // ]);
@@ -319,12 +363,14 @@ class ExamView extends Component
             $short_question = ShortQuestion::find($short_question_answer->short_question_id);
             $errorMessage[] = $this->validateCheck($key,$received_mark,$short_question);
         }
+        // dd($errorMessage);
 
         foreach ($this->essayReceiveMark as $key => $received_mark) {
             $essay_answer = EssayAnswer::find($key);
             $essay = Essay::find($essay_answer->essay_id);
             $errorMessage[] =  $this->validateCheck($key,$received_mark,$essay);
         }
+        // dd($errorMessage);
 
         $flattenedErrors = collect($errorMessage)->flatMap(function ($messageBag) {
             if ($messageBag instanceof \Illuminate\Support\MessageBag && $messageBag->has('received_mark')) {
@@ -335,6 +381,7 @@ class ExamView extends Component
         })->all();
 
         if ($flattenedErrors) {
+            // dd($flattenedErrors);
             return $this->flattenedErrors = $flattenedErrors;
 
         }else{
@@ -342,6 +389,7 @@ class ExamView extends Component
 
             foreach ($this->shortQuestionReceiveMark as $key => $received_mark) {
                 $short_question_answer = ShortQuestionAnswer::find($key);
+                // dd($short_question_answer);
                 if($short_question_answer){
                     $short_question_answer->received_mark = $received_mark;
                     $short_question_answer->save();
@@ -350,11 +398,14 @@ class ExamView extends Component
 
             foreach ($this->essayReceiveMark as $key => $received_mark) {
                 $essay_answer = EssayAnswer::find($key);
+                // dd($this->essayReceiveMark);
                 if ($essay_answer) {
                     $essay_answer->received_mark = $received_mark;
                     $essay_answer->save();
                 }
             }
+
+            // dd($this->shortQuestionReceiveM  ark, $this->essayReceiveMark);
 
             $examStatusChange = ExamAnswer::where('user_id', $submitted_user_id)->where('exam_id', $this->id)->first();
             if ($examStatusChange) {

@@ -1,4 +1,4 @@
-<div class="min-h-full w-full @if ($isExamPaperOpen == true) flex @endif" id="examViewContainer">
+<div class="min-h-full w-full @if ($isExamPaperOpen == true || $this->isTeacher) flex @endif" id="examViewContainer">
     @php
         $startDate = \Carbon\Carbon::parse($this->exams->start_date_time);
         $endDate = \Carbon\Carbon::parse($this->exams->end_date_time);
@@ -16,9 +16,8 @@
         </div>
     @endif
 
-    {{-- {{ session()->get('timer') }} - {{ session()->get('minutes') }} - {{ session()->get('startAnswer') }} --}}
     <div class="mt-3  max-w-6xl mx-auto
-        @if ($isExamPaperOpen) w-1/4 py-1 ms-2 @endif
+        @if ($isExamPaperOpen || $this->isTeacher) w-1/4 py-1 ms-2 @endif
     ">
         <div class="w-full my-5">
             @if ($this->summaryView && $examStatus == 1)
@@ -101,7 +100,7 @@
                 <form id="form" wire:submit.prevent="examSubmit" method="POST" >
                     @csrf
                     @if (
-                        $this->trueOrfalse->isNotEmpty() ||
+                            $this->trueOrfalse->isNotEmpty() ||
                             $this->multipleChoice->isNotEmpty() ||
                             $this->matching->isNotEmpty() ||
                             $this->shortQuestion->isNotEmpty() ||
@@ -536,42 +535,42 @@
 
     {{-- Teacher view for submitted students report --}}
     @if ($this->isTeacher && $this->isExamSubmittedStudent)
-        <div class="mx-auto max-w-7xl py-1 sm:px-6 lg:px-8 mb-10">
-            <div class="p-4 rounded-xl shadow-2xl bg-slate-300">
-                <h2 class="font-bold text-xl mb-4">Submitted Students</h2>
-                <table class="w-full border border-black text-sm text-left text-gray-500">
-                    <thead class="text-xs text-gray-700 uppercase">
-                        <tr class="border-b-2 border-black">
+        <div class="mx-auto w-3/4 py-1 sm:px-6 lg:px-8 my-5 h-[85vh] overflow-auto">
+            <div class="p-4 rounded-xl shadow-lg bg-white">
+                <h2 class="font-bold text-xl mb-4 text-slate-700">Submitted Students</h2>
+                <table class="w-full border border-slate-800 text-sm text-left text-gray-500 ">
+                    <thead class="text-md text-gray-700 uppercase">
+                        <tr class="border-b-2 border-slate-500">
                             <th class="px-3">No.</th>
-                            <th class="py-3" scope="">Sumitted Date</th>
-                            <th class="py-3" scope="">Name</th>
-                            <th class="py-3" scope="">Email</th>
-                            <th class="py-3" scope="">Status</th>
-                            <th class="" scope="">View</th>
+                            <th class="py-3" scope="col">Sumitted Date</th>
+                            <th class="py-3" scope="col">Name</th>
+                            <th class="py-3" scope="col">Email</th>
+                            <th class="py-3" scope="col">Status</th>
+                            <th class="py-3" scope="col">View</th>
                         </tr>
                     </thead>
                     <tbody>
                         @foreach ($this->exam_answered_users as $key => $row)
-                            <tr class="border-b border-gray-400">
+                            <tr class="border-b border-gray-400 text-slate-800 text-base">
                                 <td class="px-3">{{ $loop->index + 1 }}</td>
-                                <td class="py-3">Finished <br> Sumitted {{ $row->created_at }}</td>
+                                <td class="py-3"> <strong> Sumitted at {{ $row->created_at }}</td>
                                 <td class="py-3" scope="">{{ $row->user->name }}</td>
                                 <td class="py-3" scope="">{{ $row->user->email }}</td>
                                 @if ($row->status == 1)
                                     <td class="py-3">
-                                        <span class="bg-blue-800 text-white rounded py-1 px-2">
+                                        <span class="bg-blue-200 text-slate-800 rounded py-1 px-2 text-xs">
                                             Inprocess
                                         </span>
                                     </td>
                                 @else
                                     <td class="py-3">
-                                        <span class="bg-green-800 text-white rounded py-1 px-2">
+                                        <span class="bg-green-200 text-slate-800 rounded py-1 px-2 text-xs">
                                             Checked
                                         </span>
                                     </td>
                                 @endif
-                                <td>
-                                    <button class="py-2 px-3 bg-gray-600 text-white rounded"
+                                <td class="py-3">
+                                    <button class="py-1 px-3 bg-blue-600 hover:bg-blue-700 text-white rounded"
                                             wire:click="checkAnswer({{ $row->user_id }},{{ $row->exam_id }})">show</button>
                                 </td>
                             </tr>
