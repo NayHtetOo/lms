@@ -88,6 +88,7 @@ class ExamView extends Component
         if ($currentDate > $startDate && $currentDate < $endDate) {
             $this->startAnswer = session('startAnswer', false);
             $this->timer = session('timer', 60);
+            // dd($this->exams->duration);
             $this->duration = session('minutes', $this->exams->duration);
         }
     }

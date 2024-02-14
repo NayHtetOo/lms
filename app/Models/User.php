@@ -42,7 +42,7 @@ class User extends Authenticatable
         'email_verified_at' => 'datetime',
         'password' => 'hashed',
     ];
-    
+
     public function zoom_user_info() {
         return $this->hasOne(ZoomUserInfo::class);
     }

@@ -8,6 +8,7 @@ use App\Models\CourseSection;
 use App\Models\Enrollment;
 use App\Models\Exam;
 use App\Models\Forum;
+use App\Models\ForumDiscussion;
 use App\Models\Lesson;
 use App\Models\User;
 use Livewire\Attributes\Computed;
@@ -16,31 +17,36 @@ use Livewire\Component;
 class CourseView extends Component
 {
     public Course $currentCourse;
-
-    public $currentCourseSection;
-    public $participants;
-
-    public $lessons;
-    public $exams;
-    public $assignments;
-    public $forum;
-    public $section_id;
-    public $id;
-    public $search;
+    public $currentCourseSection,$participants;
+    public $lessons,$exams,$assignments,$forum;
+    public $section_id,$id,$search,$role_id;
     public $isParticipantSearch = false;
-    public $role_id;
-    public $alertMessage = "";
     public $alertStatus = false;
+    public $alertMessage = "";
     public $currentUser;
     public $discussion,$isForumList;
     public $isSectionTab = true,$isForumTab,$isParticipantTab,$isSettingTab;
     public $expandedSections = [],$expandedLessons = [] ,$expandedExams = [],$expandedAssignments = [];
-    public $currentForum;
+    public $currentForum,$isForumReply = false;
+    public $replyText,$editReplyText;
+    public $discussionList;
+    public $isEditReplyText = false;
+    public $currentDiscussionId;
+    public $isAdmin,$isTeacher,$isStudent,$isGuest;
+    public $isEditCourse = false;
+    // for course edit
+    public $category_type,$course_name,$course_id,$from_date,$to_date,$description,$course_photo,$visible;
 
     public function mount($id)
     {
         $this->id = $id;
         $enrollUserId = Enrollment::where('course_id',$id)->pluck('user_id');
+        $user_id = auth()->user()->id;
+
+
+        $enrollment = Enrollment::where('user_id', $user_id)->where('course_id', $this->id)->first();
+
+        $this->role($enrollment->role->name);
 
         // role check
         // $enrollUsers = Enrollment::where('course_id',$id)->get();
@@ -59,21 +65,46 @@ class CourseView extends Component
     }
 
     #[Computed]
+    public function role($role)
+    {
+        if ($role == 'admin') {
+            $this->isAdmin = true;
+        } elseif ($role == 'teacher') {
+            $this->isTeacher = true;
+        } elseif ($role == 'student') {
+            $this->isStudent = true;
+        } else {
+            $this->isGuest = true;
+        }
+    }
+
+    public function editCourse(){
+        $this->isEditCourse = !$this->isEditCourse;
+
+        $this->category_type = $this->currentCourse->course_category_id;
+        $this->course_name = $this->currentCourse->course_name;
+        $this->course_id = $this->currentCourse->course_ID;
+        $this->from_date = $this->currentCourse->from_date;
+        $this->to_date = $this->currentCourse->to_date;
+        $this->description = $this->currentCourse->description;
+        $this->course_photo = $this->currentCourse->course_photo_path;
+        $this->visible = $this->currentCourse->visible;
+
+        // dd($this->currentCourse->toArray());
+        // $courseID = $this->currentCourse->id;
+        // dd($courseID);
+    }
+
+    public function toggleModal()
+    {
+        $this->isEditCourse = !$this->isEditCourse;
+    }
+
+    #[Computed]
     public function enrollmentUser() {
         $enrollmentUser = Enrollment::where('user_id', auth()->user()->id)->first();
         return $enrollmentUser;
     }
-
-    // #[Computed]
-    // public function currentCourse(){
-    //     // return Course::findOrFail($this->id);
-    // }
-
-    // #[Computed]
-    // public function participants(){
-
-    // }
-
 
     #[Computed]
     public function lessons(){
@@ -82,7 +113,6 @@ class CourseView extends Component
 
     public function sections($id) {
         $this->expandedSections[$id] = ! isset($this->expandedSections[$id]) || !$this->expandedSections[$id];
-        // dd('Clicked section');
         $lessons = CourseSection::with("lessons")->where('id', $id)->get()->toArray();
         $exams = CourseSection::with("exams")->where('id', $id)->get()->toArray();
         $assignments = CourseSection::with("assignments")->where('id', $id)->get()->toArray();
@@ -146,7 +176,66 @@ class CourseView extends Component
         $this->currentUser = User::find($user_id);
 
         $this->currentForum = Forum::find($forum_id);
+        $this->discussionList = $this->getDiscussionList($forum_id);
 
+    }
+
+    #[Computed]
+    public function getDiscussionList($forum_id){
+        return $this->discussionList = ForumDiscussion::where('forum_id',$forum_id)->where('course_id',$this->id)->get();
+    }
+
+    public function replyForum(){
+        $this->isForumReply = !$this->isForumReply;
+    }
+    public function editReplyCancel(){
+        $this->isEditReplyText = false;
+        $this->currentDiscussionId = '';
+    }
+    public function postToForum($forum_id){
+        $forum_discuss = ForumDiscussion::create([
+            'course_id' => $this->id,
+            'forum_id' => $forum_id,
+            'user_id' => $this->currentUser->id,
+            'reply_text' => $this->replyText,
+        ]);
+
+        if($forum_discuss){
+            $this->replyText = '';
+            $this->isForumReply = !$this->isForumReply;
+            $this->discussionList = $this->getDiscussionList($forum_id);
+        }
+
+    }
+    public function updateToForum($id){
+        $forum_discuss = ForumDiscussion::find($id);
+        if($forum_discuss){
+            $forum_discuss->reply_text = $this->editReplyText;
+            $forum_discuss->save();
+            $this->isEditReplyText = false;
+            $forum_id = $this->currentForum->id;
+            $this->currentDiscussionId = '';
+            $this->getDiscussionList($forum_id);
+        }
+    }
+    public function editForumDiscussion($id,$status){
+        // dd($user_id,$status);
+        $forum_id = $this->currentForum->id;
+        $forum_discuss = ForumDiscussion::find($id);
+
+        if($status == 1){  // edit reply text
+
+            $this->isEditReplyText = true;
+            $this->editReplyText = $forum_discuss->reply_text;
+            $this->currentDiscussionId = $forum_discuss->id;
+
+        }else{ // destroy reply text
+
+            if($forum_discuss){
+                $forum_discuss->delete();
+                $this->getDiscussionList($forum_id);
+            }
+        }
     }
     public function switchTab($tab){
         /**

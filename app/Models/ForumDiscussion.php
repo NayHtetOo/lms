@@ -13,4 +13,8 @@ class ForumDiscussion extends Model
     public function forums(){
         return $this->belongsTo(Forum::class);
     }
+
+    public function user(){
+        return $this->belongsTo(User::class);
+    }
 }
