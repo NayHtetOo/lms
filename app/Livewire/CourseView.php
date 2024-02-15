@@ -4,6 +4,7 @@ namespace App\Livewire;
 
 use App\Models\Assignment;
 use App\Models\Course;
+use App\Models\CourseCategory;
 use App\Models\CourseSection;
 use App\Models\Enrollment;
 use App\Models\Exam;
@@ -11,6 +12,7 @@ use App\Models\Forum;
 use App\Models\ForumDiscussion;
 use App\Models\Lesson;
 use App\Models\User;
+use Illuminate\Support\Facades\Validator;
 use Livewire\Attributes\Computed;
 use Livewire\Component;
 
@@ -35,7 +37,8 @@ class CourseView extends Component
     public $isAdmin,$isTeacher,$isStudent,$isGuest;
     public $isEditCourse = false;
     // for course edit
-    public $category_type,$course_name,$course_id,$from_date,$to_date,$description,$course_photo,$visible;
+    public $category_type,$course_name,$course_ID,$from_date,$to_date,$description,$course_photo,$visible;
+    public $course_categories;
 
     public function mount($id)
     {
@@ -82,8 +85,12 @@ class CourseView extends Component
         $this->isEditCourse = !$this->isEditCourse;
 
         $this->category_type = $this->currentCourse->course_category_id;
+        // dd($this->category_type);
+        $this->course_categories = CourseCategory::all();
+        // dd($this->course_categories->toArray());
+
         $this->course_name = $this->currentCourse->course_name;
-        $this->course_id = $this->currentCourse->course_ID;
+        $this->course_ID = $this->currentCourse->course_ID;
         $this->from_date = $this->currentCourse->from_date;
         $this->to_date = $this->currentCourse->to_date;
         $this->description = $this->currentCourse->description;
@@ -94,10 +101,36 @@ class CourseView extends Component
         // $courseID = $this->currentCourse->id;
         // dd($courseID);
     }
+    public function updateCourse(){
+
+        $validated = $this->validate([
+            'course_name' => 'required',
+            'course_ID' => 'required',
+            'from_date' => 'required',
+            'to_date' => 'required',
+            'visible' => 'required',
+            'description' => 'required',
+        ]);
+
+        $course = Course::find($this->currentCourse->id);
+        if($course){
+            $course->course_category_id = $this->category_type;
+            $course->course_name = $this->course_name;
+            $course->course_ID = $this->course_ID;
+            $course->from_date = $this->from_date;
+            $course->to_date = $this->to_date;
+            $course->visible = $this->visible;
+            $course->description = $this->description;
+            $course->save();
+
+            $this->toggleModal();
+        }
+    }
 
     public function toggleModal()
     {
         $this->isEditCourse = !$this->isEditCourse;
+        $this->resetValidation();
     }
 
     #[Computed]

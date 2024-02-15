@@ -49,6 +49,12 @@ class ExamView extends Component
     public $minutes;
     public $duration;
     public $timer = 60;
+    public $isEditExam;
+    public $exam_name,$start_date_time,$end_date_time,$description,$duration_field;
+    // protected $casts = [
+    //     'end_date_time' => 'date:Y-m-d',
+    //     'start_date_time' => 'date:Y-m-d',
+    // ];
 
     public function mount($id)
     {
@@ -590,5 +596,42 @@ class ExamView extends Component
     public function render()
     {
         return view('livewire.exam-view')->layout("layouts.app");
+    }
+    public function editExam(){
+        $this->isEditExam = true;
+        // dd($this->exams->toArray());
+        $this->exam_name = $this->exams->exam_name;
+        $this->start_date_time = $this->exams->start_date_time;
+        $this->end_date_time = $this->exams->end_date_time;
+        $this->description = $this->exams->description;
+        $this->duration_field = $this->exams->duration;
+    }
+    public function updateExam(){
+
+        $validated = $this->validate([
+            'exam_name' => 'required',
+            'start_date_time' => 'required',
+            'end_date_time' => 'required',
+            'description' => 'required',
+            'duration_field' => 'required'
+        ]);
+
+        $exam = Exam::find($this->exams->id);
+
+        if($exam){
+            $exam->exam_name = $this->exam_name;
+            $exam->start_date_time = $this->start_date_time;
+            $exam->end_date_time = $this->end_date_time;
+            $exam->description = $this->description;
+            $exam->duration = $this->duration_field;
+            $exam->save();
+
+            $this->toggleModal();
+        }
+    }
+    public function toggleModal()
+    {
+        $this->isEditExam = !$this->isEditExam;
+        $this->resetValidation();
     }
 }
