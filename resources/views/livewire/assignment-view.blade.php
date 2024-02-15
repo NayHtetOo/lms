@@ -1,4 +1,4 @@
-<div class="min-h-full">
+<div class="min-h-full mt-[4rem]">
 
     <div class="mx-auto max-w-7xl py-6 sm:px-6 lg:px-8">
         <div class="p-4 bg-slate-300 rounded-xl transform transition-all duration-300 shadow-lg">

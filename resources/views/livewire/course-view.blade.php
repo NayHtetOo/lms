@@ -9,7 +9,7 @@
         </div> --}}
         <div class="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8 border-b border-slate-500 pb-2">
             <div class="my-3 flex justify-between w-full">
-                <h2 class="text-3xl font-bold text-slate-700 capitalize">{{ $currentCourse->id }}{{ $currentCourse->course_name }}</h2>
+                <h2 class="text-3xl font-bold text-slate-700 capitalize">{{ $currentCourse->course_name }}</h2>
 
                 @if ($isAdmin || $isTeacher)
                 {{-- wire:click="editCourse" --}}
@@ -27,7 +27,7 @@
     <main>
         <div class="mx-auto max-w-7xl py-6 sm:px-6 lg:px-8">
             @if ($alertStatus)
-                <div class="w-full bg-red-200 rounded-md p-3 my-3 flex justify-between items-center" wire:transition.500ms>
+                <div class="w-full bg-red-200 rounded-md p-3 my-3 flex justify-between items-center" wire:transition.duration.1000ms>
                     <span class="text-slate-700">{{ $alertMessage }}</span>
                     <button wire:click='closeAlertMessage' type="button">
                         <svg class="w-6 h-6 text-slate-700" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"

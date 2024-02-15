@@ -1,4 +1,4 @@
-<div class="w-3/4 mt-5 py-1 sm:px-6 lg:px-8  relative">
+<div class="w-3/4 mt-3 py-1 sm:px-6 lg:px-8 relative">
 
     <div class="w-full b-4 border-b  mt-5">
         <div class="bg-white rounded-lg shadow-md my-3 py-3">
@@ -47,7 +47,7 @@
         @endforeach
     @endif
 
-    <div class="p-2 rounded-xl shadow-2xl bg-white h-[85vh] overflow-auto">
+    <div class="p-2 rounded-xl shadow-2xl bg-white h-[55vh] overflow-auto">
         <form wire:submit.prevent="examMarkUpdate({{ $checkedCurrentUser?->id }})" method="POST">
             @csrf
             {{-- button area  --}}
@@ -62,41 +62,25 @@
             </button>
             </div>
 
-            {{-- @foreach ($shortQuestion as $key => $shortQ)
-                @error('shortQuestionReceiveMark.' . $shortQ->id)
-                    <p class="error px-2 py-2 rounded bg-red-400 text-white m-3 mt-3">{{ $message }}</p>
-                @enderror
-                @php
-                    $errorKey = 'shortQuestionReceiveMark.' . $shortQ->id;
-                    $hasError = $errors->has($errorKey);
-                @endphp
-
-                @if ($hasError)
-                    <p class="error px-2 py-2 rounded bg-red-400 text-white m-3 mt-3">{{ $errors->first($errorKey) }}</p>
-                @endif
-            @endforeach --}}
-
             <div class="rounded-xl shadow-lg">
                 <div class="p-2 mb-4 border-b border-gray-200">
                     {{-- true or false --}}
                     @if ($questionType == 1)
                         @if ($trueOrfalse->isNotEmpty())
                             <div class="m-3">
-                                <p class="font-bold text-lg text-slate-800">I.True or False Questions.</p>
-                                {{-- <div>{{ $trueOrfalse }}</div> --}}
+                                <div class="flex justify-between items-center font-bold text-lg text-slate-800">
+                                    <p class="">I.True or False Questions.</p>
+                                    <span class=""> (1 Mark)</span>
+                                </div>
                                 <div class="m-2">
                                     @foreach ($trueOrfalse as $tof)
                                         <div class="my-5">
-                                            <div class="flex justify-between">
                                                 <div class="text-base text-slate-800">
                                                     {{ $tof->true_or_false?->question_no }}.
                                                     {{ strip_tags($tof->true_or_false?->question) }}
                                                 </div>
-                                                <div class="text-base text-slate-800"> 1 Mark</div>
-                                            </div>
                                             <label class="m-6 mt-4 text-base text-slate-800" for="">Select One :
                                             </label>
-                                            {{-- <p class="p-1">{{ $this->exams->question }}</p> --}}
 
                                             <div class="mb-[0.125rem] block min-h-[1.5rem] pl-[1.5rem] ml-6">
                                                 <label class="flex items-center">

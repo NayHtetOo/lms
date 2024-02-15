@@ -26,6 +26,6 @@ class AssignmentView extends Component
 
     public function render()
     {
-        return view('livewire.assignment-view');
+        return view('livewire.assignment-view')->layout("layouts.app");
     }
 }

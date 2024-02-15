@@ -1,4 +1,4 @@
-<div class="min-h-full w-full @if ($isExamPaperOpen == true || $this->isTeacher) flex @endif" id="examViewContainer">
+<div class="min-h-full w-full mt-[4rem] @if ($isExamPaperOpen == true || $this->isTeacher || $examStatus == 2) flex @endif" id="examViewContainer">
     @php
         $startDate = \Carbon\Carbon::parse($this->exams->start_date_time);
         $endDate = \Carbon\Carbon::parse($this->exams->end_date_time);
@@ -17,11 +17,11 @@
     @endif
 
     <div class="mt-3  max-w-6xl mx-auto
-        @if ($isExamPaperOpen || $this->isTeacher) w-1/4 py-1 ms-2 @endif
+        @if ($isExamPaperOpen || $this->isTeacher || $examStatus == 2) w-1/4 py-1 ms-2 @endif
     ">
         <div class="w-full my-5">
             @if ($this->summaryView && $examStatus == 1)
-                <div class="mx-auto max-w-7xl py-1 sm:px-6 lg:px-8 ">
+                <div class="max-w-7xl py-1 sm:px-6 lg:px-8 ">
                     <div class="p-4 rounded shadow-xl bg-slate-300 text-blue-500">
                         <label class="">Wait for Exam Result</label>
                     </div>
@@ -82,14 +82,16 @@
             </div>
         </div>
         @if ($isExamPaperOpen)
-            <div class=" shadow-lg px-20 py-10 flex justify-center items-center rounded-lg">
-                <svg class="w-6 h-6 inline" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
-                     stroke-width="1.5" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round"
-                          d="M12 6v6h4.5m4.5 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
-                </svg>
-                <span class="text-2xl text-slate-700">{{ $duration }} : {{ $timer }}</span>
-            </div>
+            @if (session()->get('mins') != null && session()->get('seconds') != null)
+                <div class=" shadow-lg px-20 py-10 flex justify-center items-center rounded-lg">
+                    <svg class="w-6 h-6 inline" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+                         stroke-width="1.5" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round"
+                              d="M12 6v6h4.5m4.5 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
+                    </svg>
+                    <span class="text-2xl text-slate-700">{{ $minutes }} : {{ $seconds }}</span>
+                </div>
+            @endif
         @endif
     </div>
 
@@ -97,10 +99,10 @@
     @if (!$examSubmitted && $this->isStudent)
         @if ($isExamPaperOpen)
             <div class="w-3/4 mt-3 h-[85vh] overflow-auto">
-                <form id="form" wire:submit.prevent="examSubmit" method="POST" >
+                <form id="form" wire:submit.prevent="examSubmit" method="POST">
                     @csrf
                     @if (
-                            $this->trueOrfalse->isNotEmpty() ||
+                        $this->trueOrfalse->isNotEmpty() ||
                             $this->multipleChoice->isNotEmpty() ||
                             $this->matching->isNotEmpty() ||
                             $this->shortQuestion->isNotEmpty() ||
@@ -470,6 +472,7 @@
                                 <div class="text-end">
                                     <button class="mr-4 bg-transparent hover:bg-green-500 text-blue-700 font-semibold hover:text-white py-2 px-4 border border-blue-500 hover:border-transparent rounded"
                                             type="submit">
+                                        <span wire:loading wire:target='examSubmit'>Loading...</span>
                                         Submit
                                     </button>
                                 </div>
@@ -483,12 +486,10 @@
 
     {{-- show report for students after sumbmit --}}
     @if ($this->summaryView && $examStatus == 2)
-        <div class="mx-auto max-w-7xl py-1 sm:px-6 lg:px-8" wire:ignore>
-            <div class="p-4 rounded-xl shadow-2xl bg-slate-300">
-                {{-- <h2 class="font-bold text-xl mb-4">Summary</h2>
-                <div>Grade : {{ $gradeName }}</div> --}}
-                <div class="flex justify-between">
-                    <h2 class="font-bold text-xl bg-blue-600 px-2 py-2 rounded text-white mb-4">Result</h2>
+        <div class="w-3/4 py-1 mt-3 sm:px-6 lg:px-8" wire:ignore>
+            <div class="p-4 rounded-xl shadow-2xl bg-white">
+                <h1 class="text-slate-700 text-center text-xl font-bold">Result</h1>
+                <div class="flex justify-end">
                     <span
                           class="px-3 py-2 rounded text-white mb-4
                         @if ($gradeName == 'A') bg-green-800
@@ -498,36 +499,41 @@
                             bg-orange-500
                         @else
                             bg-red-600 @endif">
-                        Grade : {{ $gradeName }}</span>
+                        Grade : {{ $gradeName }}
+                    </span>
                 </div>
 
-                <table class="w-full border border-black text-sm text-left text-gray-500">
-                    <thead class="text-xs text-gray-700 uppercase">
-                        <tr class="border-b-2 border-black">
-                            <th class="px-6 py-3" scope="col">No.</th>
-                            <th class="px-6 py-3" scope="col">Status</th>
-                            <th class="px-6 py-3" scope="col">Question</th>
-                            <th class="" scope="col">Marks / {{ $this->numberOfQuestion }}</th>
-                            <th class="" scope="col">Grade / {{ $this->baseTotalMark }}</th>
-                            {{-- <th class="" scope="col">Review</th> --}}
+                <table class="w-full border border-slate-500 border-collapse text-sm text-left text-gray-500">
+                    <thead class=" text-slate-800 text-md uppercase">
+                        <tr class="">
+                            <th class="px-6 py-3 border border-slate-600" scope="col">No.</th>
+                            <th class="px-6 py-3 border border-slate-600" scope="col">Status</th>
+                            <th class="px-6 py-3 border border-slate-600" scope="col">Question</th>
+                            <th class="px-6 py-3 border border-slate-600" scope="col">Marks /
+                                {{ $this->numberOfQuestion }}</th>
+                            <th class="px-6 py-3 border border-slate-600" scope="col">Grade /
+                                {{ $this->baseTotalMark }}</th>
                         </tr>
                     </thead>
                     <tbody>
                         @foreach ($this->examSummary as $key => $row)
-                            <tr class="border-b border-gray-400">
-                                <td class="px-6 py-3">{{ $loop->index + 1 }}</td>
-                                {{-- <td class="px-6 py-3">Finished <br> Sumitted {{ $row[0]->created_at }}</td> --}}
-                                <td class="px-6 py-3">Finished <br> Sumitted {{ $this->examSubmittedDate }}</td>
-                                <td class="px-6 py-3" scope="col">{{ $key }}</td>
-                                <td>{{ $row['correct'] }} / {{ $row['origin'] }}</td>
-                                <td>{{ $row['grade'] }} / {{ $row['total'] }}</td>
-                                {{-- <td> <button class="py-2 px-3 bg-indigo-400 text-white rounded">Review</button> </td> --}}
+                            <tr class="">
+                                <td class="px-6 py-3 border border-slate-600 text-slate-900">{{ $loop->index + 1 }}
+                                </td>
+                                <td class="px-6 py-3 border border-slate-600 text-slate-900">Finished <br> Sumitted
+                                    {{ $this->examSubmittedDate }}</td>
+                                <td class="px-6 py-3 border border-slate-600 text-slate-900" scope="col">
+                                    {{ $key }}</td>
+                                <td class="px-6 py-3 border border-slate-600 text-slate-900" scope="col">
+                                    {{ $row['correct'] }} / {{ $row['origin'] }}</td>
+                                <td class="px-6 py-3 border border-slate-600 text-slate-900" scope="col">
+                                    {{ $row['grade'] }} / {{ $row['total'] }}</td>
                             </tr>
                         @endforeach
                     </tbody>
                 </table>
-                <div class="m-2 mt-2">
-                    <h2 class="font-bold">Highest Mark: {{ $this->gradeMark }} / {{ $this->baseTotalMark }}</h2>
+                <div class="mt-2 flex justify-end items-center w-full p-3 bg-green-500 rounded-lg">
+                    <h2 class=" text-white">Highest Mark: {{ $this->gradeMark }} / {{ $this->baseTotalMark }}</h2>
                 </div>
             </div>
         </div>
@@ -538,38 +544,41 @@
         <div class="mx-auto w-3/4 py-1 sm:px-6 lg:px-8 my-5 h-[85vh] overflow-auto">
             <div class="p-4 rounded-xl shadow-lg bg-white">
                 <h2 class="font-bold text-xl mb-4 text-slate-700">Submitted Students</h2>
-                <table class="w-full border border-slate-800 text-sm text-left text-gray-500 ">
+                <table class="w-full border border-slate-500 border-collapse text-sm text-left text-gray-500 ">
                     <thead class="text-md text-gray-700 uppercase">
-                        <tr class="border-b-2 border-slate-500">
-                            <th class="px-3">No.</th>
-                            <th class="py-3" scope="col">Sumitted Date</th>
-                            <th class="py-3" scope="col">Name</th>
-                            <th class="py-3" scope="col">Email</th>
-                            <th class="py-3" scope="col">Status</th>
-                            <th class="py-3" scope="col">View</th>
+                        <tr class="">
+                            <th class="px-3 py-3 border border-slate-600">No.</th>
+                            <th class="px-3 py-3 border border-slate-600" scope="col">Sumitted Date</th>
+                            <th class="px-3 py-3 border border-slate-600" scope="col">Name</th>
+                            <th class="px-3 py-3 border border-slate-600" scope="col">Email</th>
+                            <th class="px-3 py-3 border border-slate-600" scope="col">Status</th>
+                            <th class="px-3 py-3 border border-slate-600" scope="col">View</th>
                         </tr>
                     </thead>
                     <tbody>
                         @foreach ($this->exam_answered_users as $key => $row)
-                            <tr class="border-b border-gray-400 text-slate-800 text-base">
-                                <td class="px-3">{{ $loop->index + 1 }}</td>
-                                <td class="py-3"> <strong> Sumitted at {{ $row->created_at }}</td>
-                                <td class="py-3" scope="">{{ $row->user->name }}</td>
-                                <td class="py-3" scope="">{{ $row->user->email }}</td>
+                            <tr class="text-slate-800 text-base">
+                                <td class="px-3 py-3 border border-slate-600">{{ $loop->index + 1 }}</td>
+                                <td class="px-3 py-3 border border-slate-600"> <strong> Sumitted at
+                                        {{ $row->created_at }}</td>
+                                <td class="px-3 py-3 border border-slate-600" scope="">{{ $row->user->name }}
+                                </td>
+                                <td class="px-3 py-3 border border-slate-600" scope="">{{ $row->user->email }}
+                                </td>
                                 @if ($row->status == 1)
-                                    <td class="py-3">
+                                    <td class="px-3 py-3 border border-slate-600">
                                         <span class="bg-blue-200 text-slate-800 rounded py-1 px-2 text-xs">
                                             Inprocess
                                         </span>
                                     </td>
                                 @else
-                                    <td class="py-3">
+                                    <td class="px-3 py-3 border border-slate-600">
                                         <span class="bg-green-200 text-slate-800 rounded py-1 px-2 text-xs">
                                             Checked
                                         </span>
                                     </td>
                                 @endif
-                                <td class="py-3">
+                                <td class="px-3 py-3 border border-slate-600">
                                     <button class="py-1 px-3 bg-blue-600 hover:bg-blue-700 text-white rounded"
                                             wire:click="checkAnswer({{ $row->user_id }},{{ $row->exam_id }})">show</button>
                                 </td>
@@ -616,10 +625,16 @@
             button.setAttribute('aria-selected', 'true');
         });
     });
+    // let minutes = @this.minutes;
 
-    setInterval(() => {
+    let duration = setInterval(() => {
+        console.log(@this.minutes);
         if (@this.startAnswer) {
             @this.call('decreaseTimer');
+
+            if (@this.minutes == 0) {
+                clearInterval(duration);
+            }
         }
     }, 100);
 </script>

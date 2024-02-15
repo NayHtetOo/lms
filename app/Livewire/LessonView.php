@@ -20,6 +20,6 @@ class LessonView extends Component
 
     public function render()
     {
-        return view('livewire.lesson-view');
+        return view('livewire.lesson-view')->layout("layouts.app");
     }
 }

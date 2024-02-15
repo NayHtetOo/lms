@@ -9,9 +9,8 @@ use GuzzleHttp\Psr7\Response;
 
 class userController extends Controller
 {
-
     public function index () {
-        $courses = Course::paginate(4);
+        $courses = Course::where('visible', 1)->orderBy('created_at', 'desc')->paginate(4);
         return view('welcome', ["courses" => $courses]);
     }
 

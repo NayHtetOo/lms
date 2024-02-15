@@ -46,7 +46,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/courses', Course::class)->name('courses');
     Route::get('/course_view/{id}', CourseView::class)->name('course_view');
     Route::get('/lesson_view/{course_id}/{section_id}/{id}', LessonView::class)->name('lesson_view');
-    Route::get('/exam_view/{course_id}/{section_id}/{id}', ExamView::class)->name('exam_view');
+    Route::get('/exam_view/{course_id}/{section_id}/{id}', ExamView::class)->name('exam_view')->middleware('web');
     Route::get('/assignment_view/{course_id}/{section_id}/{id}', AssignmentView::class)->name('assignment_view');
 
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');

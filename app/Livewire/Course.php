@@ -27,9 +27,12 @@ class Course extends Component
         if ($search_name) {
             $courses = ModelsCourse::whereIn('id', $enrollment)
                 ->where('course_name', 'LIKE', '%' . $search_name . '%')
+                ->orderBy('created_at', 'desc')
                 ->paginate(4);
         } else {
-            $courses = ModelsCourse::whereIn('id', $enrollment)->paginate(4);
+            $courses = ModelsCourse::whereIn('id', $enrollment)
+                ->orderBy('created_at', 'desc')
+                ->paginate(4);
         }
 
         // $this->courses = $courses->filter(function($course) use ($search_name){

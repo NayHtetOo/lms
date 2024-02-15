@@ -15,10 +15,14 @@ class Home extends Component
 
     public function render()
     {
-        $courses = Course::where('course_name','like','%'.$this->search.'%')->paginate(4);
+        $courses = Course::where('course_name','like','%'.$this->search.'%')
+                    ->where('visible', 1)
+                    ->orderBy('created_at', 'desc')
+                    ->paginate(4);
+
         return view('livewire.home',[
             'courses' => $courses
             // 'courses' => Course::where('course_category_id',2)->get(),
-        ]);
+        ])->layout("layouts.app");
     }
 }

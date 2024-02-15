@@ -39,14 +39,16 @@ class ExamView extends Component
     public $trueOrfalse, $multipleChoice, $matching, $shortQuestion, $essay, $exam_answered_users, $checkedCurrentUser;
     public $shortQuestionReceiveMark = [], $essayReceiveMark = [];
     public $examStatus, $gradeName, $questionType;
-    public $timer = 60;
     protected $listener = ["decreaseTimer"];
     public $startAnswer = false;
     public $examDuration = 180;
-    public $duration;
     public $isExamPaperOpen = false;
     public $pageNumber = 1;
     public $flattenedErrors;
+    public $seconds;
+    public $minutes;
+    public $duration;
+    public $timer = 60;
 
     public function mount($id)
     {
@@ -83,13 +85,8 @@ class ExamView extends Component
         $todayDate = \Carbon\Carbon::now('Asia/Yangon')->format('y-m-d H:i:s');
         $currentDate = \Carbon\Carbon::parse($todayDate);
 
-        // session()->forget(['startAnswer', 'timer', 'minutes']);
-
-        if ($currentDate > $startDate && $currentDate < $endDate) {
-            $this->startAnswer = session('startAnswer', false);
-            $this->timer = session('timer', 60);
-            // dd($this->exams->duration);
-            $this->duration = session('minutes', $this->exams->duration);
+        if ($currentDate > $startDate && $currentDate < $endDate && session()->get('seconds') == null && session()->get('mins') == null) {
+            session(['seconds' => 60, 'mins' => $this->exams->duration]);
         }
 
         $this->pageNumber = $this->findFirstNonEmptyPage();
@@ -118,28 +115,31 @@ class ExamView extends Component
         $todayDate = \Carbon\Carbon::now('Asia/Yangon')->format('y-m-d H:i:s');
         $currentDate = \Carbon\Carbon::parse($todayDate);
 
+        $this->seconds = session()->get('seconds', 60);
+        $this->minutes = session()->get('mins', $this->exams->duration);
+        // dd($seconds, $minutes);
+
         if ($currentDate > $startDate && $currentDate < $endDate) {
-            if ($this->timer > 0) {
-                $this->timer--;
-                session(['timer' => $this->timer]);
-                if ($this->timer == 0) {
-                    if ($this->examDuration > 0) {
-                        $this->examDuration--;
-                        $this->timer = 59;
-                        $this->duration = $this->examDuration;
+            if ($this->seconds > 0) {
+                $this->seconds--;
+                session(['seconds' => $this->seconds]);
 
-                        session(['minutes' => $this->duration, 'timer' => $this->timer]);
+                if ($this->seconds == 0) {
+                    $this->minutes--;
+                    session(["seconds" => 59]);
+                    session(['mins' => $this->minutes]);
 
-                        if ($this->duration == 0) {
-                            //    dd(true);
-                            session()->forget(['startAnswer', 'timer', 'minutes']);
-                            $this->examSubmit();
-                        }
+                    if ($this->minutes == 0) {
+                        session(["seconds" => null]);
+                        session(["mins" => null]);
+                        $this->examSubmit();
                     }
                 }
             } else {
                 $this->startAnswer = false;
             }
+        } else {
+            session(['seconds' => 60, 'mins' => $this->exams->duration]);
         }
     }
 
@@ -181,17 +181,17 @@ class ExamView extends Component
 
         switch ($pageNumber) {
             case 1:
-                return $this->trueOrfalse->isNotEmpty() ? 1 : 0;
+                return $this->trueOrfalse->isNotEmpty();
             case 2:
-                return $this->multipleChoice->isNotEmpty() ? 2 : 0;
+                return $this->multipleChoice->isNotEmpty();
             case 3:
-                return $this->matching->isNotEmpty() ? 3 : 0;
+                return $this->matching->isNotEmpty();
             case 4:
-                return $this->shortQuestion->isNotEmpty() ? 4 : 0;
+                return $this->shortQuestion->isNotEmpty();
             case 5:
-                return $this->essay->isNotEmpty() ? 5 : 0;
+                return $this->essay->isNotEmpty();
             default:
-                return 0;
+                return false;
         }
     }
 
@@ -294,16 +294,11 @@ class ExamView extends Component
         }
     }
 
-    public function render()
-    {
-        return view('livewire.exam-view')->layout("layouts.app");
-    }
-
     public function examSubmit()
     {
-        session()->forget([
-            'startAnswer', 'timer', 'minutes'
-        ]);
+        session(["seconds" => null]);
+        session(["mins" => null]);
+
         $this->isExamPaperOpen = false;
 
         ExamAnswer::create([
@@ -332,7 +327,8 @@ class ExamView extends Component
         // return redirect()->route('courses');
 
     }
-    public function validateCheck($key,$received_mark,$short_question){
+    public function validateCheck($key, $received_mark, $short_question)
+    {
 
         if ($short_question && $received_mark > $short_question->mark) {
             $validator = Validator::make([
@@ -361,14 +357,14 @@ class ExamView extends Component
         foreach ($this->shortQuestionReceiveMark as $key => $received_mark) {
             $short_question_answer = ShortQuestionAnswer::find($key);
             $short_question = ShortQuestion::find($short_question_answer->short_question_id);
-            $errorMessage[] = $this->validateCheck($key,$received_mark,$short_question);
+            $errorMessage[] = $this->validateCheck($key, $received_mark, $short_question);
         }
         // dd($errorMessage);
 
         foreach ($this->essayReceiveMark as $key => $received_mark) {
             $essay_answer = EssayAnswer::find($key);
             $essay = Essay::find($essay_answer->essay_id);
-            $errorMessage[] =  $this->validateCheck($key,$received_mark,$essay);
+            $errorMessage[] =  $this->validateCheck($key, $received_mark, $essay);
         }
         // dd($errorMessage);
 
@@ -383,14 +379,13 @@ class ExamView extends Component
         if ($flattenedErrors) {
             // dd($flattenedErrors);
             return $this->flattenedErrors = $flattenedErrors;
-
-        }else{
+        } else {
             $this->flattenedErrors = [];
 
             foreach ($this->shortQuestionReceiveMark as $key => $received_mark) {
                 $short_question_answer = ShortQuestionAnswer::find($key);
                 // dd($short_question_answer);
-                if($short_question_answer){
+                if ($short_question_answer) {
                     $short_question_answer->received_mark = $received_mark;
                     $short_question_answer->save();
                 }
@@ -415,7 +410,6 @@ class ExamView extends Component
 
             $this->isExamSubmittedStudent = true;
             $this->checkAnsweredPaper = false;
-
         }
     }
     #[Computed]
@@ -590,5 +584,11 @@ class ExamView extends Component
          * 5 => essay
          */
         $this->questionType = $question;
+    }
+
+
+    public function render()
+    {
+        return view('livewire.exam-view')->layout("layouts.app");
     }
 }

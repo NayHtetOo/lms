@@ -1,35 +1,26 @@
-<div class="{{ $hidden }} p-4 rounded-lg bg-gray-50" id="participant" role="tabpanel" aria-labelledby="participant-tab">
-    {{-- <div>{{ $participants }}</div> --}}
-    <h2 class="text-lg font-bold text-gray-500">All Participants
-    </h2>
-    <div class="flex h-16 items-center justify-between">
+<div class="{{ $hidden }} p-4 rounded-lg bg-white shadow-lg h-[55vh] overflow-auto" id="participant" role="tabpanel" aria-labelledby="participant-tab">
+    <h2 class="text-lg font-bold text-slate-800">All Participants</h2>
+    <div class="flex h-16 items-center justify-end w-full">
         <div class="flex items-center">
-                {{-- <div class="relative inline-block border border-gray-700 rounded-lg">
-                    <button type="button" class="inline-flex w-full justify-center gap-x-1.5 rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50" id="menu-button" aria-expanded="true" aria-haspopup="true">
-                        All
-                        <svg class="-mr-1 h-5 w-5 text-gray-400" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
-                        <path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z" clip-rule="evenodd" />
-                        </svg>
-                    </button>
-                </div> --}}
                 <div class="ml-2">
-                    <input type="text" wire:model.live="search" class="w-full px-4 py-2 text-gray-700 bg-white border border-gray-300 rounded-md focus:outline-none focus:border-indigo-500" placeholder="Search...">
+                    <input type="text" wire:model.live="search" class="w-full px-4 py-2 text-slate-700 bg-white border border-slate-500 rounded-md focus:outline-none focus:border-indigo-500" placeholder="Search...">
                 </div>
         </div>
     </div>
     <br>
 
     <div class="relative overflow-x-auto shadow-md sm:rounded-lg">
-        <table class="w-full text-sm text-left rtl:text-right text-gray-500">
-            <thead class="text-xs text-gray-700 uppercase bg-gray-50">
+        <table class="w-full text-sm text-left rtl:text-right text-slate-5
+        800">
+            <thead class="text-xs text-slate-800 uppercase bg-gray-50">
                 <tr class="border-b-2">
-                    <th scope="col" class="px-6 py-3">
+                    <th scope="col" class="px-6 py-3 text-slate-800 text-md">
                         No.
                     </th>
-                    <th scope="col" class="px-6 py-3">
+                    <th scope="col" class="px-6 py-3 text-slate-800 text-md">
                         Name
                     </th>
-                    <th scope="col" class="px-6 py-3">
+                    <th scope="col" class="px-6 py-3 text-slate-800 text-md">
                         <div class="flex items-center">
                             Email
                             <a href="#"><svg class="w-3 h-3 ms-1.5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 24 24">
@@ -38,7 +29,7 @@
                             </a>
                         </div>
                     </th>
-                    <th scope="col" class="px-6 py-3">
+                    <th scope="col" class="px-6 py-3 text-slate-800 text-md">
                         <div class="flex items-center">
                             Role
                             <a href="#"><svg class="w-3 h-3 ms-1.5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 24 24">
@@ -47,7 +38,7 @@
                             </a>
                         </div>
                     </th>
-                    <th scope="col" class="px-6 py-3">
+                    <th scope="col" class="px-6 py-3 text-slate-800 text-md">
                         <div class="flex items-center">
                             Status
                             <a href="#"><svg class="w-3 h-3 ms-1.5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 24 24">
@@ -61,19 +52,19 @@
             <tbody>
                 @foreach ($participants as $user)
                     <tr class="border-b">
-                        <td class="px-6 py-4">
+                        <td class="px-6 py-4 text-slate-800 text-md">
                             {{ $loop->index + 1 }}
                         </td>
-                        <th scope="row" class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap">
+                        <th scope="row" class="px-6 py-4 text-slate-800 text-md font-medium whitespace-nowrap">
                             {{ $user->user->name }}
                         </th>
-                        <td class="px-6 py-4">
+                        <td class="px-6 py-4 text-slate-800 text-md">
                             {{ $user->user->email }}
                         </td>
-                        <td class="px-6 py-4">
+                        <td class="px-6 py-4 text-slate-800 text-md">
                             {{ $user->role->name }}
                         </td>
-                        <td class="px-6 py-4">
+                        <td class="px-6 py-4 text-slate-800 text-md">
                             {{ $user->status }}
                         </td>
                     </tr>

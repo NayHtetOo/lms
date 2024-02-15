@@ -1,25 +1,25 @@
-{{-- <div class="hidden p-4 rounded-lg bg-gray-50" id="forum" role="tabpanel" aria-labelledby="grade-tab"> --}}
-<div class="p-4 rounded-lg bg-gray-200" id="forum" role="tabpanel" aria-labelledby="grade-tab">
-    {{-- <div>{{ $forum }}</div> --}}
+<div class="p-4 rounded-lg bg-white shadow-lg" id="forum" role="tabpanel" aria-labelledby="grade-tab">
     @if ($isForumList)
-        <table class="w-full border border-black text-sm text-left text-gray-500">
-            <thead class="text-xs text-gray-700 uppercase">
-                <tr class="border-b-2 border-black">
-                    <th class="px-6 py-3" scope="col">No.</th>
-                    <th class="px-6 py-3" scope="col">Name</th>
-                    <th class="px-6 py-3" scope="col">Description</th>
-                    <th class="px-6 py-3" scope="col">Started by</th>
+        <table class="w-full border border-slate-500 border-collapse text-sm text-left text-gray-500">
+            <thead class="text-md text-slate-800 uppercase">
+                <tr>
+                    <th class="px-6 py-3 border border-slate-600" scope="col">No.</th>
+                    <th class="px-6 py-3 border border-slate-600" scope="col">Name</th>
+                    <th class="px-6 py-3 border border-slate-600" scope="col">Description</th>
+                    <th class="px-6 py-3 border border-slate-600" scope="col">Started by</th>
                     {{-- <th class="" scope="col">Replies</th> --}}
                 </tr>
             </thead>
             <tbody>
                 @foreach ($forum as $key => $fm)
-                    <tr class="border-b border-gray-400">
-                        <td class="px-6 py-3">{{ $loop->index + 1 }}</td>
-                        <td wire:click="forumDiscussion({{ $fm->id }})" class="px-6 py-3 cursor-pointer
-                            hover:text-blue-700 underline" scope="col">{{ $fm->name }}</td>
-                        <td class="px-6 py-3" scope="col">{{ strip_tags($fm->description) }}</td>
-                        <td class="px-6 py-3">{{ $fm->created_at }}</td>
+                    <tr>
+                        <td class="px-6 py-3 border border-slate-600 text-slate-800">{{ $loop->index + 1 }}</td>
+                        <td class="px-6 py-3 border border-slate-600 text-slate-800 cursor-pointer
+                            hover:text-blue-700 underline"
+                            wire:click="forumDiscussion({{ $fm->id }})" scope="col">{{ $fm->name }}</td>
+                        <td class="px-6 py-3 border border-slate-600 text-slate-800" scope="col">
+                            {{ strip_tags($fm->description) }}</td>
+                        <td class="px-6 py-3 border border-slate-600 text-slate-800">{{ $fm->created_at }}</td>
                         {{-- <td>1</td> --}}
                     </tr>
                 @endforeach
@@ -28,19 +28,37 @@
     @endif
 
     @if ($discussion)
-        <button wire:click="backToForum" class="px-2 py-2 bg-gray-700 text-white rounded m-1">Back</button>
+        {{-- <button wire:click="backToForum" class="px-2 py-2 bg-gray-700 text-white rounded m-1">Back</button> --}}
         <div class="px-2 py-2 border rounded border-gray-400">
-            <h2 class="font-bold">{{ $currentForum->name }}<br>
-                <span class="font-thin size-1">by Admin {{ $currentForum->created_at}}</span>
-            </h2>
-            <p class="px-3 py-3">{{ strip_tags($currentForum->description) }}</p>
-            <p wire:click="replyForum" class="items-end text-blue-600 cursor-pointer">Reply</p>
+            <h2 class="text-slate-800 text-xl font-bold">{{ $currentForum->name }}<br></h2>
+            <span class="font-normal text-xs text-slate-800 italic">by Admin {{ $currentForum->created_at }}</span>
+            <p class="text-slate-800 text-md py-3">{{ strip_tags($currentForum->description) }}</p>
+            <p class="items-end text-blue-600 cursor-pointer text-sm" wire:click="replyForum">Reply</p>
 
             @if ($isForumReply)
-                <div class="m-2">
-                    <textarea wire:model="replyText" class="border w-full h-20 rounded" placeholder="Write your reply.." cols="30" rows="10"></textarea>
-                    <button wire:click="postToForum({{ $currentForum->id }})" class="bg-blue-700 text-white px-2 py-2 rounded" type="button">Post to Forum</button>
-                    <button wire:click="replyForum" class="bg-gray-300 px-2 py-2 rounded" type="button">Cancel</button>
+                <div class="mt-3" wire:transition.duration.500ms>
+                    <textarea class="border w-full h-20 rounded" wire:model="replyText" placeholder="Write your reply.." cols="30"
+                              rows="10"></textarea>
+                    <div class="flex w-full justify-end">
+                        <div>
+                            <button class="bg-green-500 px-2 py-2 rounded my-3 text-white text-sm" type="button"
+                                    wire:click="replyForum">
+                                <svg class="w-5 h-5 inline" xmlns="http://www.w3.org/2000/svg" fill="none"
+                                     viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round"
+                                          d="M12 9.75 14.25 12m0 0 2.25 2.25M14.25 12l2.25-2.25M14.25 12 12 14.25m-2.58 4.92-6.374-6.375a1.125 1.125 0 0 1 0-1.59L9.42 4.83c.21-.211.497-.33.795-.33H19.5a2.25 2.25 0 0 1 2.25 2.25v10.5a2.25 2.25 0 0 1-2.25 2.25h-9.284c-.298 0-.585-.119-.795-.33Z" />
+                                </svg>
+                                Cancel</button>
+                            <button class="bg-blue-700 text-white px-2 py-2 rounded my-3 text-sm" type="button"
+                                    wire:click="postToForum({{ $currentForum->id }})">
+                                <svg class="w-5 h-5 inline" xmlns="http://www.w3.org/2000/svg" fill="none"
+                                     viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round"
+                                          d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L10.582 16.07a4.5 4.5 0 0 1-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 0 1 1.13-1.897l8.932-8.931Zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0 1 15.75 21H5.25A2.25 2.25 0 0 1 3 18.75V8.25A2.25 2.25 0 0 1 5.25 6H10" />
+                                </svg>
+                                Post</button>
+                        </div>
+                    </div>
                 </div>
             @endif
         </div>
@@ -48,22 +66,28 @@
         @foreach ($discussionList as $list)
             <div class="px-2 py-2 border border-gray-400 ml-4 mt-2 rounded">
                 <h2 class="font-bold">{{ $currentForum->name }}<br>
-                    <span class="font-thin size-1">by <span class="text-blue-600"> {{ $list->user->name }} </span> {{ $list->created_at}}</span>
+                    <span class="font-thin size-1">by <span class="text-blue-600"> {{ $list->user->name }} </span>
+                        {{ $list->created_at }}</span>
                 </h2>
-                @if (! $isEditReplyText)
+                @if (!$isEditReplyText)
                     <p class="px-3 py-3">{{ $list->reply_text }}</p>
                 @endif
                 {{-- edit forum discussion --}}
                 @if ($list->user_id == auth()->user()->id && $isEditReplyText && $list->id == $currentDiscussionId)
                     <div class="m-2">
-                        <textarea wire:model="editReplyText" class="border w-full h-20 rounded" placeholder="Write your reply.." cols="30" rows="10"></textarea>
-                        <button wire:click="updateToForum({{ $currentDiscussionId }})" class="bg-blue-700 text-white px-2 py-2 rounded" type="button">Update to Forum</button>
-                        <button wire:click="editReplyCancel" class="bg-gray-300 px-2 py-2 rounded" type="button">Cancel</button>
+                        <textarea class="border w-full h-20 rounded" wire:model="editReplyText" placeholder="Write your reply.." cols="30"
+                                  rows="10"></textarea>
+                        <button class="bg-blue-700 text-white px-2 py-2 rounded" type="button"
+                                wire:click="updateToForum({{ $currentDiscussionId }})">Update to Forum</button>
+                        <button class="bg-gray-300 px-2 py-2 rounded" type="button"
+                                wire:click="editReplyCancel">Cancel</button>
                     </div>
                 @endif
                 @if ($list->user_id == auth()->user()->id && $list->id != $currentDiscussionId)
-                    <button wire:click="editForumDiscussion({{ $list->id }},1)" class="w-21 px-1 py-1 border rounded border-gray-500">Edit</button>
-                    <button wire:click="editForumDiscussion({{ $list->id }},0)" class="w-21 px-1 py-1 text-red-600 border rounded border-red-500">Delete</button>
+                    <button class="w-21 px-1 py-1 border rounded border-gray-500"
+                            wire:click="editForumDiscussion({{ $list->id }},1)">Edit</button>
+                    <button class="w-21 px-1 py-1 text-red-600 border rounded border-red-500"
+                            wire:click="editForumDiscussion({{ $list->id }},0)">Delete</button>
                 @endif
             </div>
         @endforeach
