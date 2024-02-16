@@ -37,7 +37,7 @@
 
             @if ($isForumReply)
                 <div class="mt-3" wire:transition.duration.500ms>
-                    <textarea class="border w-full h-20 rounded" wire:model="replyText" placeholder="Write your reply.." cols="30"
+                    <textarea class="border w-full h-20 rounded text-slate-800" wire:model="replyText" placeholder="Write your reply.." cols="30"
                               rows="10"></textarea>
                     <div class="flex w-full justify-end">
                         <div>
@@ -64,29 +64,30 @@
         </div>
 
         @foreach ($discussionList as $list)
-            <div class="px-2 py-2 border border-gray-400 ml-4 mt-2 rounded">
-                <h2 class="font-bold">{{ $currentForum->name }}<br>
-                    <span class="font-thin size-1">by <span class="text-blue-600"> {{ $list->user->name }} </span>
+            <div class="px-2 py-2 border border-gray-400 mt-2 rounded">
+                <h2 class="text-xl font-bold text-slate-800">{{ $currentForum->name }} </h2>
+                    <span class="font-normal text-xs text-slate-800 italic">by <span class="text-blue-600"> {{ $list->user->name }} </span>
                         {{ $list->created_at }}</span>
-                </h2>
                 @if (!$isEditReplyText)
-                    <p class="px-3 py-3">{{ $list->reply_text }}</p>
+                    <p class="py-3">{{ $list->reply_text }}</p>
                 @endif
                 {{-- edit forum discussion --}}
                 @if ($list->user_id == auth()->user()->id && $isEditReplyText && $list->id == $currentDiscussionId)
-                    <div class="m-2">
-                        <textarea class="border w-full h-20 rounded" wire:model="editReplyText" placeholder="Write your reply.." cols="30"
+                    <div class="mt-3" wire:transition.duration.300ms>
+                        <textarea class="border w-full h-20 rounded text-slate-800" wire:model="editReplyText" placeholder="Write your reply.." cols="30"
                                   rows="10"></textarea>
-                        <button class="bg-blue-700 text-white px-2 py-2 rounded" type="button"
-                                wire:click="updateToForum({{ $currentDiscussionId }})">Update to Forum</button>
-                        <button class="bg-gray-300 px-2 py-2 rounded" type="button"
-                                wire:click="editReplyCancel">Cancel</button>
+                        <div class="w-full flex justify-end mt-3">
+                            <button class="bg-green-500 px-2 py-2 rounded text-white mr-2" type="button"
+                                    wire:click="editReplyCancel">Cancel</button>
+                            <button class="bg-blue-500 text-white px-2 py-2 rounded" type="button"
+                                    wire:click="updateToForum({{ $currentDiscussionId }})">Update</button>
+                        </div>
                     </div>
                 @endif
                 @if ($list->user_id == auth()->user()->id && $list->id != $currentDiscussionId)
-                    <button class="w-21 px-1 py-1 border rounded border-gray-500"
+                    <button class="text-sm text-yellow-600 mr-2"
                             wire:click="editForumDiscussion({{ $list->id }},1)">Edit</button>
-                    <button class="w-21 px-1 py-1 text-red-600 border rounded border-red-500"
+                    <button class="text-sm text-red-600"
                             wire:click="editForumDiscussion({{ $list->id }},0)">Delete</button>
                 @endif
             </div>

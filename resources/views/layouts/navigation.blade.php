@@ -1,6 +1,6 @@
 <nav x-data="{ open: false }" class="bg-gray-800 border-b border-gray-200">
     <!-- Primary Navigation Menu -->
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="max-w-7xl mx-auto px-4 py-2 sm:px-6 lg:px-8">
         <div class="flex justify-between h-16">
             <div class="flex">
                 <!-- Logo -->
@@ -48,7 +48,14 @@
                 <x-dropdown align="right" width="48">
                     <x-slot name="trigger">
                         <button class="inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md text-white focus:outline-none transition ease-in-out duration-150">
-                            <div>{{ Auth::user()->name }}</div>
+                            <div class="flex items-center">
+                                @if (auth()->user()->user_photo_path)
+                                    <img class="w-[50px] h-[50px] rounded-full mr-3" src="{{ asset('storage/' . auth()->user()->user_photo_path) }}" alt="{{ auth()->user()->name . "'s photo" }}">
+                                @else
+                                     <img class="w-[50px] h-[50px] rounded-full mr-3" src="{{ asset('images/profile_default.jpg') }}" alt="profile default">
+                                @endif
+                                <span> {{ Auth::user()->name }}</span>
+                            </div>
 
                             <div class="ms-1">
                                 <svg class="fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">

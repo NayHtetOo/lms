@@ -3,7 +3,8 @@
     <div class="w-full b-4 border-b  mt-5">
         <div class="bg-white rounded-lg shadow-md my-3 py-3">
             <div class="px-2 py-2 text-end my-3 text-blue-600 font-bold">
-                Student Name - {{ $checkedCurrentUser?->name }}
+                <p>Profile - </p>
+                <p>Student Name - {{ $checkedCurrentUser?->name }}</p>
             </div>
             <div class="w-full flex justify-center items-center">
                 <div class="inline-block">
@@ -62,7 +63,7 @@
             </button>
             </div>
 
-            <div class="rounded-xl shadow-lg">
+            <div class="rounded-xl">
                 <div class="p-2 mb-4 border-b border-gray-200">
                     {{-- true or false --}}
                     @if ($questionType == 1)

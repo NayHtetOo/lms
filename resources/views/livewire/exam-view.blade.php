@@ -1,4 +1,4 @@
-<div class="min-h-full w-full mt-[4rem] @if ($isExamPaperOpen == true || $this->isTeacher || $examStatus == 2) flex @endif" id="examViewContainer">
+<div class="min-h-full w-full mt-[6rem] @if ($isExamPaperOpen == true || $this->isTeacher || $examStatus == 2) flex @endif" id="examViewContainer">
     @php
         $startDate = \Carbon\Carbon::parse($this->exams->start_date_time);
         $endDate = \Carbon\Carbon::parse($this->exams->end_date_time);
@@ -82,7 +82,7 @@
                         <button class="border bg-blue-600 py-2 px-3 rounded-md text-white"
                                 @click="history.back()">Back</button>
                         @if ($currentDate->between($startDate, $endDate))
-                            @if ($this->studentAccess->role_id == 3)
+                            @if ($this->isStudent)
                                 <button class="border bg-green-500 py-2 px-3 rounded-md text-white"
                                         wire:click='answerStart'>Answer</button>
                             @endif
@@ -123,7 +123,7 @@
                                 <div class=" px-3" id="question-tab-content">
                                     <div class="rounded-lg relative" id="question1" role="tabpanel"
                                          aria-labelledby="question1-tab">
-                                        @if ($pageNumber == 1)
+                                        @if (isset($filterAnswerPaper[0]) && $pageNumber == 0)
                                             @if ($trueOrfalse->isNotEmpty())
                                                 <div wire:transition.1000ms>
                                                     <div class="w-full flex justify-start items-center">
@@ -186,7 +186,7 @@
                                     {{-- Multiple Choice Block --}}
                                     <div class=" rounded-lg" id="question2" role="tabpanel"
                                          aria-labelledby="question2-tab">
-                                        @if ($pageNumber == 2)
+                                        @if (isset($filterAnswerPaper[1]) && $pageNumber == 1)
                                             @if ($this->multipleChoice->isNotEmpty())
                                                 <div wire:transition.1000ms>
                                                     <div class="w-full flex justify-start items-center">
@@ -296,7 +296,7 @@
                                     <div class="rounded-lg" id="question3" role="tabpanel"
                                          aria-labelledby="question3-tab">
                                         {{-- <div>Matching</div> --}}
-                                        @if ($pageNumber == 3)
+                                        @if (isset($filterAnswerPaper[2]) && $pageNumber == 2)
                                             @if ($this->matching->isNotEmpty())
                                                 <div wire:transition.1000ms>
                                                     <div class="w-full flex justify-start items-center">
@@ -411,7 +411,7 @@
                                     {{-- ShortQuestion Block --}}
                                     <div class="rounded-lg" id="question4" role="tabpanel"
                                          aria-labelledby="question4-tab">
-                                        @if ($pageNumber == 4)
+                                        @if (isset($filterAnswerPaper[3]) && $pageNumber == 3)
                                             @if ($this->shortQuestion->isNotEmpty())
                                                 <div wire:transition.1000ms>
                                                     <div class="w-full flex justify-start items-center">
@@ -446,7 +446,7 @@
                                     {{-- Essay Block --}}
                                     <div class="rounded-lg" id="question5" role="tabpanel"
                                          aria-labelledby="question5-tab">
-                                        @if ($pageNumber == 5)
+                                        @if (isset($filterAnswerPaper[4]) && $pageNumber == 4)
                                             @if ($this->essay->isNotEmpty())
                                                 <div class="w-full flex justify-start items-center">
                                                     @include('exam_view.prev-next-button')

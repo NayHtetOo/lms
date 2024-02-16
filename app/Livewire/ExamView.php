@@ -43,7 +43,9 @@ class ExamView extends Component
     public $startAnswer = false;
     public $examDuration = 180;
     public $isExamPaperOpen = false;
-    public $pageNumber = 1;
+    public $pageNumber;
+    public $lastPage;
+    public $firstPage;
     public $flattenedErrors;
     public $seconds;
     public $minutes;
@@ -55,6 +57,8 @@ class ExamView extends Component
     //     'end_date_time' => 'date:Y-m-d',
     //     'start_date_time' => 'date:Y-m-d',
     // ];
+    public $hasAnswerPaper = [];
+    public $filterAnswerPaper;
 
     public function mount($id)
     {
@@ -95,7 +99,45 @@ class ExamView extends Component
             session(['seconds' => 60, 'mins' => $this->exams->duration]);
         }
 
-        $this->pageNumber = $this->findFirstNonEmptyPage();
+        // $this->pageNumber = $this->findFirstNonEmptyPage();
+
+        $trueFalse = TrueOrFalse::where('exam_id', $this->exams->id)->get();
+        $multipleChoice = MultipleChoice::where('exam_id', $this->exams->id)->get();
+        $matching = Matching::where('exam_id', $this->exams->id)->get();
+        $shortQuestion = ShortQuestion::where('exam_id', $this->exams->id)->get();
+        $essay = Essay::where('exam_id', $this->exams->id)->get();
+
+        $this->hasAnswerPaper = [
+            0 => $trueFalse->isNotEmpty() ? $trueFalse->toArray() : null,
+            1 => $multipleChoice->isNotEmpty() ? $multipleChoice->toArray() : null,
+            2 => $matching->isNotEmpty() ? $matching->toArray() : null,
+            3 => $shortQuestion->isNotEmpty() ? $shortQuestion->toArray() : null,
+            4 => $essay->isNotEmpty() ? $essay->toArray() : null,
+        ];
+
+
+        $this->filterAnswerPaper = array_filter($this->hasAnswerPaper, function ($value) {
+            return $value != null;
+        });
+
+
+        $this->pageNumber =  array_key_first($this->filterAnswerPaper);
+        $this->firstPage = array_key_first($this->filterAnswerPaper);
+        $this->lastPage = array_key_last($this->filterAnswerPaper);
+    }
+
+    public function goToNextPage()
+    {
+        do {
+            $this->pageNumber++;
+        } while (!isset($this->filterAnswerPaper[$this->pageNumber]) && $this->pageNumber < $this->lastPage);
+    }
+
+    public function goToPrevPage()
+    {
+        do {
+            $this->pageNumber--;
+        } while (!isset($this->filterAnswerPaper[$this->pageNumber]) && $this->pageNumber >= $this->firstPage);
     }
 
     public function findFirstNonEmptyPage()
@@ -149,31 +191,7 @@ class ExamView extends Component
         }
     }
 
-    public function goToNextPage()
-    {
-        $nextPageNumber = $this->pageNumber + 1;
-        // loop to reach the value is empty
-        while ($nextPageNumber <= 5 && !$this->isNotEmptyPage($nextPageNumber)) {
-            $nextPageNumber++;
-        }
-        // value is not empty and display the current page
-        if ($nextPageNumber <= 5) {
-            $this->pageNumber = $nextPageNumber;
-        }
-    }
 
-    public function goToPrevPage()
-    {
-        $prevPageNumber = $this->pageNumber - 1;
-        // loop to reach the value is empty
-        while ($prevPageNumber >= 1 && !$this->isNotEmptyPage($prevPageNumber)) {
-            $prevPageNumber--;
-        }
-
-        if ($prevPageNumber >= 1) {
-            $this->pageNumber = $prevPageNumber;
-        }
-    }
 
 
     public function isNotEmptyPage($pageNumber)
@@ -187,6 +205,7 @@ class ExamView extends Component
 
         switch ($pageNumber) {
             case 1:
+                // dd($this->trueOrfalse->isNotEmpty(), $pageNumber);
                 return $this->trueOrfalse->isNotEmpty();
             case 2:
                 return $this->multipleChoice->isNotEmpty();
