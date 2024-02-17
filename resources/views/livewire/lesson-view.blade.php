@@ -4,9 +4,9 @@
     </div>
     <div class="mx-auto max-w-7xl py-6 sm:px-6 lg:px-8 mt-[9rem] h-[35rem] overflow-auto">
         <div class="p-4 bg-slate-100 rounded-xl transform transition-all duration-300 shadow-lg h-[35rem] overflow-auto">
-            {{-- <div>
+            <div>
                 <h3 class="text-2xl text-slate-800 font-bold">{{ $this->course()->course_name }} Course</h3>
-            </div> --}}
+            </div>
             <livewire:course-photo-show :courseId='$this->lesson->course_id' />
             <div class="flex justify-between">
                 <div class="bg-green-500 inline-block py-2 px-3 rounded-md">

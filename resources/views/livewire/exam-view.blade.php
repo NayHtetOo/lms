@@ -31,11 +31,11 @@
                 <div class="border-b border-slate-500 pb-2">
 
                     <div class="flex justify-between">
-                        <h2 class="text-xl font-bold text-slate-800">{{ $this->exams()->exam_name }}</h2>
+                        <h2 class="text-xl font-bold text-slate-800">{{ $this->exams->exam_name }}</h2>
                     </div>
 
                     <div class="my-3 flex justify-end w-full">
-                        Duration - <span class="text-blue-500 font-bold">{{ $this->exams()->duration }} minutes</span>
+                        Duration - <span class="text-blue-500 font-bold">{{ $this->exams->duration }} minutes</span>
                     </div>
 
                     <div class="border-b border-slate-700">
@@ -46,7 +46,7 @@
                                       d="M12 6v6h4.5m4.5 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
                             </svg>
                             <span>Start date - <span
-                                      class="text-blue-500 font-bold">{{ \Carbon\Carbon::parse($this->exams()->start_date_time)->format('y-m-d h:i:s A') }}</span></span>
+                                      class="text-blue-500 font-bold">{{ $this->exams->start_date_time }}</span></span>
                         </div>
                         <div class="text-slate-700 my-3">
                             <svg class="w-6 h-6 inline" xmlns="http://www.w3.org/2000/svg" fill="none"
@@ -55,7 +55,7 @@
                                       d="M12 6v6h4.5m4.5 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
                             </svg>
                             <span>End date - <span
-                                      class="text-blue-500 font-bold">{{ \Carbon\Carbon::parse($this->exams()->end_date_time)->format('y-m-d h:i:s A') }}</span></span>
+                                      class="text-blue-500 font-bold">{{ $this->exams->end_date_time }}</span></span>
                         </div>
                     </div>
                     <div class="text-slate-700 my-3">
@@ -66,14 +66,14 @@
                         </svg>
                         <span class="text-green-500"> Description </span>
                         <p class="text-slate-700 mt-2 font-bold py-2 px-2">
-                            {{ $this->exams()->description }}
+                            {{ $this->exams->description }}
                         </p>
                     </div>
                 </div>
                 <div class="relative overflow-x-auto sm:rounded text-end mt-3">
                     <div class="flex justify-end items-center">
                         <div class="mr-3">
-                            <button class="text-white bg-gray-800 hover:bg-gray-900 focus:ring-4 focus:outline-none focus:ring-gray-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center gray:bg-gray-600 gray:hover:bg-gray-700 gray:focus:ring-gray-800"
+                            <button class="text-white bg-slate-800 hover:bg-slate-900 focus:ring-4 focus:outline-none focus:ring-slate-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-slate-600 dark:hover:bg-slate-700 dark:focus:ring-slate-800"
                                 @click="history.back()">Back</button>
                         </div>
                         @if ($isAdmin || $isTeacher)
@@ -501,7 +501,7 @@
 
     {{-- show report for students after sumbmit --}}
     @if ($this->summaryView && $examStatus == 2)
-        <div class="w-3/4 py-1 mt-3 sm:px-6 lg:px-8">
+        <div class="w-3/4 py-1 mt-3 sm:px-6 lg:px-8" wire:ignore>
             <div class="p-4 rounded-xl shadow-2xl bg-white">
                 <h1 class="text-slate-700 text-center text-xl font-bold">Result</h1>
                 <div class="flex justify-end">
@@ -656,14 +656,16 @@
                                 <div class="ml-2">
                                     <label class="">
                                         <span>Start Date Time</span>
-                                        <input type="datetime-local" wire:model="start_date_time" class="datepicker border mt-2 border-gray-400 rounded w-full py-2 px-2 text-gray-700 leading-tight focus:outline-none focus:bg-white focus:border-purple-500" id="inline-full-name">
+                                        <input class="border mt-2 border-gray-400 rounded w-full py-2 px-2 text-gray-700 leading-tight focus:outline-none focus:bg-white focus:border-purple-500"
+                                               id="inline-full-name" type="date" wire:model="start_date_time">
                                     </label>
                                 </div>
                             </div>
                             <div class="w-2/3 ml-2">
                                 <label class="">
                                     <span>End Date Time</span>
-                                    <input type="datetime-local" wire:model="end_date_time" class="border mt-2 border-gray-400 rounded w-full py-2 px-2 text-gray-700 leading-tight focus:outline-none focus:bg-white focus:border-purple-500" id="inline-full-name">
+                                    <input class="border mt-2 border-gray-400 rounded w-full py-2 px-2 text-gray-700 leading-tight focus:outline-none focus:bg-white focus:border-purple-500"
+                                           id="inline-full-name" type="date" wire:model="end_date_time">
                                 </label>
                             </div>
                             <div class="w-1/3 ml-2">
@@ -732,14 +734,14 @@
     });
     // let minutes = @this.minutes;
 
-    // let duration = setInterval(() => {
-    //     console.log(@this.minutes);
-    //     if (@this.startAnswer) {
-    //         @this.call('decreaseTimer');
+    let duration = setInterval(() => {
+        console.log(@this.minutes);
+        if (@this.startAnswer) {
+            @this.call('decreaseTimer');
 
-    //         if (@this.minutes == 0) {
-    //             clearInterval(duration);
-    //         }
-    //     }
-    // }, 100);
+            if (@this.minutes == 0) {
+                clearInterval(duration);
+            }
+        }
+    }, 100);
 </script>

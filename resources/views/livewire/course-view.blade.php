@@ -31,9 +31,9 @@
             @endif
 
             {{-- @include('deleted_files.course-tab-view') --}}
-            <livewire:course-photo-show :courseId="$id" />
 
-            <div class=" rounded-xl shadow-lg">
+            <div class=" rounded-xl shadow-lg h-[25rem] overflow-auto">
+                <livewire:course-photo-show :courseId="$id" />
                 <div class="mb-4 border-b border-gray-200">
                     <ul class="flex flex-wrap -mb-px text-sm font-medium text-center bg-blue-500 rounded-md px-3">
                         <li class="me-2 py-2">

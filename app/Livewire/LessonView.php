@@ -31,6 +31,12 @@ class LessonView extends Component
     }
 
     #[Computed]
+    public function course () {
+        $course = Course::findOrFail($this->lesson->course_id);
+        return $course;
+    }
+
+    #[Computed]
     public function role($role)
     {
         if ($role == 'admin') {

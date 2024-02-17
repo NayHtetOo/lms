@@ -44,8 +44,8 @@ class ProfileController extends Controller
 
         if (isset($file)) {
             $fileName = $file->hashName();
-            if (Storage::exists('public/profile/' . $oldFile)) {
-                Storage::delete('public/profile/' . $oldFile);
+            if (Storage::exists('public/' . $oldFile)) {
+                Storage::delete('public/' . $oldFile);
 
                 $file->storeAs('public/profile/', $fileName);
                 User::where('id', auth()->user()->id)->update([

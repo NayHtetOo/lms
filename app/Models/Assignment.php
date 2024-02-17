@@ -14,4 +14,8 @@ class Assignment extends Model
     public function course_sections(){
         return $this->belongsTo(CourseSection::class);
     }
+
+    public function users() {
+        return $this->belongsTo(User::class);
+    }
 }

@@ -46,4 +46,8 @@ class User extends Authenticatable
     public function zoom_user_info() {
         return $this->hasOne(ZoomUserInfo::class);
     }
+
+    public function assignments() {
+        return $this->hasMany(Assignment::class);
+    }
 }
