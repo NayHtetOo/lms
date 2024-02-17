@@ -3,6 +3,7 @@
 namespace App\Filament\Resources\CourseResource\RelationManagers;
 
 use App\Filament\Resources\CourseResource\Pages\EditCourse;
+use App\Models\Enrollment;
 use App\Models\Role;
 use App\Models\User;
 use Filament\Forms;
@@ -25,10 +26,10 @@ class EnrollmentsRelationManager extends RelationManager
             ->schema([
                 Select::make('user_id')->label('User')->required()->options(
                     User::all()->pluck('name','id')
-                 ),
-                 Select::make('role_id')->label('Role')->required()->options(
+                ),
+                Select::make('role_id')->label('Role')->required()->options(
                     Role::all()->pluck('name','id')
-                 ),
+                ),
                 Forms\Components\TextInput::make('status')
                     ->required()
                     ->maxLength(255),

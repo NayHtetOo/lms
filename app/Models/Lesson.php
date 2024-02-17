@@ -18,7 +18,11 @@ class Lesson extends Model
     public function courses(){
         return $this->belongsTo(Course::class);
     }
-    function course_sections() {
+    public function course_sections() {
         return $this->belongsTo(CourseSection::class);
     }
+    public function lesson_tutorials(){
+        return $this->hasMany(LessonTutorial::class);
+    }
+
 }

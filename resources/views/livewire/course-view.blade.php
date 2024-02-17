@@ -37,30 +37,28 @@
                 <div class="mb-4 border-b border-gray-200">
                     <ul class="flex flex-wrap -mb-px text-sm font-medium text-center bg-blue-500 rounded-md px-3">
                         <li class="me-2 py-2">
-                            <button wire:click="switchTab(1)" class="inline-block text-white text-md p-2 hover:bg-blue-600 hover:text-white"
+                            <button wire:click="switchTab(1)" class="inline-block @if ($isSectionTab)
+                            bg-black rounded
+                            @endif  text-white text-md p-2 hover:bg-blue-600 hover:text-white"
                                 type="button">Section
                             </button>
                         </li>
 
                         <li class="me-2 py-2">
-                            <button wire:click="switchTab(2)" class="inline-block text-white p-2 hover:bg-blue-600 hover:text-white text-md"
+                            <button wire:click="switchTab(2)" class="inline-block @if ($isForumTab)
+                            bg-black rounded
+                            @endif text-white p-2 hover:bg-blue-600 hover:text-white text-md"
                                 type="button" >Forums
                             </button>
                         </li>
 
                         <li class="me-2 py-2">
-                            <button wire:click="switchTab(3)" class="inline-block text-white p-2 hover:bg-blue-600 hover:text-white text-md"
+                            <button wire:click="switchTab(3)" class="inline-block @if ($isParticipantTab)
+                            bg-black rounded
+                            @endif text-white p-2 hover:bg-blue-600 hover:text-white text-md"
                                 type="button">Participants
                             </button>
                         </li>
-
-                        @if ($this->enrollmentUser->role_id == 2)
-                            <li class="me-2 py-2">
-                                <button wire:click="switchTab(4)" class="inline-block text-white p-2 hover:bg-blue-600 hover:text-white text-md"
-                                    type="button">Setting
-                                </button>
-                            </li>
-                        @endif
 
                     </ul>
                 </div>
@@ -81,10 +79,6 @@
                         @include('course.participants', [
                             'hidden' => $this->isParticipantSearch ? '' : 'hidden',
                         ])
-                    @endif
-
-                    @if ($isSettingTab)
-                        @include('course.setting')
                     @endif
 
                 </div>

@@ -7,21 +7,20 @@
             <livewire:course-photo-show :courseId='$this->assignment->course_id' />
             <div class="flex justify-between">
                 <div class="bg-green-500 inline-block py-2 px-3 rounded-md">
-                    <a class="text-white underline" href="/course_view/{{ $this->assignment->course_id }}">
+                    <a class="text-white underline" href="/course_view/{{ $this->assignment()->course_id }}">
                         <svg class="w-5 h-5 inline me-2" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
                              stroke-width="1.5" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round"
                                   d="M5.25 8.25h15m-16.5 7.5h15m-1.8-13.5-3.9 19.5m-2.1-19.5-3.9 19.5" />
                         </svg>
-                        {{ $this->courseID }} / {{ $this->assignment->assignment_name }}</a>
+                        {{ $this->courseID }} / {{ $this->assignment()->assignment_name }}</a>
                 </div>
             </div>
             <div class="border-b border-slate-600">
-
-                <h2 class="text-xl font-bold text-slate-900 my-3">{{ $this->assignment->assignment_name }} assignment</h2>
+                <h2 class="text-2xl font-bold text-slate-900 my-3">{{ $this->assignment()->assignment_name }}</h2>
             </div>
             <div class="my-3">
-                {{ strip_tags($this->assignment->description ) }}
+                {{ strip_tags($this->assignment()->description ) }}
             </div>
             <div class="flex justify-end w-full">
                 <button class="text-white bg-gray-800 hover:bg-gray-900 focus:ring-4 focus:outline-none focus:ring-gray-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center gray:bg-gray-600 gray:hover:bg-gray-700 gray:focus:ring-gray-800"

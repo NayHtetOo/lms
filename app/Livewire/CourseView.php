@@ -27,7 +27,7 @@ class CourseView extends Component
     public $alertMessage = "";
     public $currentUser;
     public $discussion,$isForumList;
-    public $isSectionTab = true,$isForumTab,$isParticipantTab,$isSettingTab;
+    public $isSectionTab = true,$isForumTab,$isParticipantTab;
     public $expandedSections = [],$expandedLessons = [] ,$expandedExams = [],$expandedAssignments = [];
     public $currentForum,$isForumReply = false;
     public $replyText,$editReplyText;
@@ -281,14 +281,12 @@ class CourseView extends Component
             $this->isSectionTab = true;
             $this->isForumTab = false;
             $this->isParticipantTab = false;
-            $this->isSettingTab = false;
             $this->isParticipantSearch = false;
         }
         if($tab == 2){
             $this->isSectionTab = false;
             $this->isForumTab = true;
             $this->isParticipantTab = false;
-            $this->isSettingTab = false;
 
             $this->isForumList = true;
             $this->discussion = false;
@@ -298,14 +296,7 @@ class CourseView extends Component
             $this->isSectionTab = false;
             $this->isForumTab = false;
             $this->isParticipantTab = true;
-            $this->isSettingTab = false;
             $this->isParticipantSearch = true;
-        }
-        if($tab == 4){
-            $this->isSectionTab = false;
-            $this->isForumTab = false;
-            $this->isParticipantTab = false;
-            $this->isSettingTab = true;
         }
 
     }

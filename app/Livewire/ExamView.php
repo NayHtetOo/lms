@@ -53,10 +53,6 @@ class ExamView extends Component
     public $timer = 60;
     public $isEditExam;
     public $exam_name,$start_date_time,$end_date_time,$description,$duration_field;
-    // protected $casts = [
-    //     'end_date_time' => 'date:Y-m-d',
-    //     'start_date_time' => 'date:Y-m-d',
-    // ];
     public $hasAnswerPaper = [];
     public $filterAnswerPaper;
     public $shortQuestionViewStatus = false;
@@ -585,10 +581,11 @@ class ExamView extends Component
         }
     }
 
-    #[Computed]
+    #[Computed()]
     public function exams()
     {
-        return Exam::findOrFail($this->id);
+        $exam = Exam::findOrFail($this->id);
+        return $exam;
     }
 
     public function backToSumittedStudent()
@@ -615,9 +612,9 @@ class ExamView extends Component
     {
         return view('livewire.exam-view')->layout("layouts.app");
     }
+
     public function editExam(){
         $this->isEditExam = true;
-        // dd($this->exams->toArray());
         $this->exam_name = $this->exams->exam_name;
         $this->start_date_time = $this->exams->start_date_time;
         $this->end_date_time = $this->exams->end_date_time;
@@ -643,9 +640,9 @@ class ExamView extends Component
             $exam->description = $this->description;
             $exam->duration = $this->duration_field;
             $exam->save();
-
             $this->toggleModal();
         }
+        return $this->exams;
     }
     public function toggleModal()
     {

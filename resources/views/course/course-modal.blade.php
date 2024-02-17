@@ -1,29 +1,29 @@
-<div x-show="{{ $isEditCourse }}" class="fixed z-10 inset-x-60">
-    <div class="items-center text-center sm:p-0">
-        <div class="fixed inset-0 transition-opacity" aria-hidden="true">
-            <div class="absolute inset-0 bg-gray-500 opacity-75"></div>
-        </div>
-        <div class="bg-white rounded-lg text-left shadow-xl transform" role="dialog" aria-modal="true" aria-labelledby="modal-headline">
-            <!-- Modal content -->
-            <div class="bg-gray-50 px-4 py-3 sm:px-6 flex justify-between">
-                <h3 class="text-lg leading-6 font-medium text-gray-900" id="modal-headline">
+<div class="fixed z-50 justify-center w-full top-12 left-72 right-0">
+    <div class="fixed inset-0 transition-opacity" aria-hidden="true">
+        <div class="absolute inset-0 bg-gray-800 opacity-75"></div>
+    </div>
+    <div class="relative p-4 w-full max-w-5xl">
+        <!-- Modal content -->
+        <div class="relative bg-white rounded-lg shadow dark:bg-gray-700">
+            <!-- Modal header -->
+            <div class="flex items-center justify-between p-4 md:p-5 border-b rounded-t dark:border-gray-600">
+                <h3 class="text-xl font-semibold text-gray-900 dark:text-white">
                     Edit Course
                 </h3>
-                <button class="text-red-600 hover:text-red-800 focus:outline-none" wire:click="toggleModal">
-                    <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                <button type="button" wire:click="toggleModal" class="text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm w-8 h-8 ms-auto inline-flex justify-center items-center dark:hover:bg-gray-600 dark:hover:text-white">
+                    <svg class="w-3 h-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 14">
+                        <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6"/>
                     </svg>
+                    {{-- <span class="sr-only">Close modal</span> --}}
                 </button>
             </div>
-
             <!-- Modal body -->
-            <div class="bg-white px-4 py-4 max-h-96 overflow-y-auto">
+            <div class="overflow-y-auto overflow-x-hidden max-h-96 p-4 md:p-5 space-y-4">
                 @if ($errors->any())
                     @foreach ($errors->all() as $error)
                         <div class="px-2 py-2 m-3 bg-red-500 text-white">{{ $error }}</div>
                     @endforeach
                 @endif
-                
                 <div class="flex m-2">
                     <div class="w-2/3">
                         <label class="">
@@ -85,17 +85,18 @@
                         </label>
                     </div>
                 </div>
-
             </div>
+
             <!-- Modal footer -->
-            <div class="bg-gray-50 px-4 py-3 sm:px-6 flex justify-end">
-                <button wire:click="toggleModal" class="rounded-md border mr-2 border-black hover:text-white hover:bg-black px-4 py-2 shadow-sm sm:text-sm sm:w-auto" wire:click="toggleModal">
-                    Close
-                </button>
-                <button wire:click="updateCourse" class="rounded-md border mr-2 border-blue-500 text-blue-500 hover:text-white hover:bg-blue-700 px-4 py-2 shadow-sm sm:text-sm sm:w-auto" wire:click="toggleModal">
+            <div class="flex items-center p-4 md:p-5 border-t border-gray-200 rounded-b dark:border-gray-600">
+                <button wire:click="updateCourse" type="button" class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
                     Update
+                </button>
+                <button wire:click="toggleModal" type="button" class="py-2.5 px-5 ms-3 text-sm font-medium text-gray-900 focus:outline-none bg-white rounded-lg border border-gray-200 hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:ring-4 focus:ring-gray-100 dark:focus:ring-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:border-gray-600 dark:hover:text-white dark:hover:bg-gray-700">
+                    Close
                 </button>
             </div>
         </div>
     </div>
 </div>
+

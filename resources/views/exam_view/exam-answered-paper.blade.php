@@ -50,9 +50,9 @@
         </div>
     </div>
 
-    @if ($errors->has('message'))
-        @foreach ($errors->get('message') as $error)
-            <p class="error">{{ $error }}</p>
+     @if ($flattenedErrors)
+        @foreach ($flattenedErrors as $error)
+            <p class="px-2 py-2 bg-red-400 m-1 text-white rounded">{{ $error }}</p>
         @endforeach
     @endif
 

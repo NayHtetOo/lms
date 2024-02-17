@@ -5,6 +5,7 @@ namespace App\Filament\Resources\CourseResource\RelationManagers;
 use App\Filament\Resources\CourseResource;
 use App\Filament\Resources\CourseSectionResource;
 use Filament\Forms;
+use Filament\Forms\Components\Repeater;
 use Filament\Forms\Form;
 use Filament\Resources\RelationManagers\RelationManager;
 use Filament\Tables;

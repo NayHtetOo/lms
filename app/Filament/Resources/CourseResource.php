@@ -53,13 +53,13 @@ class CourseResource extends Resource
     {
         return $form
             ->schema([
-                Select::make('course_category_id')->label('Category Type')->required()->options(
+                Select::make('course_category_id')->label('Category type')->required()->options(
                     CourseCategory::all()->pluck('category_name', 'id')
                 )->searchable(),
-                TextInput::make('course_name')
+                TextInput::make('course_name')->placeholder('Enter Course Name')
                     ->required()
                     ->maxLength(255),
-                TextInput::make('course_ID')
+                TextInput::make('course_ID')->label('CourseID')->placeholder('Short Name of Course(SNC)')
                     ->required()
                     ->maxLength(255),
                 DatePicker::make('from_date')
@@ -71,12 +71,12 @@ class CourseResource extends Resource
                         //    dd($get('other_field'), $value);
                         },
                     ]),
-                Textarea::make('description')
+                Textarea::make('description')->placeholder('Enter description for this course')
                     ->required()
                     ->maxLength(65535)
                     ->columnSpanFull(),
                 FileUpload::make('course_photo_path')
-                    ->label('course photo')
+                    ->label('Course photo')
                     ->required()
                     ->directory('course_photos')
                     ->visibility('private')

@@ -7,20 +7,20 @@
                     <th class="px-6 py-3 border border-slate-600" scope="col">Name</th>
                     <th class="px-6 py-3 border border-slate-600" scope="col">Description</th>
                     <th class="px-6 py-3 border border-slate-600" scope="col">Started by</th>
-                    {{-- <th class="" scope="col">Replies</th> --}}
+                    <th class="px-6 py-3 text-center border border-slate-600" scope="col">Action</th>
                 </tr>
             </thead>
             <tbody>
                 @foreach ($forum as $key => $fm)
                     <tr>
                         <td class="px-6 py-3 border border-slate-600 text-slate-800">{{ $loop->index + 1 }}</td>
-                        <td class="px-6 py-3 border border-slate-600 text-slate-800 cursor-pointer
-                            hover:text-blue-700 underline"
-                            wire:click="forumDiscussion({{ $fm->id }})" scope="col">{{ $fm->name }}</td>
+                        <td class="px-6 py-3 border border-slate-600 text-slate-800" scope="col">{{ $fm->name }}</td>
                         <td class="px-6 py-3 border border-slate-600 text-slate-800" scope="col">
                             {{ strip_tags($fm->description) }}</td>
                         <td class="px-6 py-3 border border-slate-600 text-slate-800">{{ $fm->created_at }}</td>
-                        {{-- <td>1</td> --}}
+                        <td class="px-6 py-3 border text-center border-slate-600">
+                            <span wire:click="forumDiscussion({{ $fm->id }})" class="px-3 py-2 bg-blue-500 text-white rounded cursor-pointer">View</span>
+                        </td>
                     </tr>
                 @endforeach
             </tbody>
