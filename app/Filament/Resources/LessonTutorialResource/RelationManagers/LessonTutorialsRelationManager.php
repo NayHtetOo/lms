@@ -3,6 +3,7 @@
 namespace App\Filament\Resources\LessonTutorialResource\RelationManagers;
 
 use Filament\Forms;
+use Filament\Forms\Components\Tabs\Tab;
 use Filament\Forms\Form;
 use Filament\Resources\RelationManagers\RelationManager;
 use Filament\Tables;
@@ -21,6 +22,9 @@ class LessonTutorialsRelationManager extends RelationManager
                 Forms\Components\TextInput::make('title')
                     ->required()
                     ->maxLength(255),
+                Forms\Components\FileUpload::make('path')->label('Upload')
+                ->directory('lesson_videos')
+                ->columnSpanFull()
             ]);
     }
 
@@ -30,6 +34,7 @@ class LessonTutorialsRelationManager extends RelationManager
             ->recordTitleAttribute('title')
             ->columns([
                 Tables\Columns\TextColumn::make('title'),
+                Tables\Columns\TextColumn::make('path')
             ])
             ->filters([
                 //

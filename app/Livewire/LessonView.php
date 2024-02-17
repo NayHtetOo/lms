@@ -5,6 +5,7 @@ namespace App\Livewire;
 use App\Models\Course;
 use App\Models\Enrollment;
 use App\Models\Lesson;
+use App\Models\LessonTutorial;
 use Livewire\Attributes\Computed;
 use Livewire\Component;
 
@@ -15,14 +16,22 @@ class LessonView extends Component
     public $isAdmin,$isTeacher,$isStudent,$isGuest;
     public $isEditLesson;
     public $lesson_name,$content;
+    public $lesson_tutorial;
+    public $current_lesson_tutorial;
 
     public function mount($id)
     {
         $this->lesson = Lesson::findOrFail($id);
-        $this->courseID = Course::findOrFail($this->lesson->course_id)->course_ID;
         $user_id = auth()->user()->id;
-        $enrollment = Enrollment::where('user_id', $user_id)->where('course_id', $this->lesson->course_id)->first();
-        $this->role($enrollment->role->name);
+        if($this->lesson){
+            $this->lesson_tutorial = LessonTutorial::where('lesson_id',$this->lesson->id)->get();
+            // dump($this->lesson_tutorial->first()->toArray());
+            $this->current_lesson_tutorial = $this->lesson_tutorial->last();
+
+            $this->courseID = Course::findOrFail($this->lesson->course_id)->course_ID;
+            $enrollment = Enrollment::where('user_id', $user_id)->where('course_id', $this->lesson->course_id)->first();
+            $this->role($enrollment->role->name);
+        }
     }
 
     public function render()
@@ -76,6 +85,13 @@ class LessonView extends Component
     {
         $this->isEditLesson = !$this->isEditLesson;
         $this->resetValidation();
+    }
+    public function switchVideo($video_id){
+        $video_lesson = LessonTutorial::find($video_id);
+        if($video_lesson){
+            $this->current_lesson_tutorial = $video_lesson;
+            $this->dispatch('refreshComponent');
+        }
     }
 
 }

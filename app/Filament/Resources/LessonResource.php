@@ -3,6 +3,7 @@
 namespace App\Filament\Resources;
 
 use App\Filament\Resources\LessonResource\Pages;
+use App\Filament\Resources\LessonTutorialResource\RelationManagers\LessonTutorialsRelationManager;
 use App\Models\Course;
 use App\Models\CourseCategory;
 use App\Models\CourseSection;
@@ -33,7 +34,7 @@ class LessonResource extends Resource
 
     protected static ?int $navigationSort = 4;
 
-    protected static bool $shouldRegisterNavigation = false;
+    protected static bool $shouldRegisterNavigation = true;
 
     public static function form(Form $form): Form
     {
@@ -149,7 +150,7 @@ class LessonResource extends Resource
     public static function getRelations(): array
     {
         return [
-            //
+            LessonTutorialsRelationManager::class,
         ];
     }
 

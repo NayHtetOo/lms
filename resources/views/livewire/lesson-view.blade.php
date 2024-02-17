@@ -2,12 +2,11 @@
     <div class="text-center text-3xl bg-slate-200 py-5 fixed left-0 top-20 w-full z-10">
         <h3>Lesson</h3>
     </div>
-    <div class="mx-auto max-w-7xl py-6 sm:px-6 lg:px-8 mt-[9rem] h-[35rem] overflow-auto">
-        <div class="p-4 bg-slate-100 rounded-xl transform transition-all duration-300 shadow-lg h-[35rem] overflow-auto">
-            <div>
-                <h3 class="text-2xl text-slate-800 font-bold">{{ $this->course()->course_name }} Course</h3>
-            </div>
+    <div class="mx-auto max-w-7xl py-6 sm:px-6 lg:px-8 mt-[9rem]">
+        <div class="p-4 bg-slate-100 rounded-xl transform transition-all duration-300 shadow-lg">
+
             <livewire:course-photo-show :courseId='$this->lesson->course_id' />
+
             <div class="flex justify-between">
                 <div class="bg-green-500 inline-block py-2 px-3 rounded-md">
                     <a class="text-white underline" href="/course_view/{{ $lesson->course_id }}">
@@ -20,14 +19,32 @@
                     </a>
                 </div>
             </div>
+
             <div class="border-b border-slate-600">
                 <h2 class="text-2xl font-bold text-slate-900 my-3">{{ $lesson->lesson_name }}</h2>
             </div>
-            <div class="my-3">
+
+            <div class="my-3 border-b border-slate-600">
                 {{ strip_tags($lesson->content) }}
             </div>
+
+            @if ($lesson_tutorial)
+                {{-- first video lesson --}}
+                <div class="m-2">
+                    <livewire:video-view :data="$current_lesson_tutorial" :key="$current_lesson_tutorial->id"/>
+                </div>
+                {{-- remained video lessons --}}
+                <div class="m-2 flex overflow-x-auto">
+                    @foreach ($lesson_tutorial as $lsn_tuto)
+                        <video wire:click="switchVideo({{ $lsn_tuto->id }})" class="w-1/5 h-1/5 m-2 rounded-lg" title="{{ $lsn_tuto->title }}">
+                            <source src="{{ asset('storage/'.$lsn_tuto->path) }}" type="video/mp4">
+                            Your browser does not support the video tag.
+                        </video>
+                    @endforeach
+                </div>
+            @endif
             <div class="flex justify-end w-full">
-                <button class="text-white bg-gray-800 hover:bg-gray-900 focus:ring-4 focus:outline-none focus:ring-gray-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center gray:bg-gray-600 gray:hover:bg-gray-700 gray:focus:ring-gray-800"
+                <button class="text-white bg-gray-500 hover:bg-gray-900 focus:ring-4 focus:outline-none focus:ring-gray-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center gray:bg-gray-600 gray:hover:bg-gray-700 gray:focus:ring-gray-800"
                         @click="history.back()">Back</button>
                 @if ($isAdmin || $isTeacher)
                     <div class="text-end">
@@ -109,3 +126,12 @@
     @endif
 
 </div>
+@push('scripts')
+    <script>
+        document.addEventListener('livewire:load', function () {
+            Livewire.on('refreshComponent', () => {
+                Livewire.emit('refresh');
+            });
+        });
+    </script>
+@endpush
