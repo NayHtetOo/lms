@@ -1,21 +1,10 @@
-<div class="min-h-full mt-[4rem]">
-
-    <div class="mx-auto max-w-7xl py-6 sm:px-6 lg:px-8">
-        <div class="p-4 bg-slate-300 rounded-xl transform transition-all duration-300 shadow-lg">
-            {{-- <div>{{ $this->exams }}</div>
-            <div>{{ $courseID }}</div> --}}
-            {{-- <div>
-                <a class="text-blue-700 underline"
-                   href="/course_view/{{ $this->assignment->course_id }}">{{ $this->courseID }}</a> /
-                {{ $this->assignment->assignment_name }}
-            </div> <br>
-            <h2 class="text-2xl mb-1 font-bold">{{ $this->assignment->assignment_name }}</h2>
-            <p class="text-xl mb-1">{{ $this->assignment->description }}</p>
-            <div class="relative overflow-x-auto sm:rounded-lg">
-            </div>
-            <div class="m-3">
-            </div> --}}
-
+<div class="min-h-full mt-[4rem] relative">
+        <div class="text-center text-3xl bg-slate-200 py-5 fixed left-0 top-20 w-full z-10">
+            <h3>Assignment</h3>
+        </div>
+    <div class="mx-auto max-w-7xl py-6 sm:px-6 lg:px-8 mt-[9rem]">
+        <div class="p-4 bg-slate-100 rounded-xl transform transition-all duration-300 shadow-lg h-[35rem] overflow-auto">
+            <livewire:course-photo-show :courseId='$this->assignment->course_id' />
             <div class="flex justify-between">
                 <div class="bg-green-500 inline-block py-2 px-3 rounded-md">
                     <a class="text-white underline" href="/course_view/{{ $this->assignment->course_id }}">
@@ -26,24 +15,24 @@
                         </svg>
                         {{ $this->courseID }} / {{ $this->assignment->assignment_name }}</a>
                 </div>
-                @if ($isAdmin || $isTeacher)
-                    <div class="text-end">
-                        <button wire:click="editAssignment" class="text-white bg-gray-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800" type="button">
-                            Edit
-                        </button>
-                    </div>
-                @endif
-
             </div>
             <div class="border-b border-slate-600">
-                <h2 class="text-2xl font-bold text-slate-900 my-3">{{ $this->assignment->assignment_name }}</h2>
+
+                <h2 class="text-xl font-bold text-slate-900 my-3">{{ $this->assignment->assignment_name }} assignment</h2>
             </div>
             <div class="my-3">
                 {{ strip_tags($this->assignment->description ) }}
             </div>
             <div class="flex justify-end w-full">
-                <button class="bg-blue-500 py-2 px-3 rounded-md text-white" type="button"
-                        @click="history.back()">Back</button>
+                <button class="text-white bg-gray-800 hover:bg-gray-900 focus:ring-4 focus:outline-none focus:ring-gray-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center gray:bg-gray-600 gray:hover:bg-gray-700 gray:focus:ring-gray-800"
+                                @click="history.back()">Back</button>
+                @if ($isAdmin || $isTeacher)
+                    <div class="text-end">
+                        <button wire:click="editAssignment" class="text-white bg-gray-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800 ms-2" type="button">
+                            Edit
+                        </button>
+                    </div>
+                @endif
             </div>
         </div>
 

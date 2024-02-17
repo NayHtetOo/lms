@@ -1,10 +1,18 @@
 <div class="w-3/4 mt-3 py-1 sm:px-6 lg:px-8 relative">
-
     <div class="w-full b-4 border-b  mt-5">
         <div class="bg-white rounded-lg shadow-md my-3 py-3">
             <div class="px-2 py-2 text-end my-3 text-blue-600 font-bold">
-                <p>Profile - </p>
-                <p>Student Name - {{ $checkedCurrentUser?->name }}</p>
+                <p class="flex items-center justify-end w-full">
+                    @if ($checkedCurrentUser->user_photo_path)
+                        <img class="w-[50px] h-[50px] rounded-full mr-3"
+                             src="{{ asset('storage/' . $checkedCurrentUser->user_photo_path) }}"
+                             alt="{{ $checkedCurrentUser->name . "'s photo" }}">
+                    @else
+                        <img class="w-[50px] h-[50px] rounded-full mr-3" src="{{ asset('images/profile_default.jpg') }}"
+                             alt="profile default">
+                    @endif
+                    <span>{{ $checkedCurrentUser?->name }}</span>
+                </p>
             </div>
             <div class="w-full flex justify-center items-center">
                 <div class="inline-block">
@@ -53,14 +61,14 @@
             @csrf
             {{-- button area  --}}
             <div class="fixed right-0 bottom-5 z-10">
-                <button class="mb-3 mr-4 bg-green-500 hover:bg-green-600 text-white font-semibold hover:text-white py-2 px-4 border border-blue-500 hover:border-transparent rounded"
+                <button class="mb-3 mr-4 bg-green-500 hover:bg-green-600 text-white font-semibold hover:text-white py-2 px-4 border border-green-500 hover:border-transparent rounded"
                         type="button" wire:click="backToSumittedStudent">
                     Back
                 </button>
-            <button class="mb-3 mr-4 bg-blue-500 hover:bg-blue-600 text-white font-semibold hover:text-white py-2 px-3 border border-blue-500 hover:border-transparent rounded"
-                    type="submit">
-                Submit
-            </button>
+                <button class="mb-3 mr-4 bg-blue-500 hover:bg-blue-600 text-white font-semibold hover:text-white py-2 px-3 border border-blue-500 hover:border-transparent rounded"
+                        type="submit">
+                    Submit
+                </button>
             </div>
 
             <div class="rounded-xl">
@@ -76,10 +84,10 @@
                                 <div class="m-2">
                                     @foreach ($trueOrfalse as $tof)
                                         <div class="my-5">
-                                                <div class="text-base text-slate-800">
-                                                    {{ $tof->true_or_false?->question_no }}.
-                                                    {{ strip_tags($tof->true_or_false?->question) }}
-                                                </div>
+                                            <div class="text-base text-slate-800">
+                                                {{ $tof->true_or_false?->question_no }}.
+                                                {{ strip_tags($tof->true_or_false?->question) }}
+                                            </div>
                                             <label class="m-6 mt-4 text-base text-slate-800" for="">Select One :
                                             </label>
 
@@ -377,25 +385,26 @@
                                                 Mark</div>
                                         </div>
                                         <div class="p-5 pr-20">
-                                            {{-- bg-gray-200 appearance-none border-2 border-gray-200 rounded w-full py-2 px-4 text-gray-700 leading-tight focus:outline-none focus:bg-white focus:border-purple-500 --}}
-                                            <textarea class="w-full bg-gray-200 h-40 rounded-md" disabled
+                                            <textarea wire:click='shortQuestionView({{ $shortQ->id }})' class="w-full bg-gray-200 h-40 rounded-md cursor-pointer" readonly
                                                       wire:model="shortQuestionAnswer.{{ $shortQ->short_question_id }}"></textarea>
                                         </div>
 
                                         <div class="md:flex md:items-center mb-6 mr-0">
                                             <div class="md:w-3/4">
-                                                <label class="block text-slate-800 font-bold md:text-right mb-1 md:mb-0 pr-4"
+                                                <label class="block text-slate-800 font-bold md:text-right mb-1 md:mb-0 mr-2"
                                                        for="inline-full-name">
-                                                    Receive Mark
+                                                    Mark
                                                 </label>
                                             </div>
-                                            <div class="md:w-1/6 mr-20">
+                                            <div class="md:w-1/6 mr-20 flex items-center text-white rounded-lg">
                                                 <input class="border border-slate-500 rounded w-full py-2 px-2 text-slate-800 leading-tight focus:outline-none focus:bg-white focus:border-purple-500"
                                                        id="inline-full-name" type="number"
                                                        wire:model="shortQuestionReceiveMark.{{ $shortQ->id }}">
                                             </div>
                                         </div>
                                     @endforeach
+
+                                        @include('modal.exam-answered-paper-short-question-view-modal')
                                 </div>
                             </div>
                         @else

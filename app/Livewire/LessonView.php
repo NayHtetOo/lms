@@ -20,12 +20,8 @@ class LessonView extends Component
     {
         $this->lesson = Lesson::findOrFail($id);
         $this->courseID = Course::findOrFail($this->lesson->course_id)->course_ID;
-        // dd($this->courseID);
         $user_id = auth()->user()->id;
-
         $enrollment = Enrollment::where('user_id', $user_id)->where('course_id', $this->lesson->course_id)->first();
-
-        // dd($enrollment);
         $this->role($enrollment->role->name);
     }
 

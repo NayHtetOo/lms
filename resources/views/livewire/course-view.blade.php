@@ -1,18 +1,10 @@
 <div class="min-h-full">
     <header class="bg-white shadow">
-        {{-- <div class="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8 justify-between">
-            <h1 class="text-3xl font-bold text-slate-700 capitalize">{{ $currentCourse->course_name }}
-            </h1>
-            <div class="flex justify-end w-full">
-               <button>helo</button>
-            </div>
-        </div> --}}
         <div class="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8 border-b border-slate-500 pb-2">
             <div class="my-3 flex justify-between w-full">
                 <h2 class="text-3xl font-bold text-slate-700 capitalize">{{ $currentCourse->course_name }}</h2>
 
                 @if ($isAdmin || $isTeacher)
-                {{-- wire:click="editCourse" --}}
                     <button wire:click="editCourse" class="px-3 py-2 bg-gray-400 rounded">Edit</button>
                 @endif
             </div>
@@ -39,6 +31,7 @@
             @endif
 
             {{-- @include('deleted_files.course-tab-view') --}}
+            <livewire:course-photo-show :courseId="$id" />
 
             <div class=" rounded-xl shadow-lg">
                 <div class="mb-4 border-b border-gray-200">

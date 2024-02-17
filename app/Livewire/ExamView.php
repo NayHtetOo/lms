@@ -59,6 +59,8 @@ class ExamView extends Component
     // ];
     public $hasAnswerPaper = [];
     public $filterAnswerPaper;
+    public $shortQuestionViewStatus = false;
+    public $shortQAnswerView;
 
     public function mount($id)
     {
@@ -190,9 +192,6 @@ class ExamView extends Component
             session(['seconds' => 60, 'mins' => $this->exams->duration]);
         }
     }
-
-
-
 
     public function isNotEmptyPage($pageNumber)
     {
@@ -652,5 +651,16 @@ class ExamView extends Component
     {
         $this->isEditExam = !$this->isEditExam;
         $this->resetValidation();
+    }
+
+    public function shortQuestionView($shortQId) {
+        $this->shortQuestionViewStatus = true;
+
+        $shortQuestion = ShortQuestion::findOrFail($shortQId);
+        $this->shortQAnswerView = $shortQuestion;
+    }
+
+    public function closeShortQuestionView() {
+        $this->shortQuestionViewStatus = false;
     }
 }

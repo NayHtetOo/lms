@@ -32,6 +32,13 @@ class AssignmentView extends Component
             return Assignment::findOrFail($this->id);
         }
     }
+
+    #[Computed]
+    public function course() {
+        $course = Course::findOrFail($this->assignment->course_id);
+        return $course;
+    }
+
     #[Computed]
     public function courseID(){
         return Course::findOrFail($this->assignment->course_id)->course_ID;

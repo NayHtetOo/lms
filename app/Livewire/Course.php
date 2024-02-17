@@ -18,6 +18,10 @@ class Course extends Component
 
     use WithPagination;
 
+    public function course($courseid) {
+        return redirect()->route('course_view', $courseid);
+    }
+
     #[Computed()]
     public function render()
     {

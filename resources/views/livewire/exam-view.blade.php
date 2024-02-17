@@ -1,4 +1,4 @@
-<div class="min-h-full w-full mt-[6rem] @if ($isExamPaperOpen == true || $this->isTeacher || $examStatus == 2) flex @endif" id="examViewContainer">
+<div class="min-h-full w-full mt-[5rem] @if ($isExamPaperOpen == true || $this->isTeacher || $examStatus == 2) flex @endif" id="examViewContainer">
     @php
         $startDate = \Carbon\Carbon::parse($this->exams->start_date_time);
         $endDate = \Carbon\Carbon::parse($this->exams->end_date_time);
@@ -29,17 +29,10 @@
             @endif
             <div class="p-4 rounded-xl transform transition-all duration-300 shadow-4xl shadow-lg">
                 <div class="border-b border-slate-500 pb-2">
+
                     <div class="flex justify-between">
                         <h2 class="text-xl font-bold text-slate-800">{{ $this->exams->exam_name }}</h2>
-                        @if ($isAdmin || $isTeacher)
-                            <div class="text-end pb-2">
-                                <button wire:click="editExam" class="text-white bg-gray-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800" type="button">
-                                    Edit
-                                </button>
-                            </div>
-                        @endif
                     </div>
-
 
                     <div class="my-3 flex justify-end w-full">
                         Duration - <span class="text-blue-500 font-bold">{{ $this->exams->duration }} minutes</span>
@@ -78,9 +71,21 @@
                     </div>
                 </div>
                 <div class="relative overflow-x-auto sm:rounded text-end mt-3">
-                    @if (!$this->examSubmitted)
-                        <button class="border bg-blue-600 py-2 px-3 rounded-md text-white"
+                    <div class="flex justify-end items-center">
+                        <div class="mr-3">
+                            <button class="text-white bg-gray-800 hover:bg-gray-900 focus:ring-4 focus:outline-none focus:ring-gray-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center gray:bg-gray-600 gray:hover:bg-gray-700 gray:focus:ring-gray-800"
                                 @click="history.back()">Back</button>
+                        </div>
+                        @if ($isAdmin || $isTeacher)
+                            <div class="text-end">
+                                <button class="text-white bg-green-600 hover:bg-green-800 focus:ring-4 focus:outline-none focus:ring-green-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-green-600 dark:hover:bg-green-700 dark:focus:ring-green-800"
+                                        type="button" wire:click="editExam">
+                                    Edit
+                                </button>
+                            </div>
+                        @endif
+                    </div>
+                    @if (!$this->examSubmitted)
                         @if ($currentDate->between($startDate, $endDate))
                             @if ($this->isStudent)
                                 <button class="border bg-green-500 py-2 px-3 rounded-md text-white"
@@ -620,9 +625,12 @@
                         <h3 class="text-xl font-semibold text-gray-900 dark:text-white">
                             Edit Exam
                         </h3>
-                        <button type="button" wire:click="toggleModal" class="text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm w-8 h-8 ms-auto inline-flex justify-center items-center dark:hover:bg-gray-600 dark:hover:text-white">
-                            <svg class="w-3 h-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 14">
-                                <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6"/>
+                        <button class="text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm w-8 h-8 ms-auto inline-flex justify-center items-center dark:hover:bg-gray-600 dark:hover:text-white"
+                                type="button" wire:click="toggleModal">
+                            <svg class="w-3 h-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg"
+                                 fill="none" viewBox="0 0 14 14">
+                                <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"
+                                      stroke-width="2" d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6" />
                             </svg>
                             {{-- <span class="sr-only">Close modal</span> --}}
                         </button>
@@ -639,7 +647,8 @@
                                 <div class="ml-2">
                                     <label class="">
                                         <span>Exam Name</span>
-                                        <input type="text" wire:model="exam_name" class="border mt-2 border-gray-400 rounded w-full py-2 px-2 text-gray-700 leading-tight focus:outline-none focus:bg-white focus:border-purple-500" id="inline-full-name">
+                                        <input class="border mt-2 border-gray-400 rounded w-full py-2 px-2 text-gray-700 leading-tight focus:outline-none focus:bg-white focus:border-purple-500"
+                                               id="inline-full-name" type="text" wire:model="exam_name">
                                     </label>
                                 </div>
                             </div>
@@ -647,20 +656,23 @@
                                 <div class="ml-2">
                                     <label class="">
                                         <span>Start Date Time</span>
-                                        <input type="date" wire:model="start_date_time" class="border mt-2 border-gray-400 rounded w-full py-2 px-2 text-gray-700 leading-tight focus:outline-none focus:bg-white focus:border-purple-500" id="inline-full-name">
+                                        <input class="border mt-2 border-gray-400 rounded w-full py-2 px-2 text-gray-700 leading-tight focus:outline-none focus:bg-white focus:border-purple-500"
+                                               id="inline-full-name" type="date" wire:model="start_date_time">
                                     </label>
                                 </div>
                             </div>
                             <div class="w-2/3 ml-2">
                                 <label class="">
                                     <span>End Date Time</span>
-                                    <input type="date" wire:model="end_date_time" class="border mt-2 border-gray-400 rounded w-full py-2 px-2 text-gray-700 leading-tight focus:outline-none focus:bg-white focus:border-purple-500" id="inline-full-name">
+                                    <input class="border mt-2 border-gray-400 rounded w-full py-2 px-2 text-gray-700 leading-tight focus:outline-none focus:bg-white focus:border-purple-500"
+                                           id="inline-full-name" type="date" wire:model="end_date_time">
                                 </label>
                             </div>
                             <div class="w-1/3 ml-2">
                                 <label class="">
                                     <span>Duration(minutes)</span>
-                                    <input type="number" wire:model="duration_field" class="border mt-2 border-gray-400 rounded w-full py-2 px-2 text-gray-700 leading-tight focus:outline-none focus:bg-white focus:border-purple-500" id="inline-full-name">
+                                    <input class="border mt-2 border-gray-400 rounded w-full py-2 px-2 text-gray-700 leading-tight focus:outline-none focus:bg-white focus:border-purple-500"
+                                           id="inline-full-name" type="number" wire:model="duration_field">
                                 </label>
                             </div>
                         </div>
@@ -669,17 +681,20 @@
                             <div class="w-full ml-2">
                                 <label class="">
                                     <span>Description</span>
-                                    <textarea wire:model="description" class="w-full mt-2 rounded" name="" id="" cols="30" rows="10"></textarea>
+                                    <textarea class="w-full mt-2 rounded" id="" name="" wire:model="description" cols="30"
+                                              rows="10"></textarea>
                                 </label>
                             </div>
                         </div>
                     </div>
                     <!-- Modal footer -->
                     <div class="flex items-center p-4 md:p-5 border-t border-gray-200 rounded-b dark:border-gray-600">
-                        <button wire:click="updateExam" type="button" class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
+                        <button class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
+                                type="button" wire:click="updateExam">
                             Update
                         </button>
-                        <button wire:click="toggleModal" type="button" class="py-2.5 px-5 ms-3 text-sm font-medium text-gray-900 focus:outline-none bg-white rounded-lg border border-gray-200 hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:ring-4 focus:ring-gray-100 dark:focus:ring-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:border-gray-600 dark:hover:text-white dark:hover:bg-gray-700">
+                        <button class="py-2.5 px-5 ms-3 text-sm font-medium text-gray-900 focus:outline-none bg-white rounded-lg border border-gray-200 hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:ring-4 focus:ring-gray-100 dark:focus:ring-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:border-gray-600 dark:hover:text-white dark:hover:bg-gray-700"
+                                type="button" wire:click="toggleModal">
                             Close
                         </button>
                     </div>

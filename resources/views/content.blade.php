@@ -31,8 +31,8 @@
                         {{ $row->description }}
                     </p>
                     <div class="w-full flex justify-end">
-                        <a class="bg-blue-500 py-2 px-3 rounded-md text-white my-3"
-                           href="/course_view/{{ $row->id }}" role="button">Learn More</a>
+                        <button wire:click='course({{ $row->id }})' class="bg-blue-500 py-2 px-3 rounded-md text-white my-3"
+                            type="button">Learn More</button>
                     </div>
                 </div>
             @endif
