@@ -61,7 +61,7 @@
             @csrf
             {{-- button area  --}}
             <div class="fixed right-0 bottom-5 z-10">
-                <button class="mb-3 mr-4 bg-green-500 hover:bg-green-600 text-white font-semibold hover:text-white py-2 px-4 border border-green-500 hover:border-transparent rounded"
+                <button class="mb-3 mr-4 bg-gray-500 hover:bg-black text-white font-semibold hover:text-white py-2 px-4 border border-green-500 hover:border-transparent rounded"
                         type="button" wire:click="backToSumittedStudent">
                     Back
                 </button>

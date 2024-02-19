@@ -11,7 +11,7 @@
                 </tr>
             </thead>
             <tbody>
-                @foreach ($forum as $key => $fm)
+                @forelse ($forum as $key => $fm)
                     <tr>
                         <td class="px-6 py-3 border border-slate-600 text-slate-800">{{ $loop->index + 1 }}</td>
                         <td class="px-6 py-3 border border-slate-600 text-slate-800" scope="col">{{ $fm->name }}</td>
@@ -22,7 +22,11 @@
                             <span wire:click="forumDiscussion({{ $fm->id }})" class="px-3 py-2 bg-blue-500 text-white rounded cursor-pointer">View</span>
                         </td>
                     </tr>
-                @endforeach
+                @empty
+                    <tr>
+                        <th colspan="999" class="text-center font-bold px-1 py-2">There is no forum</th>
+                    </tr>
+                @endforelse
             </tbody>
         </table>
     @endif

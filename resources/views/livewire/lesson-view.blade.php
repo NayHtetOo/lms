@@ -1,5 +1,5 @@
 <div class="min-h-full mt-[3rem] relative">
-    <div class="text-center text-3xl bg-slate-200 py-5 fixed left-0 top-20 w-full z-10">
+    <div class="text-center text-3xl bg-slate-200 py-5 fixed left-0 top-20 w-full z-5">
         <h3>Lesson</h3>
     </div>
     <div class="mx-auto max-w-7xl py-6 sm:px-6 lg:px-8 mt-[9rem]">
@@ -31,12 +31,12 @@
             @if ($lesson_tutorial)
                 {{-- first video lesson --}}
                 <div class="m-2">
-                    <livewire:video-view :data="$current_lesson_tutorial" :key="$current_lesson_tutorial->id"/>
+                    <livewire:video-view :data="$this->currentLessonTutorial()" :key="$this->currentLessonTutorial()->id"/>
                 </div>
                 {{-- remained video lessons --}}
                 <div class="m-2 flex overflow-x-auto">
-                    @foreach ($lesson_tutorial as $lsn_tuto)
-                        <video wire:click="switchVideo({{ $lsn_tuto->id }})" class="w-1/5 h-1/5 m-2 rounded-lg" title="{{ $lsn_tuto->title }}">
+                    @foreach ($lesson_tutorial as $key => $lsn_tuto)
+                        <video wire:click="switchVideo({{ $lsn_tuto->id }})" wire:key="video-{{ $lsn_tuto->id }}" class="w-1/5 h-1/5 m-2 rounded-lg">
                             <source src="{{ asset('storage/'.$lsn_tuto->path) }}" type="video/mp4">
                             Your browser does not support the video tag.
                         </video>
@@ -128,10 +128,16 @@
 </div>
 @push('scripts')
     <script>
-        document.addEventListener('livewire:load', function () {
-            Livewire.on('refreshComponent', () => {
-                Livewire.emit('refresh');
-            });
-        });
+        // document.addEventListener('livewire:load', function () {
+        //     Livewire.on('refreshComponent', () => {
+        //         Livewire.dispatch('refresh');
+        //     });
+        // });
+
+        // document.addEventListener('livewire:load', function () {
+        //     Livewire.on('video-view', () => {
+        //         Livewire.dispatch('video-view')->self();
+        //     });
+        // });
     </script>
 @endpush

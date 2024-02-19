@@ -84,15 +84,16 @@
                                 </button>
                             </div>
                         @endif
-                    </div>
-                    @if (!$this->examSubmitted)
-                        @if ($currentDate->between($startDate, $endDate))
-                            @if ($this->isStudent)
-                                <button class="border bg-green-500 py-2 px-3 rounded-md text-white"
-                                        wire:click='answerStart'>Answer</button>
+
+                        @if (!$this->examSubmitted)
+                            @if ($currentDate->between($startDate, $endDate))
+                                @if ($this->isStudent)
+                                    <button class="border bg-green-500 py-2 px-3 rounded-md text-white"
+                                            wire:click='answerStart'>Answer</button>
+                                @endif
                             @endif
                         @endif
-                    @endif
+                    </div>
                 </div>
             </div>
         </div>
@@ -493,6 +494,8 @@
                                 </div>
                             </div>
                         </div>
+                    @else
+                        <div class="text-center items-center text-xl font-bold text-gray-500 px-40 py-60">There is no any other questions</div>
                     @endif
                 </form>
             </div>
@@ -571,7 +574,7 @@
                         </tr>
                     </thead>
                     <tbody>
-                        @foreach ($this->exam_answered_users as $key => $row)
+                        @forelse ($this->exam_answered_users as $key => $row)
                             <tr class="text-slate-800 text-base">
                                 <td class="px-3 py-3 border border-slate-600">{{ $loop->index + 1 }}</td>
                                 <td class="px-3 py-3 border border-slate-600"> <strong> Sumitted at
@@ -598,7 +601,11 @@
                                             wire:click="checkAnswer({{ $row->user_id }},{{ $row->exam_id }})">show</button>
                                 </td>
                             </tr>
-                        @endforeach
+                        @empty
+                            <tr>
+                                <th colspan="999" class="text-center font-bold text-lg px-1 py-2">There is no submitted students</th>
+                            </tr>
+                        @endforelse
                     </tbody>
                 </table>
             </div>

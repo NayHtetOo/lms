@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\LessonTutorialResource\RelationManagers;
 
+use App\Tables\Columns\VideoColumn;
 use Filament\Forms;
 use Filament\Forms\Components\Tabs\Tab;
 use Filament\Forms\Form;
@@ -34,7 +35,7 @@ class LessonTutorialsRelationManager extends RelationManager
             ->recordTitleAttribute('title')
             ->columns([
                 Tables\Columns\TextColumn::make('title'),
-                Tables\Columns\TextColumn::make('path')
+                VideoColumn::make('path')
             ])
             ->filters([
                 //

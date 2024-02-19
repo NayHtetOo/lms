@@ -17,7 +17,7 @@ class LessonView extends Component
     public $isEditLesson;
     public $lesson_name,$content;
     public $lesson_tutorial;
-    public $current_lesson_tutorial;
+    public $video_id;
 
     public function mount($id)
     {
@@ -25,8 +25,9 @@ class LessonView extends Component
         $user_id = auth()->user()->id;
         if($this->lesson){
             $this->lesson_tutorial = LessonTutorial::where('lesson_id',$this->lesson->id)->get();
-            // dump($this->lesson_tutorial->first()->toArray());
-            $this->current_lesson_tutorial = $this->lesson_tutorial->last();
+            // dd($this->lesson_tutorial->first()->id);
+            $this->video_id = $this->lesson_tutorial->first()->id;
+            $this->currentLessonTutorial();
 
             $this->courseID = Course::findOrFail($this->lesson->course_id)->course_ID;
             $enrollment = Enrollment::where('user_id', $user_id)->where('course_id', $this->lesson->course_id)->first();
@@ -89,9 +90,16 @@ class LessonView extends Component
     public function switchVideo($video_id){
         $video_lesson = LessonTutorial::find($video_id);
         if($video_lesson){
-            $this->current_lesson_tutorial = $video_lesson;
-            $this->dispatch('refreshComponent');
+            $this->video_id = $video_id;
+            $this->currentLessonTutorial();
+            // $this->dispatch('video-view')->self();
         }
+    }
+
+    #[Computed]
+    public function currentLessonTutorial(){
+        $video_id = $this->video_id;
+        return LessonTutorial::find($video_id);
     }
 
 }

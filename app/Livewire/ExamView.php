@@ -149,6 +149,7 @@ class ExamView extends Component
 
     public function answerStart()
     {
+        // dd($this->examSubmitted);
         $this->isExamPaperOpen = true;
         $this->startAnswer = true;
         session(['startAnswer' => $this->startAnswer]);

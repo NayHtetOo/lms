@@ -32,7 +32,7 @@
 
             {{-- @include('deleted_files.course-tab-view') --}}
 
-            <div class=" rounded-xl shadow-lg h-[25rem] overflow-auto">
+            <div class=" rounded-xl shadow-lg h-[25rem]">
                 <livewire:course-photo-show :courseId="$id" />
                 <div class="mb-4 border-b border-gray-200">
                     <ul class="flex flex-wrap -mb-px text-sm font-medium text-center bg-blue-500 rounded-md px-3">

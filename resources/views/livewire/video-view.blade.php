@@ -1,5 +1,5 @@
 <div>
-    <video :key="{{ $data->id }}" class="w-full m-2 rounded-xl" controls>
+    <video class="w-full m-2 rounded-xl" controls wire:key="video-{{ $data->id }}">
         <source src="{{ asset('storage/'.$data->path) }}" type="video/mp4">
         Your browser does not support the video tag.
     </video>
