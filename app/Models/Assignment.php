@@ -18,4 +18,8 @@ class Assignment extends Model
     public function users() {
         return $this->belongsTo(User::class);
     }
+
+    public function assignment_finals() {
+        return $this->hasMany(AssignmentFinal::class);
+    }
 }

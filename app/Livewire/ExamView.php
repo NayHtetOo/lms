@@ -57,6 +57,9 @@ class ExamView extends Component
     public $filterAnswerPaper;
     public $shortQuestionViewStatus = false;
     public $shortQAnswerView;
+    public $essayAnswerViewStatus = false;
+    public $essayAnswerView;
+    public $answerButtonStatus = true;
 
     public function mount($id)
     {
@@ -96,8 +99,6 @@ class ExamView extends Component
         if ($currentDate > $startDate && $currentDate < $endDate && session()->get('seconds') == null && session()->get('mins') == null) {
             session(['seconds' => 60, 'mins' => $this->exams->duration]);
         }
-
-        // $this->pageNumber = $this->findFirstNonEmptyPage();
 
         $trueFalse = TrueOrFalse::where('exam_id', $this->exams->id)->get();
         $multipleChoice = MultipleChoice::where('exam_id', $this->exams->id)->get();
@@ -149,8 +150,8 @@ class ExamView extends Component
 
     public function answerStart()
     {
-        // dd($this->examSubmitted);
         $this->isExamPaperOpen = true;
+        $this->answerButtonStatus = false;
         $this->startAnswer = true;
         session(['startAnswer' => $this->startAnswer]);
     }
@@ -660,5 +661,15 @@ class ExamView extends Component
 
     public function closeShortQuestionView() {
         $this->shortQuestionViewStatus = false;
+    }
+
+    public function answerView($essayId) {
+        $this->essayAnswerViewStatus = true;
+        $essay = Essay::findOrFail($essayId);
+        $this->essayAnswerView = $essay;
+    }
+
+    public function closeEssayView() {
+        $this->essayAnswerViewStatus = false;
     }
 }

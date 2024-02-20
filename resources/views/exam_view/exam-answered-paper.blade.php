@@ -428,7 +428,7 @@
                                             <div class="text-slate-800 text-base"> {{ $esy->essay->mark }} Mark</div>
                                         </div>
                                         <div class="p-5 pr-20">
-                                            <textarea class="bg-gray-200 w-full h-40 rounded-md" disabled wire:model="essayAnswer.{{ $esy->essay_id }}"></textarea>
+                                            <textarea wire:click='answerView({{ $esy->id }})' class="bg-gray-200 w-full h-40 rounded-md cursor-pointer" readonly wire:model="essayAnswer.{{ $esy->essay_id }}"></textarea>
                                         </div>
 
                                         <div class="md:flex md:items-center mb-6 mr-0">
@@ -445,6 +445,7 @@
                                             </div>
                                         </div>
                                     @endforeach
+                                    @include('modal.exam-answered-paper-essay-view-modal')
                                 </div>
                             </div>
                         @else

@@ -13,6 +13,10 @@ class Home extends Component
     // public $courses;
     public $buttonLabel = "Learn more";
 
+     public function course($courseid) {
+        return redirect()->route('course_view', $courseid);
+    }
+
     public function render()
     {
         $courses = Course::where('course_name','like','%'.$this->search.'%')

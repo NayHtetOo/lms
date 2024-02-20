@@ -84,10 +84,9 @@
                                 </button>
                             </div>
                         @endif
-
                         @if (!$this->examSubmitted)
                             @if ($currentDate->between($startDate, $endDate))
-                                @if ($this->isStudent)
+                                @if ($this->isStudent && $answerButtonStatus)
                                     <button class="border bg-green-500 py-2 px-3 rounded-md text-white"
                                             wire:click='answerStart'>Answer</button>
                                 @endif

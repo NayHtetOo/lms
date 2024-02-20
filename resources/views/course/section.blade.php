@@ -1,4 +1,4 @@
-<div class="{{ $hidden }} rounded-lg bg-gray-50" id="section" role="tabpanel" aria-labelledby="section-tab">
+<div class="{{ $hidden }} rounded-lg bg-gray-50" id="section" role="tabpanel" aria-labelledby="section-tab" wire:transition.origin.right>
     @if ($currentCourseSection->isNotEmpty())
         @foreach ($currentCourseSection as $key => $section)
             @php
@@ -39,7 +39,7 @@
                                             @foreach ($lessons as $lson)
                                                 @if ($lson->course_section_id == $section->id)
                                                     <a href="/lesson_view/{{ $lson->course_id }}/{{ $lson->course_section_id}}/{{ $lson->id }}">
-                                                        <li class="ml-10 p-4 text-blue-500 px-2 border-b underline text-lg">
+                                                        <li class="ml-10 p-2 text-blue-500 px-2 border-b underline text-sm">
                                                             {{ $lson->lesson_name }}
                                                         </li>
                                                     </a>
@@ -64,7 +64,7 @@
                                             @foreach ($exams as $exam)
                                                 @if ($exam->course_section_id == $section->id)
                                                     <a href="/exam_view/{{ $exam->course_id }}/{{ $exam->course_section_id}}/{{ $exam->id }}">
-                                                        <li class="ml-10 p-4 text-blue-500 px-2 border-b underline text-lg">
+                                                        <li class="ml-10 my-2 text-blue-500 px-2 border-b underline text-sm">
                                                             {{ $exam->exam_name }}
                                                         </li>
                                                     </a>
@@ -89,7 +89,7 @@
                                         @foreach ($assignments as $assignment)
                                             @if ($assignment->course_section_id == $section->id)
                                                 <a href="/assignment_view/{{ $assignment->course_id }}/{{ $assignment->course_section_id}}/{{ $assignment->id }}">
-                                                    <li class="ml-10 p-4 text-blue-500 px-2 border-b underline text-lg">
+                                                    <li class="ml-10 my-2 text-sm text-blue-500 px-2 border-b underline">
                                                         {{ $assignment->assignment_name }}
                                                     </li>
                                                 </a>

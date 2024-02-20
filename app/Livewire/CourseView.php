@@ -65,6 +65,7 @@ class CourseView extends Component
             // dd('Unauthorized');
             return redirect()->route('courses');
         }
+
     }
 
     #[Computed]
@@ -81,8 +82,15 @@ class CourseView extends Component
         }
     }
 
+    #[Computed]
+    public function course() {
+        $course = Course::findOrFail($this->id);
+        return $course;
+    }
+
     public function editCourse(){
         $this->isEditCourse = !$this->isEditCourse;
+        // dd($this->isEditCourse);
 
         $this->category_type = $this->currentCourse->course_category_id;
         // dd($this->category_type);
@@ -129,7 +137,9 @@ class CourseView extends Component
 
     public function toggleModal()
     {
+
         $this->isEditCourse = !$this->isEditCourse;
+        // dd($this->isEditCourse);
         $this->resetValidation();
     }
 

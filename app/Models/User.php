@@ -50,4 +50,8 @@ class User extends Authenticatable
     public function assignments() {
         return $this->hasMany(Assignment::class);
     }
+
+    public function assignment_final() {
+        return $this->hasMany(AssignmentFinal::class);
+    }
 }

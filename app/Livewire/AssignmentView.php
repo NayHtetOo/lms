@@ -4,26 +4,28 @@ namespace App\Livewire;
 
 use App\Models\Assignment;
 use App\Models\AssignmentDraft;
+use App\Models\AssignmentFinal;
 use App\Models\Course;
 use App\Models\Enrollment;
 use Illuminate\Support\Facades\Storage;
 use Livewire\Attributes\Computed;
+use Livewire\Attributes\Validate;
 use Livewire\Component;
 use Livewire\WithFileUploads;
 
 class AssignmentView extends Component
 {
+    use WithFileUploads;
     public $id;
     public $assignment_name, $description;
     public $isEditAssignment;
     public $isAdmin, $isTeacher, $isStudent, $isGuest;
+    #[Validate('max:5120')]
     public $assignmentFile;
     public $assignmentTitle;
     public $assignmentTitleStatus = false;
     public $assignmentTitleValidation;
-
-    use WithFileUploads;
-
+    public $assignmentSave = [];
 
     public function mount($id)
     {
@@ -56,6 +58,28 @@ class AssignmentView extends Component
     public function courseID()
     {
         return Course::findOrFail($this->assignment->course_id)->course_ID;
+    }
+
+    #[Computed]
+    public function studentAssignment()
+    {
+        $assignment = AssignmentFinal::where('course_id', $this->assignment->course_id)
+            ->where('user_id', auth()->user()->id)
+            ->where('course_section_id', $this->assignment()->course_section_id)
+            ->where('assignment_id', $this->id)
+            ->first();
+        return $assignment;
+    }
+
+    #[Computed]
+    public function allAssignments()
+    {
+        $assign = $this->assignment();
+        $finalAssignment = AssignmentFinal::where('assignment_id', $this->id)
+                        ->where('course_id', $assign->course_id)
+                        ->where('course_section_id', $assign->course_section_id)
+                        ->get();
+        return $finalAssignment;
     }
 
     public function render()
@@ -119,6 +143,8 @@ class AssignmentView extends Component
 
     public function saveDraft()
     {
+        $this->validate();
+
         $assignment = Assignment::find($this->assignment()->id);
         $courseSectionId = $assignment->course_section_id;
         $userId = auth()->user()->id;
@@ -130,7 +156,6 @@ class AssignmentView extends Component
 
         if ($this->assignmentFile) {
             $fileName = $this->assignmentFile->hashName();
-
             if (isset($assignmentDraft->assignment_file_path)) {
                 AssignmentDraft::where('course_section_id', $courseSectionId)
                     ->where('user_id', $userId)
@@ -149,10 +174,8 @@ class AssignmentView extends Component
                     'assignment_file_path' => 'assignmentFilePath/' . $fileName,
                 ]);
             }
-
-
-            $this->assignmentFile->storeAs('public/assignmentFilePath', $fileName);
             $this->assignmentTitleStatus = true;
+            $this->assignmentFile->storeAs('public/assignmentFilePath', $fileName);
         }
     }
 
@@ -203,6 +226,8 @@ class AssignmentView extends Component
         $assignment = Assignment::find($this->assignment()->id);
         $courseSectionId = $assignment->course_section_id;
         $userId = auth()->user()->id;
+        $finalAssignment = AssignmentFinal::where('assignment_id', $assignment->id)->where('user_id', $userId)->where('course_section_id', $courseSectionId)->exists();
+        // dd($finalAssignment);
         $assignmentDraft = AssignmentDraft::where('course_section_id', $courseSectionId)
             ->where('user_id', $userId)
             ->first();
@@ -211,11 +236,26 @@ class AssignmentView extends Component
             Storage::delete('public/' . $assignment->assignment_file_path);
         }
 
-        $assignment->update([
-            'user_id' => $userId,
-            'assignment_file_path' => $assignmentDraft->assignment_file_path,
-            'assignment_title' => $assignmentDraft->assignment_title
-        ]);
+        if ($finalAssignment) {
+            AssignmentFinal::where('course_section_id', $courseSectionId)->where('user_id', $userId)->update([
+                'course_id' => $assignment->course_id,
+                'course_section_id' => $assignment->course_section_id,
+                'user_id' => $userId,
+                'assignment_id' => $assignment->id,
+                'assignment_file_path' => $assignmentDraft->assignment_file_path,
+                'assignment_title' => $assignmentDraft->assignment_title
+            ]);
+        } else {
+            AssignmentFinal::create([
+                'course_id' => $assignment->course_id,
+                'course_section_id' => $assignment->course_section_id,
+                'user_id' => $userId,
+                'assignment_id' => $assignment->id,
+                'assignment_file_path' => $assignmentDraft->assignment_file_path,
+                'assignment_title' => $assignmentDraft->assignment_title
+            ]);
+        }
+
 
         AssignmentDraft::where('course_section_id', $courseSectionId)
             ->where('user_id', $userId)
