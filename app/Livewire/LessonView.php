@@ -26,8 +26,11 @@ class LessonView extends Component
         if($this->lesson){
             $this->lesson_tutorial = LessonTutorial::where('lesson_id',$this->lesson->id)->get();
             // dd($this->lesson_tutorial->first()->id);
-            $this->video_id = $this->lesson_tutorial->first()->id;
-            $this->currentLessonTutorial();
+            // dd($this->lesson_tutorial);
+            if($this->lesson_tutorial->isNotEmpty()){
+                $this->video_id = $this->lesson_tutorial->first()->id;
+                $this->currentLessonTutorial();
+            }
 
             $this->courseID = Course::findOrFail($this->lesson->course_id)->course_ID;
             $enrollment = Enrollment::where('user_id', $user_id)->where('course_id', $this->lesson->course_id)->first();
@@ -88,12 +91,14 @@ class LessonView extends Component
         $this->resetValidation();
     }
     public function switchVideo($video_id){
+        // dd('switchVideo');
         $video_lesson = LessonTutorial::find($video_id);
         if($video_lesson){
             $this->video_id = $video_id;
             $this->currentLessonTutorial();
             // $this->dispatch('video-view')->self();
         }
+        // dump($this->currentLessonTutorial()->toArray());
     }
 
     #[Computed]

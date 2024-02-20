@@ -4,8 +4,14 @@ namespace App\Filament\Resources\LessonTutorialResource\RelationManagers;
 
 use App\Tables\Columns\VideoColumn;
 use Filament\Forms;
+use Filament\Forms\Components\FileUpload;
+use Filament\Forms\Components\Grid;
+use Filament\Forms\Components\Select;
+use Filament\Forms\Components\Tabs;
 use Filament\Forms\Components\Tabs\Tab;
+use Filament\Forms\Components\TextInput;
 use Filament\Forms\Form;
+use Filament\Forms\Get;
 use Filament\Resources\RelationManagers\RelationManager;
 use Filament\Tables;
 use Filament\Tables\Table;
@@ -20,12 +26,35 @@ class LessonTutorialsRelationManager extends RelationManager
     {
         return $form
             ->schema([
-                Forms\Components\TextInput::make('title')
+                Grid::make(3)->schema([
+                    Forms\Components\TextInput::make('title')
                     ->required()
                     ->maxLength(255),
-                Forms\Components\FileUpload::make('path')->label('Upload')
-                ->directory('lesson_videos')
-                ->columnSpanFull()
+                Select::make('source_type')->label('Source From')->options([
+                    'local' => 'Local Video',
+                    'external' => 'Youtube Video',
+                ])
+                ->live()
+                ->afterStateUpdated(fn (Select $component) => $component
+                    ->getContainer()
+                    ->getComponent('dynamicTypeFields')
+                    ->getChildComponentContainer()
+                    ->fill()
+                ),
+                Grid::make()
+                    ->schema(fn (Get $get): array => match ($get('source_type')) {
+                        'local' => [
+                            FileUpload::make('path')->label('Upload')
+                                ->directory('lesson_videos')
+                        ],
+                        'external' => [
+                            TextInput::make('path')->label('Video Link')->placeholder('Enter Youtube Video Link')->rules('required','url'),
+                        ],
+                        default => [],
+                    })
+                    ->key('dynamicTypeFields')
+
+                ])
             ]);
     }
 
@@ -35,7 +64,8 @@ class LessonTutorialsRelationManager extends RelationManager
             ->recordTitleAttribute('title')
             ->columns([
                 Tables\Columns\TextColumn::make('title'),
-                VideoColumn::make('path')
+                // Tables\Columns\TextColumn::make('path')
+                VideoColumn::make('path'),
             ])
             ->filters([
                 //

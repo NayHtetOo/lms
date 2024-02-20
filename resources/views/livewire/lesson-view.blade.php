@@ -30,16 +30,43 @@
 
             @if ($lesson_tutorial)
                 {{-- first video lesson --}}
-                <div class="m-2">
-                    <livewire:video-view :data="$this->currentLessonTutorial()" :key="$this->currentLessonTutorial()->id"/>
-                </div>
+                @if ($this->currentLessonTutorial())
+                    <div class="m-2">
+                        <livewire:video-view :data="$this->currentLessonTutorial()" :key="$this->currentLessonTutorial()->id"/>
+                    </div>
+                @endif
                 {{-- remained video lessons --}}
                 <div class="m-2 flex overflow-x-auto">
                     @foreach ($lesson_tutorial as $key => $lsn_tuto)
-                        <video wire:click="switchVideo({{ $lsn_tuto->id }})" wire:key="video-{{ $lsn_tuto->id }}" class="w-1/5 h-1/5 m-2 rounded-lg">
-                            <source src="{{ asset('storage/'.$lsn_tuto->path) }}" type="video/mp4">
-                            Your browser does not support the video tag.
-                        </video>
+                        {{-- need to check video type --}}
+                        @if ($lsn_tuto->source_type == 'local')
+                        <div class="w-1/5 h-1/5 m-2 rounded-lg">
+                            {{-- wire:click="switchVideo({{ $lsn_tuto->id }})"  --}}
+                            <video wire:key="video-{{ $lsn_tuto->id }}">
+                                <source src="{{ asset('storage/'.$lsn_tuto->path) }}" type="video/mp4">
+                                Your browser does not support the video tag.
+                            </video>
+                            <div class="bg-gray-700 text-white py-1 cursor-pointer text-center">
+                                <button wire:click="switchVideo({{ $lsn_tuto->id }})">Switch</button>
+                            </div>
+                        </div>
+                        @else
+                            @php
+                                // Extract the video ID from the link
+                                $videoLink = $lsn_tuto->path;
+                                $videoId = substr(parse_url($videoLink, PHP_URL_QUERY), 2);
+                            @endphp
+                            @if ($videoId)
+                                <div class="w-1/5 h-1/5 m-2 rounded-lg">
+                                    <div wire:key="video-{{ $lsn_tuto->id }}">
+                                        <iframe width="234" height="130" src="https://www.youtube.com/embed/{{ $videoId }}" frameborder="0" allowfullscreen></iframe>
+                                    </div>
+                                    <div class="bg-gray-700 w-full text-white py-1 cursor-pointer text-center">
+                                        <button wire:click="switchVideo({{ $lsn_tuto->id }})">Switch</button>
+                                    </div>
+                                </div>
+                            @endif
+                        @endif
                     @endforeach
                 </div>
             @endif
@@ -79,7 +106,6 @@
                                 <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"
                                       stroke-width="2" d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6" />
                             </svg>
-                            {{-- <span class="sr-only">Close modal</span> --}}
                         </button>
                     </div>
                     <!-- Modal body -->

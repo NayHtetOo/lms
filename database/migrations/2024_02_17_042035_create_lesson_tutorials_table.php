@@ -15,6 +15,7 @@ return new class extends Migration
             $table->id();
             $table->foreignId('lesson_id')->constrained()->onDelete('cascade');
             $table->string('title')->nullable();
+            $table->string('source_type')->nullable();
             $table->string('path')->nullable();
             $table->timestamps();
         });
