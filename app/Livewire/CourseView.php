@@ -49,7 +49,7 @@ class CourseView extends Component
 
         $enrollment = Enrollment::where('user_id', $user_id)->where('course_id', $this->id)->first();
 
-        $this->role($enrollment->role->name);
+        $this->role($enrollment?->role->name);
 
         // role check
         // $enrollUsers = Enrollment::where('course_id',$id)->get();

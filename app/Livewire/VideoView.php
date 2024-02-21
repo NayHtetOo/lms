@@ -11,14 +11,14 @@ class VideoView extends Component
 
     public function mount($data){
        $this->data = $data;
-       $this->videoData();
+    //    $this->videoData();
     }
     public function render()
     {
         return view('livewire.video-view');
     }
-    #[Computed()]
-    public function videoData(){
-        return $this->data;
-    }
+    // #[Computed()]
+    // public function videoData(){
+    //     return $this->data;
+    // }
 }

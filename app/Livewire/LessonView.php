@@ -69,7 +69,7 @@ class LessonView extends Component
         $this->content = strip_tags($this->lesson->content);
     }
     public function updateLesson(){
-
+        // dd('lesson update');
         $validated = $this->validate([
             'lesson_name' => 'required',
             'content' => 'required'

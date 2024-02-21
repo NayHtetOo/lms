@@ -9,37 +9,68 @@
                 <livewire:course-photo-show :courseId='$this->lesson->course_id' />
             </div>
 
-            <div class="w-2/3 flex p-10">
-                <div>
+            <div class="border-b border-slate-600">
+                <h2 class="text-2xl font-bold text-slate-900 my-3">{{ $lesson->lesson_name }}</h2>
+            </div>
 
-                    <div class="border-b border-slate-600">
-                        <h2 class="text-2xl font-bold text-slate-900 my-3">{{ $lesson->lesson_name }}</h2>
-                    </div>
-                    <div class="my-3 border-b border-slate-600">
-                        {{ strip_tags($lesson->content) }}
-                    </div>
-                    @if ($lesson_tutorial)
-                        {{-- first video lesson --}}
+            <div class="my-3 border-b border-slate-600">
+                {{ strip_tags($lesson->content) }}
+            </div>
+            {{-- old design for lesson view --}}
+            {{-- @include('deleted_files.lesson-video-view') --}}
+
+            @if ($lesson_tutorial)
+                <div class="flex overflow-x-auto">
+                    {{-- first video lesson --}}
+                    <div class="w-4/5">
                         @if ($this->currentLessonTutorial())
                             <div class="m-2">
-                                <livewire:video-view :data="$this->currentLessonTutorial()" :key="$this->currentLessonTutorial()->id"/>
+                                @if ($this->currentLessonTutorial()->source_type == 'local')
+                                    <div>
+                                        <video class="w-full m-2 rounded-xl" controls wire:key="video-{{ $this->currentLessonTutorial()->id }}">
+                                            <source src="{{ asset('storage/'.$this->currentLessonTutorial()->path) }}" type="video/mp4">
+                                            Your browser does not support the video tag.
+                                        </video>
+                                        <span class="ml-2 px-2 py-2 font-bold text-2xl text-center">{{ $this->currentLessonTutorial()->title }}</span>
+                                    </div>
+                                @else
+                                    @php
+                                        // Extract the video ID from the link
+                                        $videoLink = $this->currentLessonTutorial()->path;
+                                        $videoId = substr(parse_url($videoLink, PHP_URL_QUERY), 2);
+                                    @endphp
+                                    @if ($videoId)
+                                        <div wire:key="video-{{ $this->currentLessonTutorial()->id }}">
+                                            <iframe class="w-full m-2 rounded-xl" height="435" src="https://www.youtube.com/embed/{{ $videoId }}" frameborder="0" allowfullscreen></iframe>
+                                            <span class="ml-2 px-2 py-2 font-bold text-2xl text-center">{{ $this->currentLessonTutorial()->title }}</span>
+                                        </div>
+                                    @endif
+                                @endif
                             </div>
                         @endif
-                        {{-- remained video lessons --}}
-                        <div class="m-2 flex overflow-x-auto">
+                    </div>
+
+                    {{-- remained video lessons --}}
+                    <div class="w-2/5 overflow-x-auto max-h-screen">
+                        <div class="flex flex-col gap-2 px-2 py-2">
                             @foreach ($lesson_tutorial as $key => $lsn_tuto)
-                                {{-- need to check video type --}}
                                 @if ($lsn_tuto->source_type == 'local')
-                                <div class="w-1/5 h-1/5 m-2 rounded-lg">
-                                    {{-- wire:click="switchVideo({{ $lsn_tuto->id }})"  --}}
-                                    <video wire:key="video-{{ $lsn_tuto->id }}">
-                                        <source src="{{ asset('storage/'.$lsn_tuto->path) }}" type="video/mp4">
-                                        Your browser does not support the video tag.
-                                    </video>
-                                    <div class="bg-gray-700 text-white py-1 cursor-pointer text-center">
-                                        <button wire:click="switchVideo({{ $lsn_tuto->id }})">Switch</button>
+                                    <div class="bg-white shadow rounded-lg cursor-pointer" wire:click="switchVideo({{ $lsn_tuto->id }})">
+
+                                        <div class="pr-4">
+                                            <div class="w-full h-36 bg-black rounded-t-md m-1">
+                                                <video class="w-full h-full pr-4" wire:key="video-{{ $lsn_tuto->id }}">
+                                                    <source src="{{ asset('storage/'.$lsn_tuto->path) }}" type="video/mp4">
+                                                    Your browser does not support the video tag.
+                                                </video>
+                                            </div>
+                                            <div class="flex">
+                                                <div class="w-3/4 ml-2 px-2 py-2 font-bold text-xl text-center truncate">{{ $lsn_tuto->title }}</div>
+                                                <span class="w-1/4 bg-blue-600 px-2 py-2 text-center mb-2 rounded text-white cursor-pointer shadow-xl" wire:click="switchVideo({{ $lsn_tuto->id }})" wire:key="video-{{ $lsn_tuto->id }}">Watch</span>
+                                            </div>
+                                        </div>
+
                                     </div>
-                                </div>
                                 @else
                                     @php
                                         // Extract the video ID from the link
@@ -47,39 +78,40 @@
                                         $videoId = substr(parse_url($videoLink, PHP_URL_QUERY), 2);
                                     @endphp
                                     @if ($videoId)
-                                        <div class="w-1/5 h-1/5 m-2 rounded-lg">
-                                            <div wire:key="video-{{ $lsn_tuto->id }}">
-                                                <iframe width="234" height="130" src="https://www.youtube.com/embed/{{ $videoId }}" frameborder="0" allowfullscreen></iframe>
-                                            </div>
-                                            <div class="bg-gray-700 w-full text-white py-1 cursor-pointer text-center">
-                                                <button wire:click="switchVideo({{ $lsn_tuto->id }})">Switch</button>
+                                        <div class="bg-white shadow rounded-lg">
+                                            <div class="w-full pr-4">
+                                                <iframe class="w-full m-1 rounded-t-md" src="https://www.youtube.com/embed/{{ $videoId }}" frameborder="0" allowfullscreen></iframe>
+                                                <div class="flex">
+                                                    <div class="w-3/4 ml-2 px-2 py-2 font-bold text-xl text-center truncate">{{ $lsn_tuto->title }}</div>
+                                                    <span class="w-1/4 bg-blue-600 px-2 py-2 text-center mb-2 rounded text-white cursor-pointer" wire:click="switchVideo({{ $lsn_tuto->id }})" wire:key="video-{{ $lsn_tuto->id }}">Watch</span>
+                                                </div>
                                             </div>
                                         </div>
                                     @endif
                                 @endif
                             @endforeach
                         </div>
-                    @endif
-                    <div class="flex justify-end w-full">
-                        <button class="text-white bg-slate-800 hover:bg-slate-900 focus:ring-4 focus:outline-none focus:ring-slate-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center slate:bg-slate-600 slate:hover:bg-slate-700 slate:focus:ring-gray-800"
-                                @click="history.back()">Back</button>
-                        @if ($isAdmin || $isTeacher)
-                            <div class="text-end">
-                                <button class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800 ms-2"
-                                        type="button" wire:click="editLesson">
-                                    Edit
-                                </button>
-                            </div>
-                        @endif
                     </div>
                 </div>
+            @endif
+            <div class="flex justify-end w-full">
+                <button class="text-white bg-gray-500 hover:bg-gray-900 focus:ring-4 focus:outline-none focus:ring-gray-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center gray:bg-gray-600 gray:hover:bg-gray-700 gray:focus:ring-gray-800"
+                        @click="history.back()">Back</button>
+                @if ($isAdmin || $isTeacher)
+                    <div class="text-end">
+                        <button class="text-white bg-gray-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800 ms-2"
+                                type="button" wire:click="editLesson">
+                            Edit
+                        </button>
+                    </div>
+                @endif
             </div>
         </div>
 
     </div>
     {{-- lesson edit modal --}}
     @if ($isEditLesson)
-        <div class="fixed z-50 justify-center w-full top-12 left-72 right-0">
+        <div class="fixed z-50 justify-center w-full top-12 lg:left-44">
             <div class="fixed inset-0 transition-opacity" aria-hidden="true">
                 <div class="absolute inset-0 bg-gray-800 opacity-75"></div>
             </div>
@@ -104,7 +136,7 @@
                     <div class="overflow-y-auto overflow-x-hidden max-h-96 p-4 md:p-5 space-y-4">
                         @if ($errors->any())
                             @foreach ($errors->all() as $error)
-                                <div class="px-2 py-2 m-3 bg-red-500 text-white">{{ $error }}</div>
+                                <div class="px-2 py-2 m-3 bg-red-500 rounded text-white">{{ $error }}</div>
                             @endforeach
                         @endif
                         <div class="flex m-2">
