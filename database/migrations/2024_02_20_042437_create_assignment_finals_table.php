@@ -19,6 +19,8 @@ return new class extends Migration
             $table->foreignId('assignment_id')->nullable()->constrained()->cascadeOnDelete();
             $table->string('assignment_file_path')->nullable();
             $table->string('assignment_title')->nullable();
+            $table->integer('received_mark')->nullable();
+            $table->integer('status')->nullable();
             $table->timestamps();
         });
     }

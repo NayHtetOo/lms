@@ -17,6 +17,10 @@ class CoursePhotoShow extends Component
         return $course;
     }
 
+    public function courseDetailRoute($id) {
+        redirect()->route('course_detail', $id);
+    }
+
     public function mount($courseId) {
         $this->courseId = $courseId;
     }

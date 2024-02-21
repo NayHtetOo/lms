@@ -34,4 +34,8 @@ class Course extends Model
     public function forums () {
         return $this->hasMany(Forum::class);
     }
+
+    public function assignmentFinal() {
+        return $this->hasMany(AssignmentFinal::class);
+    }
 }

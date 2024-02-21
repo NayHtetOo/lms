@@ -1,4 +1,4 @@
-<div class="{{ $hidden }} rounded-lg bg-gray-50" id="section" role="tabpanel" aria-labelledby="section-tab" wire:transition.origin.right>
+<div class="{{ $hidden }} rounded-lg bg-gray-50" id="section" role="tabpanel" aria-labelledby="section-tab">
     @if ($currentCourseSection->isNotEmpty())
         @foreach ($currentCourseSection as $key => $section)
             @php

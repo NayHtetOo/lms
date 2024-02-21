@@ -26,6 +26,10 @@ class AssignmentsRelationManager extends RelationManager
                 TextInput::make('assignment_name')
                     ->required()
                     ->maxLength(255),
+                TextInput::make('mark')
+                    ->numeric()
+                    ->required()
+                    ->maxLength(3),
                 RichEditor::make('description')->columnSpanFull()
             ]);
     }
@@ -35,8 +39,10 @@ class AssignmentsRelationManager extends RelationManager
         return $table
             ->recordTitleAttribute('assignment_name')
             ->columns([
+                TextColumn::make('No')->rowIndex(),
                 TextColumn::make('assignment_name'),
                 TextColumn::make('description')->formatStateUsing(fn (string $state) => strip_tags($state)),
+                TextColumn::make('mark')->formatStateUsing(fn (string $state) => $state . " marks")
             ])
             ->filters([
                 //

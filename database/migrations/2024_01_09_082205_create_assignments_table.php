@@ -15,13 +15,14 @@ return new class extends Migration
             $table->id();
             $table->foreignId('course_id')->constrained()->onDelete('cascade');
             $table->foreignId('course_section_id')->constrained()->onDelete('cascade');
+            $table->integer('mark')->nullable();
             $table->string('assignment_name')->nullable();
             $table->string('description')->nullable();
             $table->timestamps();
         });
     }
 
-    /**
+    /**http://127.0.0.1:8000/admin/course-sections
      * Reverse the migrations.
      */
     public function down(): void

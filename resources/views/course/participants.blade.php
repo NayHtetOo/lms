@@ -1,4 +1,4 @@
-<div class="{{ $hidden }} p-4 rounded-lg bg-white shadow-lg h-[55vh] overflow-auto" id="participant" role="tabpanel" aria-labelledby="participant-tab" wire:transition.origin.right>
+<div class="{{ $hidden }} p-4 rounded-lg bg-white shadow-lg h-[55vh] overflow-auto" id="participant" role="tabpanel" aria-labelledby="participant-tab">
     <h2 class="text-lg font-bold text-slate-800">All Participants</h2>
     <div class="flex h-16 items-center justify-end w-full">
         <div class="flex items-center">

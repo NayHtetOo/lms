@@ -20,12 +20,14 @@ class AssignmentView extends Component
     public $assignment_name, $description;
     public $isEditAssignment;
     public $isAdmin, $isTeacher, $isStudent, $isGuest;
-    #[Validate('max:5120')]
     public $assignmentFile;
     public $assignmentTitle;
     public $assignmentTitleStatus = false;
     public $assignmentTitleValidation;
     public $assignmentSave = [];
+    public $teacherMarkModalStatus = false;
+    public $submittedStudent;
+    public $receivedMark;
 
     public function mount($id)
     {
@@ -63,8 +65,7 @@ class AssignmentView extends Component
     #[Computed]
     public function studentAssignment()
     {
-        $assignment = AssignmentFinal::where('course_id', $this->assignment->course_id)
-            ->where('user_id', auth()->user()->id)
+        $assignment = AssignmentFinal::where('user_id', auth()->user()->id)
             ->where('course_section_id', $this->assignment()->course_section_id)
             ->where('assignment_id', $this->id)
             ->first();
@@ -82,10 +83,6 @@ class AssignmentView extends Component
         return $finalAssignment;
     }
 
-    public function render()
-    {
-        return view('livewire.assignment-view')->layout("layouts.app");
-    }
     #[Computed]
     public function role($role)
     {
@@ -143,7 +140,9 @@ class AssignmentView extends Component
 
     public function saveDraft()
     {
-        $this->validate();
+        $this->validate([
+            'assignmentFile' => 'required|mimes:pdf|max:5120'
+        ]);
 
         $assignment = Assignment::find($this->assignment()->id);
         $courseSectionId = $assignment->course_section_id;
@@ -176,6 +175,7 @@ class AssignmentView extends Component
             }
             $this->assignmentTitleStatus = true;
             $this->assignmentFile->storeAs('public/assignmentFilePath', $fileName);
+            $this->reset('assignmentFile');
         }
     }
 
@@ -243,7 +243,8 @@ class AssignmentView extends Component
                 'user_id' => $userId,
                 'assignment_id' => $assignment->id,
                 'assignment_file_path' => $assignmentDraft->assignment_file_path,
-                'assignment_title' => $assignmentDraft->assignment_title
+                'assignment_title' => $assignmentDraft->assignment_title,
+                'status' => 1, // process status
             ]);
         } else {
             AssignmentFinal::create([
@@ -252,13 +253,50 @@ class AssignmentView extends Component
                 'user_id' => $userId,
                 'assignment_id' => $assignment->id,
                 'assignment_file_path' => $assignmentDraft->assignment_file_path,
-                'assignment_title' => $assignmentDraft->assignment_title
+                'assignment_title' => $assignmentDraft->assignment_title,
+                'status' => 1, // process status
             ]);
-        }
 
+        }
 
         AssignmentDraft::where('course_section_id', $courseSectionId)
             ->where('user_id', $userId)
             ->delete();
+    }
+
+    public function markTeacher($assignmentId) {
+        $this->teacherMarkModalStatus = true;
+        $assignmentFinal = AssignmentFinal::where('id', $assignmentId)->first();
+
+        if ($assignmentFinal->received_mark) {
+            $this->receivedMark = $assignmentFinal->received_mark;
+        } else {
+            $this->receivedMark = null;
+        }
+
+        $this->submittedStudent = $assignmentFinal;
+    }
+
+    public function closeAssignTeacher() {
+        $this->teacherMarkModalStatus = false;
+    }
+
+    public function updateMark($assignmentId) {
+        $this->validate([
+            'receivedMark' => 'required|max:3'
+        ], [
+            'receivedMark' => 'Given mark must be between 1 to 100'
+        ]);
+        AssignmentFinal::where('id', $assignmentId)->update([
+            'received_mark' => $this->receivedMark,
+            'status' => 2,
+        ]);
+        $this->reset('receivedMark');
+        $this->teacherMarkModalStatus = false;
+    }
+
+      public function render()
+    {
+        return view('livewire.assignment-view')->layout("layouts.app");
     }
 }

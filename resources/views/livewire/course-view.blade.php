@@ -43,21 +43,22 @@
 
             {{-- @include('deleted_files.course-tab-view') --}}
 
-            <div class=" rounded-xl shadow-lg h-[25rem]">
+            <div class=" rounded-xl h-[25rem]">
                 <div class="w-full flex">
-                    <div class="w-1/3 bg-gray-200 p-5 mr-5 rounded-lg">
+                    <div class="w-1/3 h-full bg-gray-200 p-5 mr-5 rounded-lg shadow-lg">
                         <div class="rounded-lg">
                             <img class="w-[10rem] rounded-lg"
                                  src="{{ asset('storage/' . $this->course()->course_photo_path) }}"
                                  alt="{{ $this->course()->course_name }}" />
                         </div>
                         <div class="my-5">
-                            <p class="text-slate-800 text-justify indent-8">
+                            <h3 class="text-xl font-bold text-slate-800 mb-3">Overview</h3>
+                            <p class="text-slate-800 text-justify indent-8 overflow-hidden" style="text-overflow: ellipsis; display: -webkit-box; -webkit-line-clamp: 5; -webkit-box-orient: vertical;" >
                                 {{ $this->course()->description }}
                             </p>
                         </div>
                     </div>
-                    <div class="w-2/3 shadow-lg ms-3">
+                    <div class="w-2/3 ms-3 h-[70vh] overflow-auto">
                         <div class="w-full bg-blue-600 rounded-md p-2">
                             <button class="inline-block @if ($isSectionTab) bg-blue-700 rounded @endif  text-white text-md p-2 hover:bg-blue-600 hover:text-white"
                                     type="button" wire:click="switchTab(1)">Section
@@ -85,51 +86,7 @@
                         @endif
                     </div>
                 </div>
-                {{-- <livewire:course-photo-show :courseId="$id" />
-                <div class="mb-4 border-b border-gray-200">
-                    <ul class="flex flex-wrap -mb-px text-sm font-medium text-center bg-blue-500 rounded-md px-3">
-                        <li class="me-2 py-2">
-                            <button class="inline-block @if ($isSectionTab) bg-black rounded @endif  text-white text-md p-2 hover:bg-blue-600 hover:text-white"
-                                    type="button" wire:click="switchTab(1)">Section
-                            </button>
-                        </li>
-
-                        <li class="me-2 py-2">
-                            <button class="inline-block @if ($isForumTab) bg-black rounded @endif text-white p-2 hover:bg-blue-600 hover:text-white text-md"
-                                    type="button" wire:click="switchTab(2)">Forums
-                            </button>
-                        </li>
-
-                        <li class="me-2 py-2">
-                            <button class="inline-block @if ($isParticipantTab) bg-black rounded @endif text-white p-2 hover:bg-blue-600 hover:text-white text-md"
-                                    type="button" wire:click="switchTab(3)">Participants
-                            </button>
-                        </li>
-
-                    </ul>
-                </div>
-
-                <div class="bg-gray-200">
-
-                    @if ($isSectionTab)
-                        @include('course.section', [
-                            'hidden' => $this->isParticipantSearch ? 'hidden' : '',
-                        ])
-                    @endif
-
-                    @if ($isForumTab)
-                        @include('course.forum')
-                    @endif
-
-                    @if ($isParticipantTab)
-                        @include('course.participants', [
-                            'hidden' => $this->isParticipantSearch ? '' : 'hidden',
-                        ])
-                    @endif
-
-                </div> --}}
             </div>
-
         </div>
     </main>
 
